@@ -1,0 +1,7 @@
+com\illtamer\infinite\bot\expansion\basic\listener\BasicBindListener$PlayerConfirmListener.class
+com\illtamer\infinite\bot\expansion\basic\listener\SubmitListener.class
+com\illtamer\infinite\bot\expansion\basic\listener\BasicBindListener.class
+com\illtamer\infinite\bot\expansion\basic\listener\MemberMenageListener.class
+com\illtamer\infinite\bot\expansion\basic\entity\SubmitSender.class
+com\illtamer\infinite\bot\expansion\basic\BasicManager.class
+com\illtamer\infinite\bot\expansion\basic\listener\KeyWordsListener.class

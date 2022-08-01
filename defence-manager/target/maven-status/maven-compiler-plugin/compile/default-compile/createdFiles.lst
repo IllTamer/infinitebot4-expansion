@@ -1,0 +1,5 @@
+com\illtamer\infinite\bot\expansion\defence\listener\AuthListener.class
+com\illtamer\infinite\bot\expansion\defence\DefenceManager.class
+com\illtamer\infinite\bot\expansion\defence\util\AuthUtil.class
+com\illtamer\infinite\bot\expansion\defence\entity\AuthData.class
+com\illtamer\infinite\bot\expansion\defence\listener\LoginListener.class

@@ -1,0 +1,37 @@
+# Infinite Bot 3 - ChatManager(群与游戏消息互通) 1.0
+#
+# 玩家在聊天界面输入 #change
+#   切换自身消息接收状态 接收/屏蔽
+#
+
+# 消息前缀映射配置(仅配置的群可进行消息转发)
+#   玩家在游戏中发送 '消息前缀 消息' 即可将消息发送至前缀对应群组，不同群组的前缀可重复
+#   例: #main 你好
+prefix-mapper:
+  # 群组: 消息前缀
+  863522624: '#main'
+
+# 群向游戏发送消息配置
+group-to-game:
+  # 是否开启功能
+  enable: true
+  # 游戏内接收的消息前缀格式
+  # 局部变量
+  # - %group_id%: 发送消息的群号
+  # - %group_card% 发送消息的群昵称
+  # - %sender_id%: 发送消息的用户qq
+  # - %sender_card% 发送消息的用户昵称
+  prefix: '(%group_id%) &6&l[&3&l%sender_card%&6&l]&7&l'
+  # 消息发送方式
+  # - 'global': 控制台 console 发送消息，不可被屏蔽
+  # - 'private': 向各玩家发送私人消息，若玩家设置屏蔽，则不会接受群消息
+  type: 'global'
+
+# 游戏向群发送消息配置
+game-to-group:
+  # 是否开启功能
+  enable: true
+  # 群内接收的消息前缀格式
+  # 局部变量
+  # - %player_name% 玩家昵称
+  prefix: '[测试一服](%player_name%): '
