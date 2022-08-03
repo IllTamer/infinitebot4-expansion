@@ -14,12 +14,15 @@ import java.util.Map;
 public class ChatManager extends InfiniteExpansion {
     private static ChatManager instance;
     private ExpansionConfig configFile;
+    private ExpansionConfig closeFile;
     private Map<String, Object> prefixMapper;
 
     @Override
     public void onEnable() {
         instance = this;
+        Global.init(this);
         configFile = new ExpansionConfig("config.yml", instance);
+        closeFile = new ExpansionConfig("close.yml", instance);
         prefixMapper = Lambda.nullableInvoke(section -> section.getValues(false), configFile.getConfig().getConfigurationSection("prefix-mapper"));
         Assert.isTrue(prefixMapper != null && prefixMapper.size() != 0, "Configuration node 'prefix-mapper' can not be empty !");
         EventExecutor.registerEvents(new Group2GameListener(configFile), instance);
@@ -28,6 +31,7 @@ public class ChatManager extends InfiniteExpansion {
 
     @Override
     public void onDisable() {
+        Global.save(closeFile);
         instance = null;
     }
 
@@ -39,6 +43,10 @@ public class ChatManager extends InfiniteExpansion {
     @NotNull
     public Map<String, Object> getPrefixMapper() {
         return prefixMapper;
+    }
+
+    public ExpansionConfig getCloseFile() {
+        return closeFile;
     }
 
     public ExpansionConfig getConfigFile() {
