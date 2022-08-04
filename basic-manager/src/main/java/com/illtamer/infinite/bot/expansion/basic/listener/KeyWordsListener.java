@@ -6,6 +6,7 @@ import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
@@ -21,11 +22,12 @@ import java.util.Iterator;
 
 public class KeyWordsListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onDailyPlayer(MessageEvent event) {
         if (!StaticAPI.isAdmin(event.getUserId()) || !"今日新玩家".equals(event.getRawMessage())) {
             return;
         }
+        event.setCancelled(true);
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             int count = 0;
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
@@ -37,11 +39,12 @@ public class KeyWordsListener implements Listener {
         });
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onCheckBind(MessageEvent event) {
         if (!"我的绑定".equals(event.getRawMessage())) {
             return;
         }
+        event.setCancelled(true);
         PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
         if (data == null || data.getUuid() == null) {
             event.reply("暂未查询到您的信息，请绑定后重试");
@@ -55,11 +58,12 @@ public class KeyWordsListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onLoginOut(MessageEvent event) {
         if (!"强制下线".equals(event.getRawMessage())) {
             return;
         }
+        event.setCancelled(true);
         PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
         if (data == null || data.getUuid() == null) {
             event.reply("暂未查询到您的信息，请绑定后重试");
@@ -74,11 +78,12 @@ public class KeyWordsListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onShowPlayers(GroupMessageEvent event) {
         if (!"服务器在线".equals(event.getRawMessage())) {
             return;
         }
+        event.setCancelled(true);
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             Collection<? extends Player> players = Bootstrap.getInstance().getServer().getOnlinePlayers();
             Iterator<? extends Player> iterator = players.iterator();

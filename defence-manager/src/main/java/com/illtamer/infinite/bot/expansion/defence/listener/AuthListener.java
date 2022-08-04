@@ -7,6 +7,7 @@ import com.illtamer.infinite.bot.expansion.defence.entity.AuthData;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
@@ -29,7 +30,7 @@ public class AuthListener implements Listener {
         this.failure = config.getString("failure");
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onAuth(MessageEvent event) {
         String msg = event.getRawMessage();
         if (!msg.startsWith("验证 ")) {
@@ -37,9 +38,11 @@ public class AuthListener implements Listener {
                 int value = Integer.parseInt(msg.split(" ")[1]);
                 LoginListener.clearCommon(value);
                 event.reply("Done-");
+                event.setCancelled(true);
             }
             return;
         }
+        event.setCancelled(true);
         if (msg.length() < 4) {
             event.reply("请核实格式 '验证 <code>'");
             return;

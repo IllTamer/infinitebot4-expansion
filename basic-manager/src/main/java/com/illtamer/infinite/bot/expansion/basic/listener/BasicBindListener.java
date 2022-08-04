@@ -5,6 +5,7 @@ import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
@@ -26,12 +27,13 @@ public class BasicBindListener implements Listener {
         this.limit = configFile.getConfig().getLong("bind.limit");
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onGroupBind(GroupMessageEvent event) {
         if (!StaticAPI.inGroups(event.getGroupId())) {
             return;
         }
         if (event.getRawMessage().startsWith("绑定 ")) {
+            event.setCancelled(true);
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (data != null && data.getUuid() != null) {
                 event.reply("您已绑定玩家: " + Lambda.nullableInvoke(OfflinePlayer::getName, data.getOfflinePlayer()));
@@ -41,6 +43,7 @@ public class BasicBindListener implements Listener {
             playerData.setUserId(event.getSender().getUserId());
             bindImplement(event, playerData, limit, false);
         } else if (event.getRawMessage().startsWith("改绑 ")) {
+            event.setCancelled(true);
             PlayerData playerData = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (playerData == null) {
                 event.reply("您未绑定过玩家");

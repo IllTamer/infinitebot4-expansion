@@ -8,6 +8,7 @@ import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import org.bukkit.Bukkit;
 
@@ -20,7 +21,7 @@ public class SubmitListener implements Listener {
         Assert.notNull(prefix, "'submit.prefix' can not be null !");
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.HIGHEST)
     public void onSubmit(MessageEvent event) {
         if (StaticAPI.isAdmin(event.getSender().getUserId())) {
             final String rawMessage = event.getRawMessage();
@@ -32,6 +33,7 @@ public class SubmitListener implements Listener {
                 Bukkit.getScheduler().runTask(Bootstrap.getInstance(),
                         () -> Bukkit.dispatchCommand(sender, command));
                 BasicManager.getInstance().getLogger().info(String.format("Id [%s] dispatched a command '%s'", event.getSender().getUserId(), command));
+                event.setCancelled(true);
             }
         }
     }

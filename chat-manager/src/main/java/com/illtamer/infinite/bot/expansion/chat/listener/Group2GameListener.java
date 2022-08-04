@@ -8,6 +8,7 @@ import com.illtamer.infinite.bot.expansion.chat.Global;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import org.bukkit.Bukkit;
@@ -36,7 +37,7 @@ public class Group2GameListener implements Listener {
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
     }
 
-    @EventHandler
+    @EventHandler(priority = Priority.LOWEST)
     public void onGroup(GroupMessageEvent event) {
         if (!enable) return;
         if (!prefixMapper.containsKey(event.getGroupId().toString())) return;

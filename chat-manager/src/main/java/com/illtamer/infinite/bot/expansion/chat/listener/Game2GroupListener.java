@@ -62,7 +62,7 @@ public class Game2GroupListener implements Listener {
     }
 
     // 最先触发
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onChange(AsyncPlayerChatEvent event) {
         final String message = event.getMessage();
         if (message.length() == 7 && "#change".equalsIgnoreCase(message)) {
