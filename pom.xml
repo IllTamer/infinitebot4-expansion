@@ -12,6 +12,7 @@
         <module>basic-manager</module>
         <module>defence-manager</module>
         <module>chat-manager</module>
+        <module>view-manager</module>
     </modules>
 
     <properties>
