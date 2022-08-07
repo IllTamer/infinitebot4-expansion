@@ -3,6 +3,8 @@
 # 玩家在聊天界面输入 #change
 #   切换自身消息接收状态 接收/屏蔽
 #
+# Notice:
+# - 本附属软依赖附属 [ViewManager]: 提供游戏内查看图片支持
 
 # 消息前缀映射配置(仅配置的群可进行消息转发，配置的群无需是机器人管理的群)
 #   玩家在游戏中发送 '消息前缀 消息' 即可将消息发送至前缀对应群组，不同群组的前缀可重复
@@ -24,11 +26,16 @@ group-to-game:
   # - %group_card% 发送消息的群昵称
   # - %sender_id%: 发送消息的用户qq
   # - %sender_card% 发送消息的用户昵称
-  prefix: '(%group_id%) &6&l[&3&l%sender_card%&6&l]&7&l'
+  prefix: '(%group_id%) &6&l[&3&l%sender_card%&6&l]&f'
   # 消息发送方式
-  # - 'global': 控制台 console 发送消息，不可被屏蔽
+  # - 'global': 控制台 console 发送消息，不可被屏蔽，
+  #             注意：在此方式下消息解析等级始终为 0
   # - 'private': 向各玩家发送私人消息，若玩家设置屏蔽，则不会接受群消息
   type: 'private'
+  # 消息解析等级
+  # - 0: 仅解析文字，过滤所有其它消息类型
+  # - 1: 解析所有支持的消息类型
+  parse-level: 1
 
 # 游戏向群发送消息配置
 game-to-group:

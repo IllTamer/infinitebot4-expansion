@@ -41,10 +41,9 @@ public class Game2GroupListener implements Listener {
     // 最后触发
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (!enable) return;
+        if (!enable || event.isCancelled()) return;
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             final String message = event.getMessage();
-            if (message.length() == 7 && "#change".equalsIgnoreCase(message)) return;
             final int index;
             if (allTurnsGroupIds.size() != 0) {
                 final String format = format(event);
