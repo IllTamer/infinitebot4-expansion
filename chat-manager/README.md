@@ -7,3 +7,9 @@
 ## 配置文件
 
 [[config.yml]](src/main/resources/config.yml)
+
+## 依赖
+
+### 软依赖
+
+- [view-manager](../view-manager) 支持游戏内查看图片
