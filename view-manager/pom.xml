@@ -25,6 +25,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>system</scope>
+            <systemPath>E:/JCode/idea/plugin/infinite-bot-3-expansion/libs/VaultAPI-1.7.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.loohp</groupId>
             <artifactId>InteractiveChatDiscordSrvAddon</artifactId>
             <version>4.2.2.6</version>
@@ -34,6 +41,7 @@
             <groupId>com.loohp</groupId>
             <artifactId>InteractiveChat</artifactId>
             <version>4.2.2.6</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

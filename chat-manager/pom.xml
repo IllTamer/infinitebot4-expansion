@@ -16,4 +16,12 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.illtamer.infinite.bot.expansion</groupId>
+            <artifactId>view-manager</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
 </project>
