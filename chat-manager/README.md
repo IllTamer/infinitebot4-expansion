@@ -13,3 +13,17 @@
 ### 软依赖
 
 - [view-manager](../view-manager) 支持游戏内查看图片
+
+## 演示
+
+### 群 -> 游戏
+
+![](image/01-qq.png)
+
+![](image/01-game.png)
+
+### 游戏 -> 群
+
+![](image/02-game.png)
+
+![](image/02-qq.png)
