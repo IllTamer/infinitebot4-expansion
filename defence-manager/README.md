@@ -18,3 +18,13 @@
 ## 配置文件
 
 [[config.yml]](src/main/resources/config.yml)
+
+## 演示
+
+### 白名单拦截
+
+![defence](image/defence.png)
+
+### Q群验证
+
+![verify](image/verify.png)

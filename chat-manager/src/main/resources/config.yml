@@ -16,6 +16,15 @@ prefix-mapper:
   863522624: '#main'
   663950147: ''
 
+# 消息互通功能增强
+# 开启后，当游戏内发送 InteractiveChat 内配置的展示变量后，自动同步发送至QQ
+# 提示：默认展示变量
+# - [i] 或 [item], 展示手持物品
+# - [inv] 或 [inventory], 展示背包物品
+# - [e] 或 [ender], 展示末影箱物品
+# 注意：此功能仅在ib3加装 视图增强 附属后且 game-to-group.enable 节点设置为 true 时可用
+expand-chat: true
+
 # 群向游戏发送消息配置
 group-to-game:
   # 是否开启功能

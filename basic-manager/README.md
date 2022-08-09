@@ -24,3 +24,21 @@
 ## 配置文件
 
 [[config.yml]](src/main/resources/config.yml)
+
+## 演示
+
+### 今日新玩家
+
+![new-player](image/new-player.png)
+
+### 我的绑定
+
+![my-bind](image/my-bind.png)
+
+### 强制下线
+
+![force-out](image/force-out.png)
+
+### 服务器在线
+
+![online](image/online.png)
