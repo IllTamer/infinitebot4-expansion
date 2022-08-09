@@ -9,8 +9,13 @@ import com.loohp.interactivechat.objectholders.ValueTrios;
 import com.loohp.interactivechat.utils.*;
 import com.loohp.interactivechatdiscordsrvaddon.InteractiveChatDiscordSrvAddon;
 import com.loohp.interactivechatdiscordsrvaddon.graphics.ImageGeneration;
+import com.loohp.interactivechatdiscordsrvaddon.utils.DiscordItemStackUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.ShulkerBox;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -25,6 +30,24 @@ public class HologramUtil {
     private static final String PREFIX = "base64://";
 
     private HologramUtil() {}
+
+    public static BufferedImage getTooltip(ItemStack item, Player player) {
+        BufferedImage tooltip = null;
+        try {
+            tooltip = new BufferedImage(8, 8, 6);
+            if (item.getType() == Material.FILLED_MAP) {
+                tooltip = ImageGeneration.getMapImage(item, player);
+            } else if (item.getItemMeta() != null && item.getType() == Material.SHULKER_BOX) {
+                ShulkerBox box = (ShulkerBox) item.getItemMeta();
+                tooltip = ImageGeneration.getInventoryImage(box.getInventory(), ICPlayerFactory.getICPlayer(player));
+            } else {
+                tooltip = ImageGeneration.getToolTipImage(DiscordItemStackUtils.getToolTip(item, ICPlayerFactory.getICPlayer(player)).getComponents());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tooltip;
+    }
 
     public static BufferedImage getPlayerListImage() {
         Map<OfflinePlayer, Integer> players = Bukkit.getOnlinePlayers().stream().filter(each -> !VanishUtils.isVanished(each.getUniqueId())).collect(Collectors.toMap(each -> each, PlayerUtils::getPing));
