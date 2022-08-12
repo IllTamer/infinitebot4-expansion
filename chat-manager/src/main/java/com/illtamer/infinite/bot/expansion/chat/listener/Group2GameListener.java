@@ -171,7 +171,7 @@ public class Group2GameListener implements Listener {
                     return new TextComponent("§7[图片]" + ChatColor.RESET);
                 Image image = (Image) entity;
                 final TextComponent component = new TextComponent("§a[图片]" + ChatColor.RESET);
-                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text("点击以查看")));
+                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("点击以查看")));
                 final UUID uuid = DispatchUtil.executeImageWrapper(image.getUrl(), false);
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "vm-map#" + uuid));
                 return component;

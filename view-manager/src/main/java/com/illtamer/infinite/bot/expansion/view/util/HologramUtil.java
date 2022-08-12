@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.view.util;
 
+import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.loohp.interactivechat.libs.net.kyori.adventure.text.Component;
 import com.loohp.interactivechat.libs.net.kyori.adventure.text.minimessage.MiniMessage;
 import com.loohp.interactivechat.libs.net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class HologramUtil {
 
     private static final String PREFIX = "base64://";
+    private static final boolean UPPER = PluginUtil.Version.upper(12);
 
     private HologramUtil() {}
 
@@ -35,12 +37,15 @@ public class HologramUtil {
         BufferedImage tooltip = null;
         try {
             tooltip = new BufferedImage(8, 8, 6);
-            if (item.getType() == Material.FILLED_MAP) {
+            if (item.getType() == Material.MAP) {
                 tooltip = ImageGeneration.getMapImage(item, player);
-            } else if (item.getItemMeta() != null && item.getType() == Material.SHULKER_BOX) {
-                ShulkerBox box = (ShulkerBox) item.getItemMeta();
-                tooltip = ImageGeneration.getInventoryImage(box.getInventory(), ICPlayerFactory.getICPlayer(player));
             } else {
+                if (UPPER) {
+                    if (item.getItemMeta() != null && item.getType() == Material.SHULKER_BOX) {
+                        ShulkerBox box = (ShulkerBox) item.getItemMeta();
+                        return ImageGeneration.getInventoryImage(box.getInventory(), ICPlayerFactory.getICPlayer(player));
+                    }
+                }
                 tooltip = ImageGeneration.getToolTipImage(DiscordItemStackUtils.getToolTip(item, ICPlayerFactory.getICPlayer(player)).getComponents());
             }
         } catch (Exception e) {
