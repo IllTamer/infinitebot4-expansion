@@ -5,6 +5,7 @@ import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -26,6 +27,7 @@ public class PreGame2GroupMessageEvent extends Event {
      * */
     private final String cleanMessage;
     private final Player player;
+    private final AsyncPlayerChatEvent oriEvent;
     /**
      * 将要发送的 Message 对象
      * <p>
@@ -33,13 +35,18 @@ public class PreGame2GroupMessageEvent extends Event {
      * */
     private Message message;
 
-    public PreGame2GroupMessageEvent(Set<Long> targetGroups, String prefix, String cleanMessage, Player player) {
+    public PreGame2GroupMessageEvent(Set<Long> targetGroups, String prefix, String cleanMessage, Player player, AsyncPlayerChatEvent oriEvent) {
         super(true);
         this.targetGroups = targetGroups;
         this.prefix = prefix;
         this.cleanMessage = cleanMessage;
         this.player = player;
+        this.oriEvent = oriEvent;
         this.message = MessageBuilder.json().text(prefix).text(cleanMessage).build();
+    }
+
+    public void cancelledOriEvent() {
+        oriEvent.setCancelled(true);
     }
 
     public Set<Long> getTargetGroups() {

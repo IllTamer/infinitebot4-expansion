@@ -61,7 +61,7 @@ public class Game2GroupListener implements Listener {
             targetGroups.addAll(turnsGroupIds);
             cleanMessage = turnsGroupIds.size() == 0 ? rawMessage : rawMessage.substring(index+1);
         }
-        PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(cleanMessage), player);
+        PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(cleanMessage), player, event);
         eventMap.put(messageEvent, event);
         Bukkit.getPluginManager().callEvent(messageEvent);
     }
