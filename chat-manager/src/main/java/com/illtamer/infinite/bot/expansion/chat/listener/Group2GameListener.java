@@ -76,7 +76,7 @@ public class Group2GameListener implements Listener {
                 else {
                     players.forEach(player -> player.spigot().sendMessage(format.componentFormat()));
                     if (format.at) {
-                        if (format.atTargets.size() == 0)
+                        if (format.atAll)
                             players.forEach(player -> AtUtil.all(player, format.sender));
                         else
                             format.atTargets.forEach(player ->  AtUtil.one(player, format.sender));
@@ -103,6 +103,7 @@ public class Group2GameListener implements Listener {
         private final Message message;
 
         private boolean at = false;
+        private boolean atAll = false;
         private String sender;
         private final List<Player> atTargets = new ArrayList<>();
 
@@ -151,6 +152,7 @@ public class Group2GameListener implements Listener {
                 }
                 String qqStr = ((At) entity).getQq();
                 if ("all".equalsIgnoreCase(qqStr)) {
+                    atAll = true;
                     return new TextComponent(ChatColor.AQUA + "@全体玩家" + ChatColor.RESET);
                 } else {
                     Long qq = Long.parseLong(qqStr);
@@ -159,8 +161,7 @@ public class Group2GameListener implements Listener {
                         return new TextComponent(ChatColor.YELLOW + "@" + qq + ChatColor.RESET);
                     else {
                         final OfflinePlayer offlinePlayer = data.getOfflinePlayer();
-                        if (offlinePlayer.isOnline())
-                            atTargets.add(offlinePlayer.getPlayer());
+                        atTargets.add(offlinePlayer.getPlayer());
                         return new TextComponent(ChatColor.YELLOW + "@" + offlinePlayer.getName() + ChatColor.RESET);
                     }
                 }
