@@ -15,9 +15,11 @@ import org.bukkit.Bukkit;
 public class SubmitListener implements Listener {
 
     private final String prefix;
+    private final int delayTick;
 
     public SubmitListener(ExpansionConfig configFile) {
         this.prefix = configFile.getConfig().getString("submit.prefix");
+        this.delayTick = configFile.getConfig().getInt("submit.delay-tick", 5);
         Assert.notNull(prefix, "'submit.prefix' can not be null !");
     }
 
@@ -28,7 +30,7 @@ public class SubmitListener implements Listener {
             if (rawMessage.startsWith(prefix) && rawMessage.length() >= prefix.length() +  2) {
                 String command = rawMessage.substring(prefix.length() + 1);
                 event.reply("指令执行中, 请稍后");
-                SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event);
+                SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event, delayTick);
                 // 主线程执行指令
                 Bukkit.getScheduler().runTask(Bootstrap.getInstance(),
                         () -> Bukkit.dispatchCommand(sender, command));

@@ -17,6 +17,8 @@
 submit:
   # 前缀 (例: 'cmd help')
   prefix: cmd
+  # 合并消息等待时长，若设置为 0 则不进行等待
+  delay-tick: 5
 
 # 基础绑定设置
 bind:

@@ -16,24 +16,23 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-public class SubmitSender implements ConsoleCommandSender {
+public final class SubmitSender implements ConsoleCommandSender {
+    private final List<String> cacheMessages = new ArrayList<>();
     private final Server server;
     private final MessageEvent event;
+    private final int delayTick;
 
-    public SubmitSender(Server server, MessageEvent event) {
+    public SubmitSender(Server server, MessageEvent event, int delayTick) {
         this.server = server;
         this.event = event;
+        this.delayTick = delayTick;
     }
 
     @Override
     public void sendMessage(@NotNull String s) {
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () ->
-                event.reply(PluginUtil.clearColor(s)));
+        doSendMessage(s);
     }
 
     @Override
@@ -43,8 +42,7 @@ public class SubmitSender implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(@Nullable UUID uuid, @NotNull String s) {
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () ->
-                event.reply(PluginUtil.clearColor(s)));
+        doSendMessage(s);
     }
 
     @Override
@@ -166,4 +164,21 @@ public class SubmitSender implements ConsoleCommandSender {
     public void setOp(boolean b) {
         throw new UnsupportedOperationException();
     }
+
+    private void doSendMessage(String s) {
+        if (cacheMessages.size() == 0) {
+            cacheMessages.add(s);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Bootstrap.getInstance(), () -> {
+                List<String> messages = new ArrayList<>(cacheMessages);
+                cacheMessages.clear();
+                if (messages.size() == 1)
+                    event.reply(PluginUtil.clearColor(messages.get(0)));
+                else
+                    event.reply(PluginUtil.clearColor(StringUtil.toString(messages)));
+            }, delayTick);
+        } else {
+            cacheMessages.add(s);
+        }
+    }
+
 }
