@@ -61,9 +61,13 @@ public class Game2GroupListener implements Listener {
             targetGroups.addAll(turnsGroupIds);
             cleanMessage = turnsGroupIds.size() == 0 ? rawMessage : rawMessage.substring(index+1);
         }
-        PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(cleanMessage), player, event);
-        eventMap.put(messageEvent, event);
-        Bukkit.getPluginManager().callEvent(messageEvent);
+        // main thread
+        String finalCleanMessage = cleanMessage;
+        Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> {
+            PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(finalCleanMessage), player, event);
+            eventMap.put(messageEvent, event);
+            Bukkit.getPluginManager().callEvent(messageEvent);
+        });
     }
 
     // 最后触发
