@@ -1,4 +1,4 @@
-# Infinite Bot 3 - ChatManager(群与游戏消息互通) 1.0
+# Infinite Bot 3.0.3 - ChatManager(群与游戏消息互通)
 
 ## 指令
 

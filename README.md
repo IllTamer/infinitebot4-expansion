@@ -7,6 +7,7 @@ Expansions for InfiniteBot v3 - Minecraft
 - [[basic-manager]](/basic-manager)： 基础管理附属
 - [[chat-manager]](/chat-manager)： 消息互通附属
 - [[defence-manager]](/defence-manager)： 消息互通附属
+- [[view-manager]](/view-manager)： 视图可视化附属
 
 ## Installation
 
