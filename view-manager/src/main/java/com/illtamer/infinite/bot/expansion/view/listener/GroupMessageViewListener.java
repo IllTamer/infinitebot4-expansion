@@ -10,11 +10,14 @@ import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.loohp.interactivechat.objectholders.ICPlayer;
 import com.loohp.interactivechat.objectholders.ICPlayerFactory;
 import com.loohp.interactivechatdiscordsrvaddon.graphics.ImageGeneration;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
+import java.util.UUID;
 
 public class GroupMessageViewListener implements Listener {
 
@@ -56,16 +59,17 @@ public class GroupMessageViewListener implements Listener {
         if (message.length() != keyword.length() || !keyword.equals(message)) return null;
         event.setCancelled(true); // cancel event
         final PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-        if (data == null || data.getUuid() == null) {
+        String uuid;
+        if (data == null || (uuid = data.getPreferUUID()) == null) {
             event.reply("您未绑定游戏角色");
             return null;
         }
-        final Player player = data.getOfflinePlayer().getPlayer();
-        if (player == null || !player.isOnline()) {
-            event.reply("玩家 " + data.getOfflinePlayer().getName() + " 未在线");
+        final OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+        if (player.getPlayer() == null || !player.isOnline()) {
+            event.reply("玩家 " + player.getName() + " 未在线");
             return null;
         }
-        return player;
+        return player.getPlayer();
     }
 
 }

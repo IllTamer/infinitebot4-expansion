@@ -16,6 +16,7 @@ import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import org.bukkit.Bukkit;
 
 import java.util.List;
+import java.util.UUID;
 
 public class MemberMenageListener implements Listener {
     private final boolean accept;
@@ -59,13 +60,15 @@ public class MemberMenageListener implements Listener {
         }
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-            if (data == null || data.getUuid() == null) {
+            if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
                 if (defaultCard == null || defaultCard.length() == 0) return;
                 if (event.getSender().getNickname().equals(defaultCard)) return;
                 OpenAPIHandling.setGroupMemberCard(defaultCard, event.getSender().getUserId(), event.getGroupId());
                 return;
             }
-            String name = data.getOfflinePlayer().getName();
+            // TODO 本体设置返回方法，可配置优先级
+            String uuid = data.getUuid() == null ? data.getValidUUID() : data.getUuid();
+            String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
             if (!event.getSender().getNickname().equals(name)) {
                 try {
                     OpenAPIHandling.setGroupMemberCard(name, event.getGroupId(), event.getSender().getUserId());

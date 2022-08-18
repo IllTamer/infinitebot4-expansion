@@ -16,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 
 public class Game2GroupListener implements Listener {
     private final boolean enable;
+    private final boolean asyncRender;
     private final String prefix;
     private final Map<String, Object> prefixMapper;
     private final Set<Long> allTurnsGroupIds;
@@ -34,6 +34,7 @@ public class Game2GroupListener implements Listener {
         if (section == null)
             section = configFile.getConfig().createSection("game-to-group");
         this.enable = section.getBoolean("enable", false);
+        this.asyncRender = section.getBoolean("async-render", true);
         this.prefix = PluginUtil.parseColor(section.getString("prefix", "[]"));
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
         this.allTurnsGroupIds = prefixMapper.entrySet().stream()
@@ -63,11 +64,16 @@ public class Game2GroupListener implements Listener {
         }
         // main thread
         String finalCleanMessage = cleanMessage;
-        Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> {
-            PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(finalCleanMessage), player, event);
+        Runnable runnable = () -> {
+            PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(asyncRender, Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(finalCleanMessage), player, event);
             eventMap.put(messageEvent, event);
             Bukkit.getPluginManager().callEvent(messageEvent);
-        });
+        };
+        if (asyncRender) {
+            Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), runnable);
+        } else {
+            Bukkit.getScheduler().runTask(Bootstrap.getInstance(), runnable);
+        }
     }
 
     // 最后触发

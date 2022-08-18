@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.defence.listener;
 
+import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.expansion.defence.DefenceManager;
 import com.illtamer.infinite.bot.expansion.defence.entity.AuthData;
 import com.illtamer.infinite.bot.expansion.defence.util.AuthUtil;
@@ -9,6 +10,7 @@ import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
+import com.illtamer.infinite.bot.minecraft.util.ValidUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,15 +19,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LoginListener implements Listener {
-    public static final HashMap<UUID, AuthData> DATA_HASH_MAP = new HashMap<>();
+    private static final HashMap<UUID, AuthData> DATA_HASH_MAP = new HashMap<>();
     private static final LinkedList<BukkitTask> authList = new LinkedList<>();
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final HashMap<String, Integer> ATTACKERS = new HashMap<>();
     private static BukkitTask SCHEDULED;
+    private static int joins;
 
 //    private final boolean authme;
     private final List<String> kickMessages;
@@ -84,9 +89,10 @@ public class LoginListener implements Listener {
             return;
         }
 
-        String time = FORMAT.format(new Date(System.currentTimeMillis() + limit * 60000L));
-        String code = AuthUtil.getCode(joins);
-        AuthData authData = new AuthData(code, time);
+        final String time = FORMAT.format(new Date(System.currentTimeMillis() + limit * 60000L));
+        final String code = AuthUtil.getCode(joins);
+        final boolean valid = ValidUtil.isValidUUID(uuid);
+        AuthData authData = new AuthData(code, time, valid);
         DATA_HASH_MAP.put(uuid, authData);
 
         authList.add(Bukkit.getScheduler().runTaskLater(Bootstrap.getInstance(), () ->
@@ -94,10 +100,6 @@ public class LoginListener implements Listener {
         );
         kick(code, time, kickMessages, event);
     }
-
-    private static final HashMap<String, Integer> ATTACKERS = new HashMap<>();
-
-    private static int joins;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDefence(AsyncPlayerPreLoginEvent event) {
@@ -115,18 +117,6 @@ public class LoginListener implements Listener {
         ATTACKERS.put(address,++now);
     }
 
-    private static void kick(String code, String time, List<String> kickMessages, AsyncPlayerPreLoginEvent event) {
-        StringBuilder builder = new StringBuilder();
-        for (String temp : kickMessages) {
-            builder.append(temp
-                    .replace("%code%", code)
-                    .replace("%time%", time)
-                    .replace("%player%", event.getName())
-            ).append("\n");
-        }
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, PluginUtil.parseColor(builder.toString()));
-    }
-
     /**
      * 清空攻击次数小于一定值的攻击者
      * */
@@ -138,6 +128,32 @@ public class LoginListener implements Listener {
         try {
             SCHEDULED.cancel();
         } catch (Exception ignore) {}
+    }
+
+    @Nullable
+    public static Pair<UUID, AuthData> getByCode(String code) {
+        for (Map.Entry<UUID, AuthData> entry : DATA_HASH_MAP.entrySet()) {
+            if (entry.getValue().getCode().equalsIgnoreCase(code)) {
+                return new Pair<>(entry.getKey(), entry.getValue());
+            }
+        }
+        return null;
+    }
+
+    public static boolean removeByUUID(UUID uuid) {
+        return DATA_HASH_MAP.remove(uuid) != null;
+    }
+
+    private static void kick(String code, String time, List<String> kickMessages, AsyncPlayerPreLoginEvent event) {
+        StringBuilder builder = new StringBuilder();
+        for (String temp : kickMessages) {
+            builder.append(temp
+                    .replace("%code%", code)
+                    .replace("%time%", time)
+                    .replace("%player%", event.getName())
+            ).append("\n");
+        }
+        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, PluginUtil.parseColor(builder.toString()));
     }
 
 }

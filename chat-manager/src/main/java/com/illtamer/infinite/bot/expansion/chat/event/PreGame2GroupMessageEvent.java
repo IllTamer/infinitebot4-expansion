@@ -35,8 +35,8 @@ public class PreGame2GroupMessageEvent extends Event {
      * */
     private Message message;
 
-    public PreGame2GroupMessageEvent(Set<Long> targetGroups, String prefix, String cleanMessage, Player player, AsyncPlayerChatEvent oriEvent) {
-        super(false);
+    public PreGame2GroupMessageEvent(boolean async, Set<Long> targetGroups, String prefix, String cleanMessage, Player player, AsyncPlayerChatEvent oriEvent) {
+        super(async);
         this.targetGroups = targetGroups;
         this.prefix = prefix;
         this.cleanMessage = cleanMessage;

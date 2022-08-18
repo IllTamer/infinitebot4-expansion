@@ -2,6 +2,7 @@ package com.illtamer.infinite.bot.expansion.basic.listener;
 
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
+import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
@@ -15,12 +16,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 public class KeyWordsListener implements Listener {
+
+private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @EventHandler(priority = Priority.HIGHEST)
     public void onDailyPlayer(MessageEvent event) {
@@ -46,15 +46,27 @@ public class KeyWordsListener implements Listener {
         }
         event.setCancelled(true);
         PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-        if (data == null || data.getUuid() == null) {
+        if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
             event.reply("暂未查询到您的信息，请绑定后重试");
         } else {
-            OfflinePlayer player = data.getOfflinePlayer();
-            event.reply(String.format(
-                    "绑定的玩家ID: %s|%s",
-                    player.getName(),
-                    player.isOnline() ? "(在线)" : ("(离线)\n最后一次登录: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(player.getLastPlayed())))
-            ));
+            final MessageBuilder builder = MessageBuilder.json();
+            if (data.getUuid() != null) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid()));
+                builder.text(String.format(
+                        "已绑定离线玩家ID: %s|%s",
+                        player.getName(),
+                        player.isOnline() ? "(在线)" : ("(离线)\n最后一次登录: " + FORMAT.format(new Date(player.getLastPlayed())))
+                ));
+            }
+            if (data.getValidUUID() != null) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(data.getValidUUID()));
+                builder.text(String.format(
+                        "已绑定正版玩家ID: %s|%s",
+                        player.getName(),
+                        player.isOnline() ? "(在线)" : ("(离线)\n最后一次登录: " + FORMAT.format(new Date(player.getLastPlayed())))
+                ));
+            }
+            event.reply(builder.build());
         }
     }
 
@@ -65,12 +77,22 @@ public class KeyWordsListener implements Listener {
         }
         event.setCancelled(true);
         PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-        if (data == null || data.getUuid() == null) {
+        if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
             event.reply("暂未查询到您的信息，请绑定后重试");
         } else {
-            final Player onlinePlayer = Lambda.nullableInvoke(OfflinePlayer::getPlayer, data.getOfflinePlayer());
-            if (onlinePlayer != null) {
-                Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> onlinePlayer.kickPlayer(PluginUtil.parseColor("&c您已被(QQ: " + event.getSender().getUserId() + ")强制下线")));
+            List<Player> players = new ArrayList<>(2);
+            if (data.getUuid() != null) {
+                final Player player = Lambda.nullableInvoke(OfflinePlayer::getPlayer, Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())));
+                if (player != null) players.add(player);
+            }
+            if (data.getValidUUID() != null) {
+                final Player player = Lambda.nullableInvoke(OfflinePlayer::getPlayer, Bukkit.getOfflinePlayer(UUID.fromString(data.getValidUUID())));
+                if (player != null) players.add(player);
+            }
+            if (players.size() != 0) {
+                Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> players.forEach(player ->
+                        player.kickPlayer(PluginUtil.parseColor("&c您已被(QQ: " + event.getSender().getUserId() + ")强制下线"))
+                ));
                 event.reply("强制下线成功");
             } else {
                 event.reply("您的账号并未在线");

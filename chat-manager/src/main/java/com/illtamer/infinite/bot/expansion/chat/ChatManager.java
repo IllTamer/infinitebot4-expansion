@@ -2,8 +2,8 @@ package com.illtamer.infinite.bot.expansion.chat;
 
 import com.illtamer.infinite.bot.api.util.Assert;
 import com.illtamer.infinite.bot.expansion.chat.listener.Game2GroupListener;
-import com.illtamer.infinite.bot.expansion.chat.listener.Group2GameListener;
 import com.illtamer.infinite.bot.expansion.chat.listener.GameMessageViewListener;
+import com.illtamer.infinite.bot.expansion.chat.listener.Group2GameListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;

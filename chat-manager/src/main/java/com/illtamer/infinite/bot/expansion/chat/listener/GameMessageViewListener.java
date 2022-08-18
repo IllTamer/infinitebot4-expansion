@@ -66,8 +66,8 @@ public class GameMessageViewListener implements Listener {
             e.printStackTrace();
         }
         event.setMessage(builder.build());
-        if (item || inv || end)
-            event.cancelledOriEvent();
+//        if (item || inv || end)
+//            event.cancelledOriEvent();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

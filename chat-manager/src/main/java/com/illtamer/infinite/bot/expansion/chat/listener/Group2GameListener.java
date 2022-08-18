@@ -3,11 +3,9 @@ package com.illtamer.infinite.bot.expansion.chat.listener;
 import com.illtamer.infinite.bot.api.entity.Group;
 import com.illtamer.infinite.bot.api.entity.TransferEntity;
 import com.illtamer.infinite.bot.api.entity.transfer.*;
-import com.illtamer.infinite.bot.api.entity.transfer.Record;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.api.message.Message;
-import com.illtamer.infinite.bot.api.message.MessageChain;
 import com.illtamer.infinite.bot.api.util.Assert;
 import com.illtamer.infinite.bot.expansion.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.chat.Global;
@@ -145,10 +143,12 @@ public class Group2GameListener implements Listener {
                 if (!at) { // init at args
                     at = true;
                     final PlayerData senderData = StaticAPI.getRepository().queryByUserId(senderId);
-                    if (senderData == null || senderData.getUuid() == null)
+                    if (senderData == null || (senderData.getUuid() == null && senderData.getValidUUID() == null))
                         this.sender = senderId.toString();
-                    else
-                        this.sender = senderData.getOfflinePlayer().getName();
+                    else {
+                        String uuid = senderData.getUuid() == null ? senderData.getValidUUID() : senderData.getUuid();
+                        this.sender = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+                    }
                 }
                 String qqStr = ((At) entity).getQq();
                 if ("all".equalsIgnoreCase(qqStr)) {
@@ -157,11 +157,13 @@ public class Group2GameListener implements Listener {
                 } else {
                     Long qq = Long.parseLong(qqStr);
                     final PlayerData data = StaticAPI.getRepository().queryByUserId(qq);
-                    if (data == null || data.getUuid() == null)
+                    if (data == null || (data.getUuid() == null && data.getValidUUID() == null))
                         return new TextComponent(ChatColor.YELLOW + "@" + qq + ChatColor.RESET);
                     else {
-                        final OfflinePlayer offlinePlayer = data.getOfflinePlayer();
-                        atTargets.add(offlinePlayer.getPlayer());
+                        String uuid = data.getUuid() == null ? data.getValidUUID() : data.getUuid();
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+                        if (offlinePlayer.getPlayer() != null)
+                            atTargets.add(offlinePlayer.getPlayer());
                         return new TextComponent(ChatColor.YELLOW + "@" + offlinePlayer.getName() + ChatColor.RESET);
                     }
                 }
