@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>chat-manager</artifactId>
+    <version>1.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -20,7 +21,7 @@
         <dependency>
             <groupId>com.illtamer.infinite.bot.expansion</groupId>
             <artifactId>view-manager</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 
