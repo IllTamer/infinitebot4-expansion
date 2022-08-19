@@ -38,6 +38,14 @@
 
 ## 可能出现的问题
 
+### 常见报错
+
+```
+java.lang.NullPointerException: Cannot invoke "com.loohp.interactivechatdiscordsrvaddon.resources.ResourceManager.getTextureManager()" because the return value of "java.util.function.Supplier.get()" is null
+```
+
+前置插件 `InteractiveChatDiscordSrvAddon` 在初始化时会自动异步下载服务器对应版本的材质，若使用插件时材质未下载完毕，则会出现此报错。耐心等待下载即可。
+
 ### 图片解析问题
 
 在 catserver-1.12.2 中，附属前置插件 `InteractiveChat`, `InteractiveChat-DiscordSRV-Addon` 的功能会收到影响，其表现为
