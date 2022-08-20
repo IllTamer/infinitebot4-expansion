@@ -11,15 +11,19 @@ import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class SubmitListener implements Listener {
 
     private final String prefix;
     private final int delayTick;
+    private final String senderName;
 
     public SubmitListener(ExpansionConfig configFile) {
-        this.prefix = configFile.getConfig().getString("submit.prefix");
-        this.delayTick = configFile.getConfig().getInt("submit.delay-tick", 5);
+        final FileConfiguration config = configFile.getConfig();
+        this.prefix = config.getString("submit.prefix");
+        this.delayTick = config.getInt("submit.delay-tick", 5);
+        this.senderName = config.getString("submit.sender-name", "InfiniteBot-BasicManager#SubmitSender");
         Assert.notNull(prefix, "'submit.prefix' can not be null !");
     }
 
@@ -30,7 +34,7 @@ public class SubmitListener implements Listener {
             if (rawMessage.startsWith(prefix) && rawMessage.length() >= prefix.length() +  2) {
                 String command = rawMessage.substring(prefix.length() + 1);
                 event.reply("指令执行中, 请稍后");
-                SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event, delayTick);
+                SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event, delayTick, senderName);
                 // 主线程执行指令
                 Bukkit.getScheduler().runTask(Bootstrap.getInstance(),
                         () -> Bukkit.dispatchCommand(sender, command));

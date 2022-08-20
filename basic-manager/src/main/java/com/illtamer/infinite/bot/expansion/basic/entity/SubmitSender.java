@@ -23,11 +23,13 @@ public final class SubmitSender implements ConsoleCommandSender {
     private final Server server;
     private final MessageEvent event;
     private final int delayTick;
+    private final String senderName;
 
-    public SubmitSender(Server server, MessageEvent event, int delayTick) {
+    public SubmitSender(Server server, MessageEvent event, int delayTick, String senderName) {
         this.server = server;
         this.event = event;
         this.delayTick = delayTick;
+        this.senderName = senderName;
     }
 
     @Override
@@ -57,7 +59,7 @@ public final class SubmitSender implements ConsoleCommandSender {
 
     @Override
     public @NotNull String getName() {
-        return "InfiniteBot-BasicManager#SubmitSender";
+        return senderName;
     }
 
     @Override
