@@ -1,6 +1,9 @@
 package com.illtamer.infinite.bot.expansion.chat;
 
 import com.illtamer.infinite.bot.api.util.Assert;
+import com.illtamer.infinite.bot.expansion.chat.filter.AccessStartFilter;
+import com.illtamer.infinite.bot.expansion.chat.filter.DenyContainsFilter;
+import com.illtamer.infinite.bot.expansion.chat.filter.Filter;
 import com.illtamer.infinite.bot.expansion.chat.listener.Game2GroupListener;
 import com.illtamer.infinite.bot.expansion.chat.listener.GameMessageViewListener;
 import com.illtamer.infinite.bot.expansion.chat.listener.Group2GameListener;
@@ -26,6 +29,8 @@ public class ChatManager extends InfiniteExpansion {
         closeFile = new ExpansionConfig("close.yml", instance);
         prefixMapper = Lambda.nullableInvoke(section -> section.getValues(false), configFile.getConfig().getConfigurationSection("prefix-mapper"));
         Assert.isTrue(prefixMapper != null && prefixMapper.size() != 0, "Configuration node 'prefix-mapper' can not be empty !");
+        Filter.MAP.put("deny-contains", new DenyContainsFilter());
+        Filter.MAP.put("access-start", new AccessStartFilter());
         EventExecutor.registerEvents(new Group2GameListener(configFile), instance);
         EventExecutor.registerBukkitEvent(new Game2GroupListener(configFile), instance);
         EventExecutor.registerBukkitEvent(new GameMessageViewListener(configFile), instance);
