@@ -23,11 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class GameMessageViewListener implements Listener {
-    public static GameMessageViewListener instance;
     private final boolean expandChat;
 
     public GameMessageViewListener(ExpansionConfig configFile) {
-        instance = this;
         this.expandChat = configFile.getConfig().getBoolean("expand-chat") && StaticAPI.hasExpansion("ViewManager");
     }
 
@@ -74,12 +72,11 @@ public class GameMessageViewListener implements Listener {
     public void onShowMapImage(AsyncPlayerChatEvent event) {
         if (!expandChat) return;
         final String message = event.getMessage();
-        if (!message.startsWith("vm-map#")) return;
+        if (!message.startsWith("vm-map//")) return;
         final GraphicsToPacketMapWrapper wrapper = InteractiveChatDiscordSrvAddonAPI.
-                getDiscordImageWrapperByUUID(UUID.fromString(message.substring("vm-map#".length())));
-        Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> {
-            wrapper.show(event.getPlayer());
-        });
+                getDiscordImageWrapperByUUID(UUID.fromString(message.substring("vm-map//".length())));
+        Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () ->
+                wrapper.show(event.getPlayer()));
         event.setCancelled(true);
     }
 
