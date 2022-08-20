@@ -43,6 +43,7 @@ public class Group2GameListener implements Listener {
     private final boolean global; // type
     private final int parseLevel;
     private final Map<String, Object> prefixMapper;
+    private final boolean expandChat;
     @Nullable
     private final Filter filter;
 
@@ -55,6 +56,7 @@ public class Group2GameListener implements Listener {
         this.global = "global".equalsIgnoreCase(section.getString("type"));
         this.parseLevel = section.getInt("parse-level");
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
+        this.expandChat = configFile.getConfig().getBoolean("expand-chat");
         this.filter = Filter.MAP.get(section.getString("filter.mode"));
         if (filter != null) {
             filter.init(section.getStringList("filter.key-set"));
@@ -200,7 +202,7 @@ public class Group2GameListener implements Listener {
             } else if (entity instanceof Face) {
                 return new TextComponent("§7[表情]" + ChatColor.RESET);
             } else if (entity instanceof Image) {
-                if (!StaticAPI.hasExpansion("ViewManager"))
+                if (!expandChat || !StaticAPI.hasExpansion("ViewManager"))
                     return new TextComponent("§7[图片]" + ChatColor.RESET);
                 Image image = (Image) entity;
                 final TextComponent component = new TextComponent("§a[图片]" + ChatColor.RESET);
