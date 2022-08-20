@@ -39,7 +39,8 @@ group-to-game:
   # - %group_card% 发送消息的群昵称
   # - %sender_id%: 发送消息的用户qq
   # - %sender_card% 发送消息的用户昵称
-  prefix: '(%group_id%) &6&l[&3&l%sender_card%&6&l]&f'
+  # - %sender_name% 发送消息的群名片,失败则用户昵称,还失败则QQ号
+  prefix: '(%group_id%) &6&l[&3&l%sender_name%&6&l]&f'
   # 消息发送方式
   # - 'global': 控制台 console 发送消息，不可被屏蔽，
   #             注意：在此方式下消息解析等级始终为 0
