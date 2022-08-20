@@ -60,8 +60,7 @@ public class MemberMenageListener implements Listener {
         if (!autoRename || !StaticAPI.inGroups(event.getGroupId())) {
             return;
         }
-        // 是否修改群管理名片校验
-        if (!event.getSender().getRole().equals("member") && !changeAdmin) {
+        if (!changeAdmin && event.getSender().getRole().equals("admin")) {
             return;
         }
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
