@@ -3,6 +3,7 @@ package com.illtamer.infinite.bot.expansion.chat.listener;
 import com.illtamer.infinite.bot.api.entity.Group;
 import com.illtamer.infinite.bot.api.entity.TransferEntity;
 import com.illtamer.infinite.bot.api.entity.transfer.*;
+import com.illtamer.infinite.bot.api.entity.transfer.Record;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.api.message.Message;
@@ -125,11 +126,15 @@ public class Group2GameListener implements Listener {
         public Format(int parseLevel, GroupMessageEvent event) {
             this.parseLevel = parseLevel;
             this.senderId = event.getSender().getUserId();
+            String senderName = event.getSender().getCard();
+            senderName = senderName.trim().length() == 0 ? event.getSender().getNickname() : senderName;
+            senderName = senderName.trim().length() == 0 ? String.valueOf(event.getSender().getUserId()) : senderName;
             this.replacedPrefix = prefix
                     .replace("%group_id%", event.getGroupId().toString())
                     .replace("%group_card%", getGroupName(event.getGroupId()))
                     .replace("%sender_id%", senderId.toString())
-                    .replace("%sender_card%", event.getSender().getCard());
+                    .replace("%sender_card%", event.getSender().getCard())
+                    .replace("%sender_name%", senderName);
             this.message = event.getMessage();
         }
 
