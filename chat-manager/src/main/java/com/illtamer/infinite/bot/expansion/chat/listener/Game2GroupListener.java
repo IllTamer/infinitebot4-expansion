@@ -6,6 +6,7 @@ import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.expansion.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.chat.Global;
 import com.illtamer.infinite.bot.expansion.chat.event.PreGame2GroupMessageEvent;
+import com.illtamer.infinite.bot.expansion.chat.filter.Filter;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
@@ -16,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -28,6 +30,8 @@ public class Game2GroupListener implements Listener {
     private final Map<String, Object> prefixMapper;
     private final Set<Long> allTurnsGroupIds;
     private final Map<PreGame2GroupMessageEvent, AsyncPlayerChatEvent> eventMap = new HashMap<>();
+    @Nullable
+    private final Filter filter;
 
     public Game2GroupListener(ExpansionConfig configFile) {
         ConfigurationSection section = configFile.getConfig().getConfigurationSection("game-to-group");
@@ -41,6 +45,10 @@ public class Game2GroupListener implements Listener {
                 .filter(entry -> ((String) entry.getValue()).length() == 0)
                 .map(entry -> Long.parseLong(entry.getKey()))
                 .collect(Collectors.toSet());
+        this.filter = Filter.MAP.get(section.getString("filter.mode"));
+        if (filter != null) {
+            filter.init(section.getStringList("filter.key-set"));
+        }
     }
 
     // 较先触发(取消 InteractiveChat 消息)
@@ -49,6 +57,10 @@ public class Game2GroupListener implements Listener {
         if (!enable || event.isCancelled()) return;
         final Player player = event.getPlayer();
         final String rawMessage = event.getMessage();
+        if (filter != null && !filter.result(rawMessage)) {
+            System.out.println("Game message !result");
+            return;
+        }
 
         Set<Long> targetGroups = new HashSet<>(allTurnsGroupIds);
         String cleanMessage = rawMessage;
@@ -85,7 +97,7 @@ public class Game2GroupListener implements Listener {
                 MessageBuilder.json().text(messageEvent.getPrefix()).text(messageEvent.getCleanMessage()).build() :
                 messageEvent.getMessage();
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(),
-                () -> messageEvent.getTargetGroups().forEach(Game2GroupListener.messageConsumer(message)));
+                () -> messageEvent.getTargetGroups().forEach(messageConsumer(message)));
     }
 
     // 最先触发

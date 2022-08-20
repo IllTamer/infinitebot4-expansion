@@ -9,6 +9,7 @@ import com.illtamer.infinite.bot.api.message.Message;
 import com.illtamer.infinite.bot.api.util.Assert;
 import com.illtamer.infinite.bot.expansion.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.chat.Global;
+import com.illtamer.infinite.bot.expansion.chat.filter.Filter;
 import com.illtamer.infinite.bot.expansion.chat.util.AtUtil;
 import com.illtamer.infinite.bot.expansion.view.util.DispatchUtil;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
@@ -19,6 +20,7 @@ import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
+import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -29,6 +31,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +43,8 @@ public class Group2GameListener implements Listener {
     private final boolean global; // type
     private final int parseLevel;
     private final Map<String, Object> prefixMapper;
+    @Nullable
+    private final Filter filter;
 
     public Group2GameListener(ExpansionConfig configFile) {
         ConfigurationSection section = configFile.getConfig().getConfigurationSection("group-to-game");
@@ -50,6 +55,10 @@ public class Group2GameListener implements Listener {
         this.global = "global".equalsIgnoreCase(section.getString("type"));
         this.parseLevel = section.getInt("parse-level");
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
+        this.filter = Filter.MAP.get(section.getString("filter.mode"));
+        if (filter != null) {
+            filter.init(section.getStringList("filter.key-set"));
+        }
     }
 
     @EventHandler(priority = Priority.LOWEST)
@@ -58,8 +67,10 @@ public class Group2GameListener implements Listener {
         if (!prefixMapper.containsKey(event.getGroupId().toString())) return;
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             if (global) { // console
-                Format format = new Format(0, prefix, event);
-                Bukkit.getConsoleSender().sendMessage(format.stringFormat());
+                Format format = new Format(0, event);
+                final String stringFormat = format.stringFormat();
+                if (stringFormat == null) return;
+                Bukkit.getConsoleSender().sendMessage(stringFormat);
             } else { // private
                 final Collection<? extends Player> players = Bukkit.getOnlinePlayers().stream()
                         .filter(player -> {
@@ -68,11 +79,15 @@ public class Group2GameListener implements Listener {
                         })
                         .collect(Collectors.toList());
                 if (players.size() == 0) return;
-                Format format = new Format(parseLevel, prefix, event);
-                if (format.isStringFormat())
-                    players.forEach(player -> player.sendMessage(format.stringFormat()));
-                else {
-                    players.forEach(player -> player.spigot().sendMessage(format.componentFormat()));
+                Format format = new Format(parseLevel, event);
+                if (format.isStringFormat()) {
+                    final String stringFormat = format.stringFormat();
+                    if (stringFormat == null) return;
+                    players.forEach(player -> player.sendMessage(stringFormat));
+                } else {
+                    final BaseComponent[] components = format.componentFormat();
+                    if (components == null) return;
+                    players.forEach(player -> player.spigot().sendMessage(components));
                     if (format.at) {
                         if (format.atAll)
                             players.forEach(player -> AtUtil.all(player, format.sender));
@@ -94,7 +109,7 @@ public class Group2GameListener implements Listener {
             return "Unknown Group";
     }
 
-    private static class Format {
+    private class Format {
         private final int parseLevel;
         private final Long senderId;
         private final String replacedPrefix;
@@ -105,7 +120,7 @@ public class Group2GameListener implements Listener {
         private String sender;
         private final List<Player> atTargets = new ArrayList<>();
 
-        public Format(int parseLevel, String prefix, GroupMessageEvent event) {
+        public Format(int parseLevel, GroupMessageEvent event) {
             this.parseLevel = parseLevel;
             this.senderId = event.getSender().getUserId();
             this.replacedPrefix = prefix
@@ -116,12 +131,26 @@ public class Group2GameListener implements Listener {
             this.message = event.getMessage();
         }
 
+        @Nullable
         private String stringFormat() {
-            return replacedPrefix + message.getCleanMessage();
+            final List<String> cleanMessage = filter == null ? message.getCleanMessage() : filter.doFilter(message.getCleanMessage());
+            if (cleanMessage.size() == 0) return null;
+            return replacedPrefix + StringUtil.toString(cleanMessage);
         }
 
+        @Nullable
         private BaseComponent[] componentFormat() {
+            final List<String> cleanMessage = message.getCleanMessage();
+            if (filter != null && cleanMessage.size() == 0) return null;
+
             final List<TransferEntity> entities = message.getMessageChain().getEntities();
+            if (entities.size() == 0) return null;
+            if (filter != null) {
+                for (TransferEntity entity : entities) {
+                    if (entity instanceof Text && !filter.result(((Text) entity).getText()))
+                        return null;
+                }
+            }
             BaseComponent[] components = new BaseComponent[entities.size()+1];
             components[0] = new TextComponent(replacedPrefix);
             for (int i = 0; i < entities.size(); ++ i)
@@ -133,12 +162,12 @@ public class Group2GameListener implements Listener {
             return parseLevel == 0;
         }
 
+        @SuppressWarnings("deprecation")
         private BaseComponent stepFormat(@NotNull TransferEntity entity) {
             Assert.notNull(entity, "TransferEntity can not be null");
             if (entity instanceof Text) {
                 String text = ((Text) entity).getText();
-                if (text.endsWith("\r\n")) text = text.substring(0, text.length()-2);
-                return new TextComponent(text);
+                return new TextComponent(text.replace("\r\n", "\n"));
             } else if (entity instanceof At) {
                 if (!at) { // init at args
                     at = true;
@@ -157,9 +186,10 @@ public class Group2GameListener implements Listener {
                 } else {
                     Long qq = Long.parseLong(qqStr);
                     final PlayerData data = StaticAPI.getRepository().queryByUserId(qq);
-                    if (data == null || (data.getUuid() == null && data.getValidUUID() == null))
+                    if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
+                        // TODO 获取群成员名片
                         return new TextComponent(ChatColor.YELLOW + "@" + qq + ChatColor.RESET);
-                    else {
+                    } else {
                         String uuid = data.getUuid() == null ? data.getValidUUID() : data.getUuid();
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
                         if (offlinePlayer.getPlayer() != null)
@@ -176,12 +206,12 @@ public class Group2GameListener implements Listener {
                 final TextComponent component = new TextComponent("§a[图片]" + ChatColor.RESET);
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("点击以查看")));
                 final UUID uuid = DispatchUtil.executeImageWrapper(image.getUrl(), false);
-                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "vm-map#" + uuid));
+                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "vm-map//" + uuid));
                 return component;
             } else if (entity instanceof Record) {
                 return new TextComponent("§7[语音]" + ChatColor.RESET);
             } else if (entity instanceof Reply) {
-                return new TextComponent("§f[回复消息]" + ChatColor.RESET + ' ' + ((Reply) entity).getText());
+                return new TextComponent("§f[回复消息]\n" + ChatColor.RESET);
             } else {
                 return new TextComponent("§7[Unsupported]" + ChatColor.RESET);
             }
