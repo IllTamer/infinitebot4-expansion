@@ -38,6 +38,8 @@ member-manage:
   # 默认群名片
   # 当成员未绑定角色时，设置为该名片
   default-card: '待绑定'
+  # 是否修改群管理员的名片
+  change-admin: false
   # 群成员加入时欢迎语 (自动@该成员)
   # 局部变量 {0}-成员QQ
   welcome:

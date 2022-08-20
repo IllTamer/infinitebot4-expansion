@@ -21,6 +21,7 @@ import java.util.UUID;
 public class MemberMenageListener implements Listener {
     private final boolean accept;
     private final boolean autoRename;
+    private final boolean changeAdmin;
     private final String defaultCard;
     private final List<String> msgs;
 
@@ -28,6 +29,7 @@ public class MemberMenageListener implements Listener {
         this.accept = configFile.getConfig().getBoolean("member-manage.auto-accept");
         this.autoRename = configFile.getConfig().getBoolean("member-manage.auto-change-card");
         this.defaultCard = configFile.getConfig().getString("member-manage.default-card");
+        this.changeAdmin = configFile.getConfig().getBoolean("member-manage.change-admin");
         this.msgs = configFile.getConfig().getStringList("member-manage.welcome");
     }
 
@@ -58,6 +60,10 @@ public class MemberMenageListener implements Listener {
         if (!autoRename || !StaticAPI.inGroups(event.getGroupId())) {
             return;
         }
+        // 是否修改群管理名片校验
+        if (!event.getSender().getRole().equals("member") && !changeAdmin) {
+            return;
+        }
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
@@ -71,10 +77,9 @@ public class MemberMenageListener implements Listener {
             String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
             if (!event.getSender().getNickname().equals(name)) {
                 try {
-                    OpenAPIHandling.setGroupMemberCard(name, event.getGroupId(), event.getSender().getUserId());
+                    OpenAPIHandling.setGroupMemberCard(name, event.getSender().getUserId(), event.getGroupId());
                 } catch (APIInvokeException e) {
-                    if (!"GROUP_NOT_FOUND".equals(e.getMessage()))
-                        e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         });
