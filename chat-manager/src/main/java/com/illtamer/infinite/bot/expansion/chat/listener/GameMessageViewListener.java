@@ -70,7 +70,6 @@ public class GameMessageViewListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onShowMapImage(AsyncPlayerChatEvent event) {
-        System.out.println("收到消息");
         if (!expandChat) return;
         final String message = event.getMessage();
         if (!message.startsWith("vm-map//")) return;

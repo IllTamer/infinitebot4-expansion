@@ -58,7 +58,6 @@ public class Game2GroupListener implements Listener {
         final Player player = event.getPlayer();
         final String rawMessage = event.getMessage();
         if (filter != null && !filter.result(rawMessage)) {
-            System.out.println("Game message !result");
             return;
         }
 
