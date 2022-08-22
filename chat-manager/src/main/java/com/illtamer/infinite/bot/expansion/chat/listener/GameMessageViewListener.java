@@ -6,6 +6,7 @@ import com.illtamer.infinite.bot.expansion.view.util.HologramUtil;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.loohp.interactivechat.InteractiveChat;
 import com.loohp.interactivechat.objectholders.ICPlayer;
 import com.loohp.interactivechat.objectholders.ICPlayerFactory;
@@ -23,15 +24,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 public class GameMessageViewListener implements Listener {
-    private final boolean expandChat;
-
-    public GameMessageViewListener(ExpansionConfig configFile) {
-        this.expandChat = configFile.getConfig().getBoolean("expand-chat") && StaticAPI.hasExpansion("ViewManager");
-    }
 
     @EventHandler
     public void onMessage(PreGame2GroupMessageEvent event) {
-        if (!expandChat || event.getCleanMessage().length() <= 2) return;
+        if (event.getCleanMessage().length() <= 2) return;
         final Player player = event.getPlayer();
         final ICPlayer icPlayer = ICPlayerFactory.getICPlayer(player);
         String message = event.getCleanMessage();
@@ -70,7 +66,6 @@ public class GameMessageViewListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onShowMapImage(AsyncPlayerChatEvent event) {
-        if (!expandChat) return;
         final String message = event.getMessage();
         if (!message.startsWith("vm-map//")) return;
         final GraphicsToPacketMapWrapper wrapper = InteractiveChatDiscordSrvAddonAPI.
