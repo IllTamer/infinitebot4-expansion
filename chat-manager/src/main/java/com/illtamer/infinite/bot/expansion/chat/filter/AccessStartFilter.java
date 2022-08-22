@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AccessStartFilter implements Filter {
+public class AccessStartFilter implements MessageFilter {
 
     private final Set<String> keys = new HashSet<>();
     private boolean empty;
@@ -31,6 +31,11 @@ public class AccessStartFilter implements Filter {
             if (message.startsWith(key)) return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return empty;
     }
 
 }

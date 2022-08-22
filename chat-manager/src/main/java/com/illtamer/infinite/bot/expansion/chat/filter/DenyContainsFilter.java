@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DenyContainsFilter implements Filter {
+public class DenyContainsFilter implements MessageFilter {
 
     private final Set<String> keys = new HashSet<>();
     private boolean empty;
@@ -31,6 +31,11 @@ public class DenyContainsFilter implements Filter {
             if (message.contains(key)) return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return empty;
     }
 
 }
