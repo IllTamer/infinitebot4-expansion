@@ -17,6 +17,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -36,12 +37,13 @@ public class HologramUtil {
     public static BufferedImage getTooltip(ItemStack item, Player player) {
         BufferedImage tooltip = null;
         try {
+            final Material type = item.getType();
             tooltip = new BufferedImage(8, 8, 6);
-            if (item.getType() == Material.MAP) {
+            if (item.hasItemMeta() && item.getItemMeta() instanceof MapMeta) {
                 tooltip = ImageGeneration.getMapImage(item, player);
             } else {
                 if (UPPER) {
-                    if (item.getItemMeta() != null && item.getType() == Material.SHULKER_BOX) {
+                    if (item.getItemMeta() != null && type == Material.SHULKER_BOX) {
                         ShulkerBox box = (ShulkerBox) item.getItemMeta();
                         return ImageGeneration.getInventoryImage(box.getInventory(), ICPlayerFactory.getICPlayer(player));
                     }
