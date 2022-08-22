@@ -11,6 +11,7 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import org.bukkit.Bukkit;
@@ -46,12 +47,14 @@ public class MemberMenageListener implements Listener {
     @EventHandler
     public void onJoin(GroupMemberJoinEvent event) {
         if (StaticAPI.inGroups(event.getGroupId())) {
-            event.sendGroupMessage(
-                    MessageBuilder.json()
-                            .at(event.getUserId())
-                            .text(StringUtil.toString(msgs).replace("{0}", event.getUserId().toString()))
-                            .build()
-            );
+            Bukkit.getScheduler().runTaskLater(Bootstrap.getInstance(), () -> {
+                event.sendGroupMessage(
+                        MessageBuilder.json()
+                                .at(event.getUserId())
+                                .text(StringUtil.toString(msgs).replace("{0}", event.getUserId().toString()))
+                                .build()
+                );
+            }, 20L);
         }
     }
 
@@ -65,15 +68,13 @@ public class MemberMenageListener implements Listener {
         }
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-            if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
+            if (data == null || (data.getPreferUUID() == null)) {
                 if (defaultCard == null || defaultCard.length() == 0) return;
                 if (event.getSender().getNickname().equals(defaultCard)) return;
                 OpenAPIHandling.setGroupMemberCard(defaultCard, event.getSender().getUserId(), event.getGroupId());
                 return;
             }
-            // TODO 本体设置返回方法，可配置优先级
-            String uuid = data.getUuid() == null ? data.getValidUUID() : data.getUuid();
-            String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+            String name = Bukkit.getOfflinePlayer(UUID.fromString(data.getPreferUUID())).getName();
             if (!event.getSender().getNickname().equals(name)) {
                 try {
                     OpenAPIHandling.setGroupMemberCard(name, event.getSender().getUserId(), event.getGroupId());
