@@ -6,22 +6,25 @@ import com.illtamer.infinite.bot.expansion.basic.listener.MemberMenageListener;
 import com.illtamer.infinite.bot.expansion.basic.listener.SubmitListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
 
 public class BasicManager extends InfiniteExpansion {
 
     private static BasicManager instance;
     private ExpansionConfig configFile;
+    private Language language;
 
     @Override
     public void onEnable() {
         instance = this;
         configFile = new ExpansionConfig("config.yml", this);
-        EventExecutor.registerEvents(new SubmitListener(configFile), instance);
+        this.language = Language.of(this);
+        EventExecutor.registerEvents(new SubmitListener(configFile, language), instance);
         EventExecutor.registerEvents(new MemberMenageListener(configFile), instance);
-        EventExecutor.registerEvents(new BasicBindListener(configFile), instance);
-        EventExecutor.registerBukkitEvent(new BasicBindListener.PlayerConfirmListener(), instance);
-        EventExecutor.registerEvents(new KeyWordsListener(), instance);
+        EventExecutor.registerEvents(new BasicBindListener(configFile, language), instance);
+        EventExecutor.registerBukkitEvent(new BasicBindListener.PlayerConfirmListener(language), instance);
+        EventExecutor.registerEvents(new KeyWordsListener(language), instance);
     }
 
     @Override
@@ -36,6 +39,10 @@ public class BasicManager extends InfiniteExpansion {
 
     public ExpansionConfig getConfigFile() {
         return configFile;
+    }
+
+    public Language getLanguage() {
+        return language;
     }
 
     public static BasicManager getInstance() {

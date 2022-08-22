@@ -5,6 +5,7 @@ import com.illtamer.infinite.bot.expansion.view.listener.GroupMessageViewListene
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
 import org.bukkit.Bukkit;
 
@@ -14,17 +15,19 @@ import java.util.regex.Pattern;
 public class ViewManager extends InfiniteExpansion {
     private static ViewManager instance;
     private ExpansionConfig configFile;
+    private Language language;
 
     @Override
     public void onEnable() {
         instance = this;
         configFile = new ExpansionConfig("config.yml",  instance);
+        this.language = Language.of(this);
         Assert.notNull(Bukkit.getPluginManager().getPlugin("InteractiveChatDiscordSrvAddon"), "前置插件 InteractiveChatDiscordSrvAddon 未加载");
         if (!StaticAPI.hasExpansion("ChatManager"))
             getLogger().warn("未检测到消息互通附属，功能增强已关闭");
         else
             getLogger().info("检测到消息互通附属，功能增强已开启");
-        EventExecutor.registerEvents(new GroupMessageViewListener(), instance);
+        EventExecutor.registerEvents(new GroupMessageViewListener(language), instance);
     }
 
     @Override
@@ -39,6 +42,10 @@ public class ViewManager extends InfiniteExpansion {
 
     public ExpansionConfig getConfigFile() {
         return configFile;
+    }
+
+    public Language getLanguage() {
+        return language;
     }
 
     public static ViewManager getInstance() {

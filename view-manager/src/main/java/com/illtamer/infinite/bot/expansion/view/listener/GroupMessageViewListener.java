@@ -6,7 +6,9 @@ import com.illtamer.infinite.bot.expansion.view.util.HologramUtil;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
+import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.loohp.interactivechat.objectholders.ICPlayer;
 import com.loohp.interactivechat.objectholders.ICPlayerFactory;
 import com.loohp.interactivechatdiscordsrvaddon.graphics.ImageGeneration;
@@ -20,6 +22,12 @@ import java.awt.image.BufferedImage;
 import java.util.UUID;
 
 public class GroupMessageViewListener implements Listener {
+
+    private final Language language;
+
+    public GroupMessageViewListener(Language language) {
+        this.language = language;
+    }
 
     @EventHandler
     public void onOnlinePlayers(MessageEvent event) {
@@ -54,19 +62,19 @@ public class GroupMessageViewListener implements Listener {
     }
 
     @Nullable
-    private static Player keyCheckAndGetOnlinePlayer(@NotNull String keyword, MessageEvent event) {
+    private Player keyCheckAndGetOnlinePlayer(@NotNull String keyword, MessageEvent event) {
         final String message = event.getRawMessage();
         if (message.length() != keyword.length() || !keyword.equals(message)) return null;
         event.setCancelled(true); // cancel event
         final PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
         String uuid;
         if (data == null || (uuid = data.getPreferUUID()) == null) {
-            event.reply("您未绑定游戏角色");
+            event.reply(language.get("unbind"));
             return null;
         }
         final OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
         if (player.getPlayer() == null || !player.isOnline()) {
-            event.reply("玩家 " + player.getName() + " 未在线");
+            event.reply(language.get("offline").replace("%player_name%", player.getName() == null ? "null" : player.getName()));
             return null;
         }
         return player.getPlayer();

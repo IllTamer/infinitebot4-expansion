@@ -9,6 +9,7 @@ import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -30,9 +32,11 @@ public class BasicBindListener implements Listener {
     // Pair: data->status
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
     private final long limit;
+    private final Language language;
 
-    public BasicBindListener(ExpansionConfig configFile) {
+    public BasicBindListener(ExpansionConfig configFile, Language language) {
         this.limit = configFile.getConfig().getLong("bind.limit");
+        this.language = language;
     }
 
     @EventHandler(priority = Priority.HIGHEST)
@@ -79,13 +83,17 @@ public class BasicBindListener implements Listener {
         } else {
             if (valid) {
                 if (data.getValidUUID() != null) {
-                    event.reply("您已绑定正版玩家: " + Lambda.nullableInvoke(OfflinePlayer::getName, Bukkit.getOfflinePlayer(UUID.fromString(data.getValidUUID()))));
+                    String message = language.get("bind", "valid-exist").replace("%player_name%", Optional.ofNullable(Lambda.nullableInvoke(OfflinePlayer::getName,
+                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))).orElse("null"));
+                    event.reply(message);
                     return;
                 }
                 status = Status.UPDATE_BIND_VALID;
             } else {
                 if (data.getUuid() != null) {
-                    event.reply("您已绑定离线玩家: " + Lambda.nullableInvoke(OfflinePlayer::getName, Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid()))));
+                    String message = language.get("bind", "offline-exist").replace("%player_name%", Optional.ofNullable(Lambda.nullableInvoke(OfflinePlayer::getName,
+                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))).orElse("null"));
+                    event.reply(message);
                     return;
                 }
                 status = Status.UPDATE_BIND_INVALID;
@@ -99,19 +107,19 @@ public class BasicBindListener implements Listener {
         if ((player = getOnlinePlayer(playerName, event)) == null) return;
         PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
         if (data == null) {
-            event.reply("您未绑定过玩家");
+            event.reply(language.get("bind", "invalid"));
             return;
         }
         Status status;
         if (valid) {
             if (data.getValidUUID() == null) {
-                event.reply("您未绑定过正版玩家");
+                event.reply(language.get("bind", "invalid-valid"));
                 return;
             }
             status = Status.UPDATE_CHANGE_VALID;
         } else {
             if (data.getUuid() == null) {
-                event.reply("您未绑定过离线玩家");
+                event.reply(language.get("bind", "invalid-offline"));
                 return;
             }
             status = Status.UPDATE_CHANGE_INVALID;
@@ -119,10 +127,10 @@ public class BasicBindListener implements Listener {
         bindImplement(event::reply, player, data, limit, status, true);
     }
 
-    private static void bindImplement(Consumer<String> reply, @NotNull Player player, @NotNull PlayerData data, long limit, Status status, boolean changeBind) {
+    private void bindImplement(Consumer<String> reply, @NotNull Player player, @NotNull PlayerData data, long limit, Status status, boolean changeBind) {
         final boolean result = ValidUtil.isValidPlayer(player);
         if ((status.valid && !result) || (!status.valid && result)) {
-            reply.accept("账号类型与绑定类型不符!");
+            reply.accept(language.get("bind", "except-status"));
             return;
         }
         BIND_DATA.put(player, new Pair<>(data, status));
@@ -132,31 +140,41 @@ public class BasicBindListener implements Listener {
             if (pair == null) return;
             PlayerData remove = pair.getKey();
             VERIFY.remove(userId);
-            player.sendMessage(PluginUtil.parseColor("&cQQ(&f" + remove.getUserId() + "&c)向此账号申请的绑定已过期"));
+            player.sendMessage(PluginUtil.parseColor(language.get("bind", "expired").replace("%qq%", remove.getUserId().toString())));
         }, limit * 60 * 20L));
-        reply.accept("已向 " + player.getName() + " 发送申请, 请前往游戏进行验证!");
-        player.sendMessage(PluginUtil.parseColor("&eQQ(&f" + userId + "&e) 正向您申请绑定, 请核实后输入 &a确认" + (changeBind ? "改绑" : "绑定") + userId + " &e完成与该账号的绑定! &7&l[" + limit + "分钟内有效]"));
+        reply.accept(language.get("bind", "process").replace("%player_name%", player.getName()));
+        player.sendMessage(PluginUtil.parseColor(language.get("bind", "notice")
+                .replace("%qq%", userId.toString())
+                .replace("%key_word%", "确认" + (changeBind ? "改绑" : "绑定") + userId)
+                .replace("%limit%", String.valueOf(limit))
+        ));
     }
 
     @Nullable
-    private static Player getOnlinePlayer(String playerName, MessageEvent event) {
+    private Player getOnlinePlayer(String playerName, MessageEvent event) {
         if (playerName.length() == 0) {
             formatExceptionHandle(event);
             return null;
         }
         final Player player = Bukkit.getPlayer(playerName);
         if (player == null || !player.isOnline()) {
-            event.reply("玩家: " + playerName + " 未在线");
+            event.reply(language.get("bind", "offline").replace("%player_name%", playerName));
             return null;
         }
         return player;
     }
 
-    private static void formatExceptionHandle(MessageEvent event) {
-        event.reply("请使用 '绑定/改绑 正版/离线 玩家名称' 的格式进行更改绑定!");
+    private void formatExceptionHandle(MessageEvent event) {
+        event.reply(language.get("bind", "mistake"));
     }
 
     public static class PlayerConfirmListener implements org.bukkit.event.Listener {
+
+        private final Language language;
+
+        public PlayerConfirmListener(Language language) {
+            this.language = language;
+        }
 
         @org.bukkit.event.EventHandler
         public void onConfirm(AsyncPlayerChatEvent event) {
@@ -168,7 +186,7 @@ public class BasicBindListener implements Listener {
             long qq = data.getUserId();
             if (event.getMessage().equals("确认绑定" + qq)) {
                 if (!status.bind) {
-                    player.sendMessage("关键字回复错误，您当前状态为：待绑定");
+                    player.sendMessage(PluginUtil.parseColor(language.get("bind", "result", "bad-bind")));
                     return;
                 }
                 BIND_DATA.remove(player);
@@ -181,11 +199,11 @@ public class BasicBindListener implements Listener {
                     StaticAPI.getRepository().save(data);
                 else
                     StaticAPI.getRepository().update(data);
-                player.sendMessage(PluginUtil.parseColor("&a绑定成功!"));
+                player.sendMessage(PluginUtil.parseColor(language.get("bind", "result", "success-bind")));
                 event.setCancelled(true);
             } else if (event.getMessage().equals("确认改绑" + qq)) {
                 if (status.bind) {
-                    player.sendMessage("关键字回复错误，您当前状态为：待改绑");
+                    player.sendMessage(PluginUtil.parseColor(language.get("bind", "result", "bad-rebind")));
                     return;
                 }
                 BIND_DATA.remove(player);
@@ -196,7 +214,7 @@ public class BasicBindListener implements Listener {
                     data.setUuid(player.getUniqueId().toString());
                 StaticAPI.getRepository().update(data);
 
-                player.sendMessage(PluginUtil.parseColor("&a改绑成功!"));
+                player.sendMessage(PluginUtil.parseColor(language.get("bind", "result", "success-rebind")));
                 event.setCancelled(true);
             }
         }

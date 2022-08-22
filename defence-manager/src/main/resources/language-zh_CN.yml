@@ -1,0 +1,7 @@
+auth:
+  exist-valid: '您已绑定正版账号，请勿重复验证'
+  exist-offline: '您已绑定离线账号，请勿重复验证'
+  notice: '请核实格式 `验证 正版/离线 <code>`'
+  leave: '&c&l> [群%d]成员(%d)已退出，其绑定玩家(%s)数据被删除'
+  except-type: '账号类型不符，要求类型：%type%'
+  except-account: '请使用原先角色绑定的QQ账号进行 %type%'

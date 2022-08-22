@@ -6,9 +6,10 @@ import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.expansion.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.chat.Global;
 import com.illtamer.infinite.bot.expansion.chat.event.PreGame2GroupMessageEvent;
-import com.illtamer.infinite.bot.expansion.chat.filter.Filter;
+import com.illtamer.infinite.bot.expansion.chat.filter.MessageFilter;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,9 +32,10 @@ public class Game2GroupListener implements Listener {
     private final Set<Long> allTurnsGroupIds;
     private final Map<PreGame2GroupMessageEvent, AsyncPlayerChatEvent> eventMap = new HashMap<>();
     @Nullable
-    private final Filter filter;
+    private final MessageFilter filter;
+    private final Language language;
 
-    public Game2GroupListener(ExpansionConfig configFile) {
+    public Game2GroupListener(ExpansionConfig configFile, Language language) {
         ConfigurationSection section = configFile.getConfig().getConfigurationSection("game-to-group");
         if (section == null)
             section = configFile.getConfig().createSection("game-to-group");
@@ -45,10 +47,11 @@ public class Game2GroupListener implements Listener {
                 .filter(entry -> ((String) entry.getValue()).length() == 0)
                 .map(entry -> Long.parseLong(entry.getKey()))
                 .collect(Collectors.toSet());
-        this.filter = Filter.MAP.get(section.getString("filter.mode"));
+        this.filter = MessageFilter.MAP.get(section.getString("filter.mode"));
         if (filter != null) {
             filter.init(section.getStringList("filter.key-set"));
         }
+        this.language = language;
     }
 
     // 较先触发(取消 InteractiveChat 消息)
@@ -93,7 +96,10 @@ public class Game2GroupListener implements Listener {
         final AsyncPlayerChatEvent event = eventMap.remove(messageEvent);
         if (event == null) return;
         Message message = messageEvent.getMessage() == null ?
-                MessageBuilder.json().text(messageEvent.getPrefix()).text(messageEvent.getCleanMessage()).build() :
+                MessageBuilder.json()
+                        .text(messageEvent.getPrefix())
+                        .text(messageEvent.getCleanMessage())
+                        .build() :
                 messageEvent.getMessage();
         Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(),
                 () -> messageEvent.getTargetGroups().forEach(messageConsumer(message)));
@@ -109,10 +115,10 @@ public class Game2GroupListener implements Listener {
             final Object close = closeMap.get(uuid);
             if (close == null || !((boolean) close)) { // close: false
                 closeMap.put(uuid, true);
-                event.getPlayer().sendMessage("切换消息接收状态为：屏蔽");
+                event.getPlayer().sendMessage(language.get("game-to-group", "change-on"));
             } else { // close: true
                 closeMap.put(uuid, false);
-                event.getPlayer().sendMessage("切换消息接收状态为：接收");
+                event.getPlayer().sendMessage(language.get("game-to-group", "change-close"));
             }
             event.setCancelled(true);
         }

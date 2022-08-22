@@ -10,9 +10,12 @@ import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
+import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
+import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +27,14 @@ public class AuthListener implements Listener {
     private final boolean removeOnLeave;
     private final String success;
     private final String failure;
+    private final Language language;
 
-    public AuthListener(ExpansionConfig configFile) {
+    public AuthListener(ExpansionConfig configFile, Language language) {
         final FileConfiguration config = configFile.getConfig();
         this.removeOnLeave = config.getBoolean("remove-on-leave");
         this.success = config.getString("success");
         this.failure = config.getString("failure");
+        this.language = language;
     }
 
     @EventHandler(priority = Priority.HIGHEST)
@@ -50,20 +55,20 @@ public class AuthListener implements Listener {
 
         if (msg.startsWith("正版 ")) {
             if (data != null && data.getValidUUID() != null) {
-                event.reply("您已绑定正版账号，请勿重复验证");
+                event.reply(language.get("auth", "exist-valid"));
                 return;
             }
             String code = msg.substring("正版 ".length());
             doAuth(code, event.getUserId(), data, true, event::reply);
         } else if (msg.startsWith("离线 ")) {
             if (data != null && data.getUuid() != null) {
-                event.reply("您已绑定离线账号，请勿重复验证");
+                event.reply(language.get("auth", "exist-offline"));
                 return;
             }
             String code = msg.substring("离线 ".length());
             doAuth(code, event.getUserId(), data, false, event::reply);
         } else {
-            event.reply("请核实格式 '验证 正版/离线 <code>'");
+            event.reply(language.get("auth", "notice"));
         }
     }
 
@@ -74,7 +79,7 @@ public class AuthListener implements Listener {
         final PlayerData delete = StaticAPI.getRepository().delete(event.getUserId());
         if (delete != null) {
             DefenceManager.getInstance().getLogger().info(PluginUtil.parseColor(
-                    String.format("&c&l> [群%d]成员(%d)已退出，其绑定玩家(%s)数据被删除", event.getGroupId(), event.getUserId(), delete.getOfflinePlayer().getName())));
+                    String.format(language.get("auth", "leave"), event.getGroupId(), event.getUserId(), Lambda.nullableInvoke(OfflinePlayer::getName, delete.getOfflinePlayer()))));
         }
     }
 
@@ -87,12 +92,12 @@ public class AuthListener implements Listener {
         final AuthData authData = pair.getValue();
         final String uuid = pair.getKey().toString();
         if ((valid && !authData.isValid()) || (!valid && authData.isValid())) {
-            reply.accept("账号类型不符，要求类型：" + (valid ? "正版" : "离线"));
+            reply.accept(language.get("auth", "except-type").replace("%type%", (valid ? "正版" : "离线")));
             return;
         }
         PlayerData data = record == null ? new PlayerData() : record;
         if (data.getUserId() != null && !data.getUserId().equals(userId)) {
-            reply.accept("请使用原先角色绑定的QQ账号进行" + (valid ? "正版" : "离线") + "绑定");
+            reply.accept(language.get("auth", "except-type").replace("%type%", (valid ? "正版验证" : "离线验证")));
             return;
         }
         LoginListener.removeByUUID(pair.getKey());

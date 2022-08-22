@@ -1,0 +1,16 @@
+group-to-game:
+  click: '点击以查看'
+  unknown: 'Unknown Group'
+  at:
+    one:
+      title1: '&b有人@你'
+      title2: '&b%sender_name% @了你'
+    all:
+      title1: '&b有全体消息'
+      title2: '&b%sender_name% @了全体成员'
+    message: '&b[@] &e>>> &a%sender_name% &b@了你'
+
+game-to-group:
+  change-on: '切换消息接收状态为：屏蔽'
+  change-close: '切换消息接收状态为：接收'
+
