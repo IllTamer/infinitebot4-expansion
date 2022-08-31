@@ -1,4 +1,4 @@
-# Infinite Bot 3.0.6 - ChatManager(群与游戏消息互通)
+# Infinite Bot 3.1.0 - ChatManager(群与游戏消息互通)
 #
 # 互通支持
 # - @: 群内@成员/@全体成员时，若被@者在服务器内且绑定游戏玩家，则游戏中会同样@该玩家
@@ -50,6 +50,9 @@ group-to-game:
   # - 0: 仅解析文字，过滤所有其它消息类型
   # - 1: 解析所有支持的消息类型
   parse-level: 1
+  # @ 的声音
+  # 默认 ENTITY_PLAYER_LEVELUP (高版本), LEVEL_UP (低版本)
+  at-sound: ENTITY_PLAYER_LEVELUP
   # 过滤器
   filter:
     # 模式
