@@ -17,7 +17,7 @@ import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.event.Priority;
+import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -67,7 +67,7 @@ public class Group2GameListener implements Listener {
         this.language = language;
     }
 
-    @EventHandler(priority = Priority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onGroup(GroupMessageEvent event) {
         if (!enable) return;
         if (!prefixMapper.containsKey(event.getGroupId().toString())) return;
@@ -157,8 +157,8 @@ public class Group2GameListener implements Listener {
         @Nullable
         private BaseComponent[] componentFormat() {
             final List<String> cleanMessage = message.getCleanMessage();
-            // 过滤规则存在时拒绝纯特殊消息
-            if (filter != null && !filter.isEmpty() && cleanMessage.size() == 0) return null;
+            // 过滤规则存在时 部分过滤规则拒绝纯特殊消息
+            if (filter != null && !filter.isEmpty() && cleanMessage.size() == 0 && filter.rejectNoText()) return null;
 
             final List<TransferEntity> entities = message.getMessageChain().getEntities();
             if (entities.size() == 0) return null;
@@ -212,7 +212,7 @@ public class Group2GameListener implements Listener {
             } else if (entity instanceof Face) {
                 return new TextComponent("§7[表情]" + ChatColor.RESET);
             } else if (entity instanceof Image) {
-                if (!expandChat || !StaticAPI.hasExpansion("ViewManager"))
+                if (!expandChat || !StaticAPI.hasExpansion("ViewManager", "IllTamer"))
                     return new TextComponent("§7[图片]" + ChatColor.RESET);
                 Image image = (Image) entity;
                 final TextComponent component = new TextComponent("§a[图片]" + ChatColor.RESET);

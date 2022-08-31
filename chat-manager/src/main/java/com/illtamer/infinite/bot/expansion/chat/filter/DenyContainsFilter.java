@@ -38,4 +38,9 @@ public class DenyContainsFilter implements MessageFilter {
         return empty;
     }
 
+    @Override
+    public boolean rejectNoText() {
+        return false;
+    }
+
 }

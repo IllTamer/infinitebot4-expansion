@@ -38,4 +38,9 @@ public class AccessStartFilter implements MessageFilter {
         return empty;
     }
 
+    @Override
+    public boolean rejectNoText() {
+        return true;
+    }
+
 }

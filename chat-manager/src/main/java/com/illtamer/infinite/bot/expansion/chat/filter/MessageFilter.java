@@ -31,4 +31,9 @@ public interface MessageFilter {
      * */
     boolean isEmpty();
 
+    /**
+     * 是否拒绝纯特殊消息
+     * */
+    boolean rejectNoText();
+
 }
