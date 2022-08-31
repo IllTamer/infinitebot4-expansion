@@ -1,4 +1,4 @@
-# Infinite Bot 3.0.6 - BasicManager(基础管理)
+# Infinite Bot 3.1.0 - BasicManager(基础管理)
 #
 # 自带关键字列表 []表示监听范围 ()表示权限等级
 #   - 今日新玩家 [全局] (管理员)
@@ -44,3 +44,7 @@ member-manage:
   # 局部变量 {0}-成员QQ
   welcome:
     - '欢迎{0}加入xxx'
+  # 欢迎语的延时时间
+  # 群成员加入时触发的事件优先级较高，此时群成员信息未完全载入（表现为@不生效），需延迟回复
+  # 单位：tick (1s=20tick)
+  welcome-delay: 20

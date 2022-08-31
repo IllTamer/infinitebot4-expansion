@@ -25,6 +25,7 @@ public class MemberMenageListener implements Listener {
     private final boolean changeAdmin;
     private final String defaultCard;
     private final List<String> msgs;
+    private final long welcomeDelay;
 
     public MemberMenageListener(ExpansionConfig configFile) {
         this.accept = configFile.getConfig().getBoolean("member-manage.auto-accept");
@@ -32,6 +33,7 @@ public class MemberMenageListener implements Listener {
         this.defaultCard = configFile.getConfig().getString("member-manage.default-card");
         this.changeAdmin = configFile.getConfig().getBoolean("member-manage.change-admin");
         this.msgs = configFile.getConfig().getStringList("member-manage.welcome");
+        this.welcomeDelay = configFile.getConfig().getLong("member-manage.welcome-delay", 20);
     }
 
     @EventHandler
@@ -54,7 +56,7 @@ public class MemberMenageListener implements Listener {
                                 .text(StringUtil.toString(msgs).replace("{0}", event.getUserId().toString()))
                                 .build()
                 );
-            }, 20L);
+            }, welcomeDelay);
         }
     }
 
