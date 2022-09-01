@@ -24,7 +24,7 @@ public class BasicManager extends InfiniteExpansion {
         EventExecutor.registerEvents(new MemberMenageListener(configFile), instance);
         EventExecutor.registerEvents(new BasicBindListener(configFile, language), instance);
         EventExecutor.registerBukkitEvent(new BasicBindListener.PlayerConfirmListener(language), instance);
-        EventExecutor.registerEvents(new KeyWordsListener(language), instance);
+        EventExecutor.registerEvents(new KeyWordsListener(configFile, language), instance);
     }
 
     @Override

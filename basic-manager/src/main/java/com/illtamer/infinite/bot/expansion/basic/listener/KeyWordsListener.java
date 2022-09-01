@@ -8,12 +8,14 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
@@ -23,15 +25,24 @@ public class KeyWordsListener implements Listener {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    private final String newPlayer;
+    private final String myBind;
+    private final String loginOut;
+    private final String online;
     private final Language language;
 
-    public KeyWordsListener(Language language) {
+    public KeyWordsListener(ExpansionConfig config, Language language) {
+        final ConfigurationSection section = config.getConfig().getConfigurationSection("key-word");
+        this.newPlayer = section.getString("new-player");
+        this.myBind = section.getString("my-bind");
+        this.loginOut = section.getString("login-out");
+        this.online = section.getString("online");
         this.language = language;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDailyPlayer(MessageEvent event) {
-        if (!StaticAPI.isAdmin(event.getUserId()) || !"今日新玩家".equals(event.getRawMessage())) {
+        if (!StaticAPI.isAdmin(event.getUserId()) || !newPlayer.equals(event.getRawMessage())) {
             return;
         }
         event.setCancelled(true);
@@ -48,7 +59,7 @@ public class KeyWordsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCheckBind(MessageEvent event) {
-        if (!"我的绑定".equals(event.getRawMessage())) {
+        if (!myBind.equals(event.getRawMessage())) {
             return;
         }
         event.setCancelled(true);
@@ -79,7 +90,7 @@ public class KeyWordsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoginOut(MessageEvent event) {
-        if (!"强制下线".equals(event.getRawMessage())) {
+        if (!loginOut.equals(event.getRawMessage())) {
             return;
         }
         event.setCancelled(true);
@@ -109,7 +120,7 @@ public class KeyWordsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onShowPlayers(GroupMessageEvent event) {
-        if (!"服务器在线".equals(event.getRawMessage())) {
+        if (!online.equals(event.getRawMessage())) {
             return;
         }
         event.setCancelled(true);

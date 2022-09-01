@@ -27,7 +27,7 @@ public class ViewManager extends InfiniteExpansion {
             getLogger().warn("未检测到消息互通附属，功能增强已关闭");
         else
             getLogger().info("检测到消息互通附属，功能增强已开启");
-        EventExecutor.registerEvents(new GroupMessageViewListener(language), instance);
+        EventExecutor.registerEvents(new GroupMessageViewListener(configFile, language), instance);
     }
 
     @Override
