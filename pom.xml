@@ -7,12 +7,13 @@
     <groupId>com.illtamer.infinite.bot.expansion</groupId>
     <artifactId>main</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>2.0</version>
     <modules>
         <module>basic-manager</module>
         <module>defence-manager</module>
         <module>chat-manager</module>
         <module>view-manager</module>
+        <module>test</module>
     </modules>
 
     <properties>
@@ -31,7 +32,7 @@
         <dependency>
             <groupId>com.illtamer.infinite.bot</groupId>
             <artifactId>minecraft</artifactId>
-            <version>3.0.5</version>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

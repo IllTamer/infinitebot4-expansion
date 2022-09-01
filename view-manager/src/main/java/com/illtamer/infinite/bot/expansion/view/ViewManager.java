@@ -23,7 +23,7 @@ public class ViewManager extends InfiniteExpansion {
         configFile = new ExpansionConfig("config.yml",  instance);
         this.language = Language.of(this);
         Assert.notNull(Bukkit.getPluginManager().getPlugin("InteractiveChatDiscordSrvAddon"), "前置插件 InteractiveChatDiscordSrvAddon 未加载");
-        if (!StaticAPI.hasExpansion("ChatManager"))
+        if (!StaticAPI.hasExpansion("ChatManager", "IllTamer"))
             getLogger().warn("未检测到消息互通附属，功能增强已关闭");
         else
             getLogger().info("检测到消息互通附属，功能增强已开启");
@@ -38,6 +38,16 @@ public class ViewManager extends InfiniteExpansion {
     @Override
     public String getExpansionName() {
         return "ViewManager";
+    }
+
+    @Override
+    public String getVersion() {
+        return "2.0";
+    }
+
+    @Override
+    public String getAuthor() {
+        return "IllTamer";
     }
 
     public ExpansionConfig getConfigFile() {

@@ -4,9 +4,6 @@ import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.expansion.chat.event.PreGame2GroupMessageEvent;
 import com.illtamer.infinite.bot.expansion.view.util.HologramUtil;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
-import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
-import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
-import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.loohp.interactivechat.InteractiveChat;
 import com.loohp.interactivechat.objectholders.ICPlayer;
 import com.loohp.interactivechat.objectholders.ICPlayerFactory;
@@ -27,7 +24,7 @@ public class GameMessageViewListener implements Listener {
 
     @EventHandler
     public void onMessage(PreGame2GroupMessageEvent event) {
-        if (event.getCleanMessage().length() <= 2) return;
+        if (event.getCleanMessage().length() == 0) return;
         final Player player = event.getPlayer();
         final ICPlayer icPlayer = ICPlayerFactory.getICPlayer(player);
         String message = event.getCleanMessage();
