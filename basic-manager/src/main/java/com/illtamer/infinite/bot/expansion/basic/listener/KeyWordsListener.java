@@ -6,8 +6,8 @@ import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
-import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.event.Priority;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
@@ -29,7 +29,7 @@ public class KeyWordsListener implements Listener {
         this.language = language;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = Priority.HIGHEST)
     public void onDailyPlayer(MessageEvent event) {
         if (!StaticAPI.isAdmin(event.getUserId()) || !"今日新玩家".equals(event.getRawMessage())) {
             return;
@@ -46,7 +46,7 @@ public class KeyWordsListener implements Listener {
         });
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = Priority.HIGHEST)
     public void onCheckBind(MessageEvent event) {
         if (!"我的绑定".equals(event.getRawMessage())) {
             return;
@@ -77,7 +77,7 @@ public class KeyWordsListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = Priority.HIGHEST)
     public void onLoginOut(MessageEvent event) {
         if (!"强制下线".equals(event.getRawMessage())) {
             return;
@@ -107,7 +107,7 @@ public class KeyWordsListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = Priority.HIGHEST)
     public void onShowPlayers(GroupMessageEvent event) {
         if (!"服务器在线".equals(event.getRawMessage())) {
             return;

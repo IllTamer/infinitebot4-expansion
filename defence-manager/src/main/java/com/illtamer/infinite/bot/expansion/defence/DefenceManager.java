@@ -32,16 +32,6 @@ public class DefenceManager extends InfiniteExpansion {
         return "DefenceManager";
     }
 
-    @Override
-    public String getVersion() {
-        return "2.0";
-    }
-
-    @Override
-    public String getAuthor() {
-        return "IllTamer";
-    }
-
     public ExpansionConfig getConfigFile() {
         return configFile;
     }

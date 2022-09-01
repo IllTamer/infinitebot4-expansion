@@ -37,16 +37,6 @@ public class BasicManager extends InfiniteExpansion {
         return "BasicManager";
     }
 
-    @Override
-    public String getVersion() {
-        return "2.0";
-    }
-
-    @Override
-    public String getAuthor() {
-        return "IllTamer";
-    }
-
     public ExpansionConfig getConfigFile() {
         return configFile;
     }

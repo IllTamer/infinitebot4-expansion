@@ -76,7 +76,8 @@ public class Game2GroupListener implements Listener {
             targetGroups.addAll(turnsGroupIds);
             cleanMessage = turnsGroupIds.size() == 0 ? rawMessage : rawMessage.substring(index+1);
         }
-        final String finalCleanMessage = cleanMessage;
+        // main thread
+        String finalCleanMessage = cleanMessage;
         Runnable runnable = () -> {
             PreGame2GroupMessageEvent messageEvent = new PreGame2GroupMessageEvent(asyncRender, Collections.unmodifiableSet(targetGroups), format(player), PluginUtil.clearColor(finalCleanMessage), player, event);
             eventMap.put(messageEvent, event);
