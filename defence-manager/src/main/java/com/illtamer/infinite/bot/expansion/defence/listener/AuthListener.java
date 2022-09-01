@@ -8,7 +8,7 @@ import com.illtamer.infinite.bot.expansion.defence.entity.AuthData;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.event.Priority;
+import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -37,7 +37,7 @@ public class AuthListener implements Listener {
         this.language = language;
     }
 
-    @EventHandler(priority = Priority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onAuth(MessageEvent event) {
         String msg = event.getRawMessage();
         if (!msg.startsWith("验证 ")) {

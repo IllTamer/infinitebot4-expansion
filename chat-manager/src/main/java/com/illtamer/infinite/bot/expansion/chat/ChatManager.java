@@ -7,6 +7,7 @@ import com.illtamer.infinite.bot.expansion.chat.filter.MessageFilter;
 import com.illtamer.infinite.bot.expansion.chat.listener.Game2GroupListener;
 import com.illtamer.infinite.bot.expansion.chat.listener.GameMessageViewListener;
 import com.illtamer.infinite.bot.expansion.chat.listener.Group2GameListener;
+import com.illtamer.infinite.bot.expansion.chat.util.AtUtil;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
@@ -27,9 +28,10 @@ public class ChatManager extends InfiniteExpansion {
     @Override
     public void onEnable() {
         instance = this;
-        Global.init(this);
+        Global.init(instance);
         configFile = new ExpansionConfig("config.yml", instance);
         closeFile = new ExpansionConfig("close.yml", instance);
+        AtUtil.init(configFile);
         prefixMapper = Lambda.nullableInvoke(section -> section.getValues(false), configFile.getConfig().getConfigurationSection("prefix-mapper"));
         Assert.isTrue(prefixMapper != null && prefixMapper.size() != 0, "Configuration node 'prefix-mapper' can not be empty !");
         MessageFilter.MAP.put("deny-contains", new DenyContainsFilter());
@@ -37,7 +39,7 @@ public class ChatManager extends InfiniteExpansion {
         this.language = Language.of(this);
         EventExecutor.registerEvents(new Group2GameListener(configFile, language), instance);
         EventExecutor.registerBukkitEvent(new Game2GroupListener(configFile, language), instance);
-        boolean expandChat = configFile.getConfig().getBoolean("expand-chat") && StaticAPI.hasExpansion("ViewManager");
+        boolean expandChat = configFile.getConfig().getBoolean("expand-chat") && StaticAPI.hasExpansion("ViewManager", "IllTamer");
         if (expandChat) {
             EventExecutor.registerBukkitEvent(new GameMessageViewListener(), instance);
         }
@@ -52,6 +54,16 @@ public class ChatManager extends InfiniteExpansion {
     @Override
     public String getExpansionName() {
         return "ChatManager";
+    }
+
+    @Override
+    public String getVersion() {
+        return "2.0";
+    }
+
+    @Override
+    public String getAuthor() {
+        return "IllTamer";
     }
 
     @NotNull

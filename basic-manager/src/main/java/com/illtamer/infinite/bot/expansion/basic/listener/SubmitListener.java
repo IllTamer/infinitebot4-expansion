@@ -8,7 +8,7 @@ import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.event.Priority;
+import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import org.bukkit.Bukkit;
@@ -30,14 +30,14 @@ public class SubmitListener implements Listener {
         Assert.notNull(prefix, "'submit.prefix' can not be null !");
     }
 
-    @EventHandler(priority = Priority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSubmit(MessageEvent event) {
         if (StaticAPI.isAdmin(event.getSender().getUserId())) {
             final String rawMessage = event.getRawMessage();
             if (rawMessage.startsWith(prefix) && rawMessage.length() >= prefix.length() +  2) {
                 String command = rawMessage.substring(prefix.length() + 1);
                 final String reply = language.get("submit", "reply");
-                if (reply != null && reply.length() != 0)
+                if (reply.length() != 0)
                     event.reply(reply);
                 SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event, delayTick, senderName);
                 // 主线程执行指令
