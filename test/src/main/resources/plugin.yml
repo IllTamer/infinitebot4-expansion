@@ -1,6 +1,0 @@
-name: TestIB3Expansion
-main: com.illtamer.infinite.bot.expansion.test.TestMain
-version: 1.0
-
-depend:
-  - InfiniteBot3
