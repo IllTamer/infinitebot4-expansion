@@ -13,6 +13,7 @@
         <module>defence-manager</module>
         <module>chat-manager</module>
         <module>view-manager</module>
+        <module>message-manager</module>
     </modules>
 
     <properties>
