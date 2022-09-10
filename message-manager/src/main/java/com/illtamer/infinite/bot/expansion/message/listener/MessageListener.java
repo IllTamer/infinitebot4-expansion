@@ -2,11 +2,7 @@ package com.illtamer.infinite.bot.expansion.message.listener;
 
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
-import com.illtamer.infinite.bot.expansion.message.message.MessageLoader;
-import com.illtamer.infinite.bot.expansion.message.message.MessageTrigger;
-import com.illtamer.infinite.bot.expansion.message.message.PlaceholderHandler;
-import com.illtamer.infinite.bot.expansion.message.message.ResponseHandler;
-import com.illtamer.infinite.bot.expansion.message.pojo.MessageEntity;
+import com.illtamer.infinite.bot.expansion.message.message.*;
 import com.illtamer.infinite.bot.expansion.message.pojo.MessageNode;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
@@ -34,7 +30,7 @@ public class MessageListener implements Listener {
     // all
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMessage(MessageEvent event) {
-        final List<Pair<MessageNode, Object>> pairs = trigger.select(event);
+        final List<Pair<MessageNode, Object>> pairs = MessageLimit.check(trigger.select(event), event);
         if (pairs.size() == 0) return;
         event.setCancelled(true);
         final String uuid = Lambda.nullableInvoke(PlayerData::getPreferUUID, repository.queryByUserId(event.getUserId()));
@@ -42,9 +38,7 @@ public class MessageListener implements Listener {
         PlaceholderHandler handler = new PlaceholderHandler(event, player);
         pairs.stream()
                 .map(handler::replace)
-                .forEach(entity -> ResponseHandler.handle(entity, event));
+                .forEach(entity -> ResponseHandler.handle(entity, event, player));
     }
-
-
 
 }

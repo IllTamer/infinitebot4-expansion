@@ -7,6 +7,8 @@ import java.util.List;
  * */
 public class MessageNode {
 
+    private Limit limit;
+
     /**
      * 消息触发器
      * */
@@ -40,7 +42,17 @@ public class MessageNode {
         /**
          * 图片
          * */
-        IMAGE("image");
+        IMAGE("image"),
+
+        /**
+         * Web API str
+         * */
+        API("api"),
+
+        /**
+         * 命令
+         * */
+        COMMAND("command");
 
         private final String value;
 
@@ -56,10 +68,20 @@ public class MessageNode {
             if (value != null) {
                 if (value.equals(TEXT.value)) return TEXT;
                 else if (value.equals(IMAGE.value)) return IMAGE;
+                else if (value.equals(API.value)) return API;
+                else if (value.equals(COMMAND.value)) return COMMAND;
             }
             throw new IllegalArgumentException("Unknown show-type: " + value);
         }
 
+    }
+
+    public Limit getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Limit limit) {
+        this.limit = limit;
     }
 
     public Trigger getTrigger() {

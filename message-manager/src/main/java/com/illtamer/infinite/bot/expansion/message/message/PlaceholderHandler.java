@@ -46,19 +46,28 @@ public class PlaceholderHandler {
     private static List<String> splitText(List<String> list) {
         if (list.size() == 0) return list;
         List<String> splits = new ArrayList<>((int) (list.size() * 1.5));
-        for (String s : list) {
-            final Matcher matcher = SPLIT_REGX.matcher(s);
-            if (!matcher.find()) {
-                splits.add(s);
-                continue;
-            }
-            final String pre = matcher.group(1);
-            if (pre.length() != 0) splits.add(pre);
-            splits.add(matcher.group(3));
-            final String lat = matcher.group(5);
-            if (lat.length() != 0) splits.add(lat);
+        for (String line : list) {
+            splits.addAll(recursionSplit(line, false));
         }
+        splits.remove(splits.size()-1);
         return splits;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> recursionSplit(String line, boolean deep) {
+        final Matcher matcher = SPLIT_REGX.matcher(line);
+        if (!matcher.find()) {
+            return deep ? Collections.singletonList(line) :
+                    (line.length() == 0 ? Collections.EMPTY_LIST : Arrays.asList(line, "\n"));
+        }
+        List<String> words = new ArrayList<>();
+        final String pre = matcher.group(1);
+        if (pre.length() != 0) words.addAll(recursionSplit(pre, true));
+        words.add(matcher.group(3));
+        final String lat = matcher.group(5);
+        if (lat.length() != 0) words.add(lat);
+        if (!deep) words.add("\n");
+        return words;
     }
 
     /**

@@ -23,7 +23,6 @@ public class LambdaFilter<E> {
     }
 
     public boolean result() {
-        System.out.println("result " + _continue);
         return _continue;
     }
 
