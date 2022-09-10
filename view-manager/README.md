@@ -1,4 +1,4 @@
-# Infinite Bot 3 - ViewManager(视图增强附属) 1.0
+# Infinite Bot 3 - ViewManager(视图增强附属) 2.0
 
 > 注：视图增强为其它附属（如消息互通）的增强前置附属，如您需要对该类附属进行功能增强，
 请将本附属与其依赖附属安装在同一服务器下
@@ -19,6 +19,10 @@
 - `InteractiveChat` [测试版本 4.2.3.1](https://ci.loohpjames.com/job/InteractiveChat/146/)
 
 - `DiscordSRV` [测试版本 1.26.0](https://github.com/DiscordSRV/DiscordSRV/releases/tag/v1.25.1)
+
+## 配置文件
+
+[[config.yml]](src/main/resources/config.yml)
 
 ## 演示
 
