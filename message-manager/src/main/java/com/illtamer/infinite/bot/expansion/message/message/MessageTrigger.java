@@ -4,9 +4,9 @@ import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.event.message.PrivateMessageEvent;
-import com.illtamer.infinite.bot.expansion.message.util.LambdaFilter;
 import com.illtamer.infinite.bot.expansion.message.pojo.MessageNode;
 import com.illtamer.infinite.bot.expansion.message.pojo.Trigger;
+import com.illtamer.infinite.bot.expansion.message.util.LambdaFilter;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
 
@@ -26,7 +26,7 @@ public class MessageTrigger {
     }
 
     /**
-     * 获取所有匹配的自制消息节点
+     * 获取所有可触发的自制消息节点
      * */
     public List<Pair<MessageNode, Object>> select(MessageEvent event) {
         return pairList.stream()
