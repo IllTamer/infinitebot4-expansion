@@ -2,7 +2,6 @@ package com.illtamer.infinite.bot.expansion.message.message;
 
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.util.Assert;
-import com.illtamer.infinite.bot.api.util.HttpRequestUtil;
 import com.illtamer.infinite.bot.expansion.message.InputStreamSupplier;
 import com.illtamer.infinite.bot.expansion.message.MessageManager;
 import com.illtamer.infinite.bot.expansion.message.pojo.Image;
@@ -10,6 +9,7 @@ import com.illtamer.infinite.bot.expansion.message.pojo.*;
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
 import com.illtamer.infinite.bot.minecraft.util.ExpansionUtil;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,11 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.slf4j.Logger;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.io.*;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,35 +27,36 @@ public class MessageLoader {
     // 自定义静态变量Map
     public static final Map<String, String> CUSTOM_PLACEHOLDERS = new HashMap<>();
     public static final List<Pair<MessageNode, Object>> MESSAGE_NODES = new ArrayList<>();
-    private static final Logger LOGGER = MessageManager.getInstance().getLogger();
+    private static Logger logger;
 
     private static int getImageTimeout;
     private static Pair<String, Integer> proxy;
 
     public static void init(FileConfiguration configuration, File dataFolder, IExpansion expansion) {
+        logger = MessageManager.getInstance().getLogger();
         if (CUSTOM_PLACEHOLDERS.size() != 0) CUSTOM_PLACEHOLDERS.clear();
         if (MESSAGE_NODES.size() != 0) MESSAGE_NODES.clear();
         getImageTimeout = configuration.getInt("get-image-timeout", 10) * 1000;
         final ConfigurationSection proxySection = configuration.getConfigurationSection("proxy");
         if (proxySection != null && proxySection.getBoolean("enable")) {
             proxy = new Pair<>(proxySection.getString("host"), proxySection.getInt("port"));
-            LOGGER.info("图片资源代理已配置：" + proxy);
+            logger.info("图片资源代理已配置：" + proxy);
         }
         Optional.ofNullable(configuration.getConfigurationSection("custom-placeholder"))
                 .orElseThrow(() -> new IllegalArgumentException("custom-placeholder节点不存在！"))
                 .getValues(false).forEach((k, v) -> CUSTOM_PLACEHOLDERS.put(k, String.valueOf(v)));
         final String folderName = configuration.getString("folder", "/message");
         File folder = new File(dataFolder, folderName);
-        LOGGER.info("加载了 " + CUSTOM_PLACEHOLDERS.size() + " 个自定义静态变量");
+        logger.info("加载了 " + CUSTOM_PLACEHOLDERS.size() + " 个自定义静态变量");
         if (!folder.exists()) {
-            LOGGER.warn("消息节点资源文件夹不存在，默认目录与实例配置创建在: " + folder.getAbsolutePath());
+            logger.warn("消息节点资源文件夹不存在，默认目录与实例配置创建在: " + folder.getAbsolutePath());
             folder.mkdirs();
             InputStream input = expansion.getResource("message/examples.yml");
             ExpansionUtil.savePluginResource(folderName + "/examples.yml", false, dataFolder, input);
         }
         final File[] files = folder.listFiles();
         if (files == null || files.length == 0) {
-            LOGGER.info("未找到可用的消息节点");
+            logger.info("未找到可用的消息节点");
             return;
         }
         for (File file : files) {
@@ -69,7 +66,7 @@ public class MessageLoader {
                             .orElseThrow(() -> new IllegalArgumentException("文件 " + file.getName() + " 中节点 " + key + " 解析失败"))))
                     .collect(Collectors.toList()));
         }
-        LOGGER.info("加载了 " + MESSAGE_NODES.size() + " 个消息节点");
+        logger.info("加载了 " + MESSAGE_NODES.size() + " 个消息节点");
     }
 
     private static Pair<MessageNode, Object> deserialize(ConfigurationSection section) {
@@ -167,6 +164,7 @@ public class MessageLoader {
         Command command = new Command();
         command.setType(Command.Type.parse(section.getString("type")));
         command.setOp(section.getBoolean("op"));
+        command.setRegx(section.getString("regx"));
         return command;
     }
 
@@ -188,15 +186,30 @@ public class MessageLoader {
         throw new IllegalArgumentException(source);
     }
 
+    public static void main(String[] args) throws Exception {
+        for (int i = 0; i < 10; ++ i) {
+            FileOutputStream out = new FileOutputStream("C:\\Users\\Bacon\\Desktop\\" + System.currentTimeMillis() + ".png");
+            String url = "http://api.illtamer.com/random?url=https://api.ixiaowai.cn/api/api.php&url=https://api.ixiaowai.cn/mcapi/mcapi.php&url=http://api.btstu.cn/sjbz/?lx=dongman&url=http://www.dmoe.cc/random.php&url=http://api.btstu.cn/sjbz/?lx=suiji&url=http://img.xjh.me/random_img.php&url=https://img.xjh.me/random_img.php";
+            final InputStream pair = getInputStream(url).getValue();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = pair.read(buffer)) != -1) {
+                out.write(buffer, 0, length);
+            }
+        }
+    }
+
     private static Pair<Integer, InputStream> getInputStream(String url) throws IOException {
         HttpClient client = new HttpClient();
         if (proxy != null) {
             client.getHostConfiguration().setProxy(proxy.getKey(), proxy.getValue());
+            client.getParams().setAuthenticationPreemptive(true);
         }
         client.getHttpConnectionManager().getParams().setConnectionTimeout(getImageTimeout);
         client.getHttpConnectionManager().getParams().setSoTimeout(getImageTimeout);
         client.getParams().setContentCharset("UTF-8");
         GetMethod getMethod = new GetMethod(url);
+        getMethod.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         getMethod.setRequestHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36");
         int status = client.executeMethod(getMethod);
         return new Pair<>(status, getMethod.getResponseBodyAsStream());

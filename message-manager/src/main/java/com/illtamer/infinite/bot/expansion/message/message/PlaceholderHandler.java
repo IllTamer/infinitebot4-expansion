@@ -3,6 +3,7 @@ package com.illtamer.infinite.bot.expansion.message.message;
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.expansion.message.hook.Placeholder;
+import com.illtamer.infinite.bot.expansion.message.pojo.Api;
 import com.illtamer.infinite.bot.expansion.message.pojo.MessageEntity;
 import com.illtamer.infinite.bot.expansion.message.pojo.MessageNode;
 import org.bukkit.OfflinePlayer;
@@ -26,9 +27,19 @@ public class PlaceholderHandler {
     public MessageEntity replace(Pair<MessageNode, Object> pair) {
         MessageEntity entity = new MessageEntity();
         entity.setShowType(pair.getKey().getShowType());
-        entity.setAttribute(pair.getValue());
+        entity.setAttribute(tryReplace(pair.getValue()));
         entity.setContent(doReplace(pair.getKey().getContent()));
         return entity;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E> E tryReplace(E e) {
+        if (e instanceof Api) {
+            Api api = (Api) e;
+            api.setUrl(format(Placeholder.set(api.getUrl(), player), placeholders));
+            return (E) api;
+        }
+        return e;
     }
 
     private List<String> doReplace(List<String> content) {

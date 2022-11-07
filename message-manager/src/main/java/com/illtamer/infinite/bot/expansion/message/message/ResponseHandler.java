@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ResponseHandler {
 
@@ -144,12 +146,23 @@ public class ResponseHandler {
 
     public static void command(MessageEntity entity, MessageEvent event, OfflinePlayer player) {
         final Command command = (Command) entity.getAttribute();
+        // match trigger statement
+        final List<String> args = new ArrayList<>();
+        if (event.getMessage().isTextOnly()) {
+            final Pattern pattern = Pattern.compile(command.getRegx());
+            final Matcher matcher = pattern.matcher(event.getRawMessage());
+            if (matcher.find()) {
+                for (int i = 0; i < matcher.groupCount(); i++)
+                    args.add(matcher.group(i));
+            }
+        }
+
         final boolean setOp = command.isOp();
         if (command.getType() == Command.Type.CONSOLE) {
             SubmitSender sender = new SubmitSender(Bukkit.getServer(), event, setOp, "message-manager#command-sender");
             for (String content : entity.getContent()) {
                 Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () ->
-                        Bukkit.dispatchCommand(sender, content));
+                        Bukkit.dispatchCommand(sender, replaceInput(content, args)));
             }
         } else if (command.getType() == Command.Type.SELF) {
             final Player onlinePlayer = player.getPlayer();
@@ -160,10 +173,17 @@ public class ResponseHandler {
             final boolean playerOp = onlinePlayer.isOp();
             if (!playerOp && setOp) onlinePlayer.setOp(true);
             for (String content : entity.getContent()) {
-                onlinePlayer.performCommand(content);
+                onlinePlayer.performCommand(replaceInput(content, args));
             }
             onlinePlayer.setOp(playerOp);
         } else throw new IllegalArgumentException();
+    }
+
+    private static String replaceInput(String line, List<String> args) {
+        for (int i = 0; i < args.size(); i++) {
+            line = line.replace("{input_" + i + "}", args.get(i));
+        }
+        return line;
     }
 
     static {

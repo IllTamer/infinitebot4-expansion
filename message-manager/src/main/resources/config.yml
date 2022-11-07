@@ -35,3 +35,4 @@ notice-when-limit: true
 # !! 暂不支持嵌套使用
 custom-placeholder:
   自定义变量: 'Hello World'
+  每日一句API: 'https://v1.hitokoto.cn/?c=f&encode=text'

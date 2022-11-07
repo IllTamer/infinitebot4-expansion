@@ -14,6 +14,13 @@ public class Command {
      * */
     private Type type;
 
+    /**
+     * 获取消息参数的正则表达式
+     *
+     * 使用 {#input_(index)}
+     * */
+    private String regx;
+
     public enum Type {
 
         CONSOLE("console"),
@@ -48,6 +55,14 @@ public class Command {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public String getRegx() {
+        return regx;
+    }
+
+    public void setRegx(String regx) {
+        this.regx = regx;
     }
 
 }

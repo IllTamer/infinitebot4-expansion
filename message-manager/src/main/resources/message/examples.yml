@@ -122,8 +122,9 @@ example-api:
   show-type: 'api'
   # api消息配置节点
   api:
+    # 支持除特殊变量外所有内联变量，包括自定义变量与papi
     # 注意：仅支持返回内容为纯文本的api调用
-    url: 'https://v1.hitokoto.cn/?c=f&encode=text'
+    url: '{每日一句API}'
   content:
     - '{#reply}{#sender}{自定义变量}'
     - '这是你的每日一句：{#content}'
@@ -136,9 +137,9 @@ example-command:
     source: 'group'
     admin: false
     bind: true
-    type: 'equal'
+    type: 'contains'
     filter: true
-    keys: ['打招呼']
+    keys: ['打招呼 ']
   papi: false
   show-type: 'command'
   command:
@@ -148,6 +149,10 @@ example-command:
     # 'console': 以控制台身份执行，支持消息回显
     # 'self': 以绑定的玩家身份执行(需在线)，不支持回显
     type: 'self'
+    # 获取消息参数的正则表达式
+    # 使用 {input_(index)} 调用，(index)为正则表达式的分组索引
+    #   该变量仅在纯文字消息触发下可用
+    regx: '(打招呼 )(.*)'
   # 消息内容，每一行为一条指令
   content:
-    - 'say %player_name% 向你问好 {自定义变量}'
+    - 'say %player_name% 向你问好 {input_2}'
