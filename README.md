@@ -9,6 +9,7 @@ Expansions for InfiniteBot v3 - Minecraft
 - [[defence-manager]](/defence-manager)： 消息互通附属
 - [[view-manager]](/view-manager)： 视图可视化附属
 - [[message-manager]](/message-manager)： 自定义消息附属
+- [[github-manager]](/github-manager)： Github小助手
 
 ## Installation
 
