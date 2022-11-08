@@ -59,9 +59,10 @@ public class Group2GameListener implements Listener {
         this.parseLevel = section.getInt("parse-level");
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
         this.expandChat = configFile.getConfig().getBoolean("expand-chat");
-        this.filter = MessageFilter.MAP.get(section.getString("filter.mode"));
+        final List<String> keySet = section.getStringList("filter.key-set");
+        this.filter = keySet.size() != 0 ? MessageFilter.MAP.get(section.getString("filter.mode")) : null;
         if (filter != null) {
-            filter.init(section.getStringList("filter.key-set"));
+            filter.init(keySet);
         }
         this.language = language;
     }
