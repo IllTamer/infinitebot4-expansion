@@ -1,3 +1,5 @@
+version: 1
+
 submit:
   reply: '指令执行中, 请稍后'
   log: 'Id [%s] dispatched a command `%s`'
@@ -13,6 +15,11 @@ key-word:
   no-player: '当前无玩家在线！'
   show-player: '服务器当前总人数：%d%s%s'
 
+unbind:
+  user_id-mistake: '请输入正确的qq号'
+  invalid: '当前账号类型未绑定qq'
+  invalid-type: '目标qq与账号绑定qq不符'
+  success: '当前账号类型解绑成功'
 
 bind:
   valid-exist: '您已绑定正版玩家: %player_name%'
