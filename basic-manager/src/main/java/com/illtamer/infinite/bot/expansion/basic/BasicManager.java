@@ -1,9 +1,8 @@
 package com.illtamer.infinite.bot.expansion.basic;
 
-import com.illtamer.infinite.bot.expansion.basic.listener.BasicBindListener;
-import com.illtamer.infinite.bot.expansion.basic.listener.KeyWordsListener;
-import com.illtamer.infinite.bot.expansion.basic.listener.MemberMenageListener;
-import com.illtamer.infinite.bot.expansion.basic.listener.SubmitListener;
+import com.illtamer.infinite.bot.expansion.basic.hook.Placeholder;
+import com.illtamer.infinite.bot.expansion.basic.listener.*;
+import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
@@ -18,8 +17,10 @@ public class BasicManager extends InfiniteExpansion {
     @Override
     public void onEnable() {
         instance = this;
-        configFile = new ExpansionConfig("config.yml", this);
-        this.language = Language.of(this);
+        Placeholder.init();
+        configFile = new ExpansionConfig("config.yml", this, 1);
+        this.language = Language.of("language", 1, this);
+        EventExecutor.registerBukkitEvent(new TipListener(configFile), instance);
         EventExecutor.registerEvents(new SubmitListener(configFile, language), instance);
         EventExecutor.registerEvents(new MemberMenageListener(configFile), instance);
         EventExecutor.registerEvents(new BasicBindListener(configFile, language), instance);
