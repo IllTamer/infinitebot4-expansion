@@ -14,6 +14,8 @@
         <module>chat-manager</module>
         <module>view-manager</module>
         <module>message-manager</module>
+        <module>test-expansion</module>
+        <module>github-manager</module>
     </modules>
 
     <properties>
@@ -32,7 +34,7 @@
         <dependency>
             <groupId>com.illtamer.infinite.bot</groupId>
             <artifactId>minecraft</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
