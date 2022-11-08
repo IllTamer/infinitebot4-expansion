@@ -11,6 +11,7 @@ import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
+import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.ValidUtil;
@@ -174,6 +175,39 @@ public class BasicBindListener implements Listener {
 
         public PlayerConfirmListener(Language language) {
             this.language = language;
+        }
+
+        @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.LOWEST)
+        public void unbind(AsyncPlayerChatEvent event) {
+            final String message = event.getMessage();
+            if (!message.startsWith("解绑 ")) return;
+            event.setCancelled(true);
+            final Player player = event.getPlayer();
+            long qq;
+            try {
+                qq = Long.parseLong(message.substring("解绑 ".length()));
+            } catch (Exception e) {
+                player.sendMessage(language.get("unbind", "user_id-mistake"));
+                return;
+            }
+            final String uuid = player.getUniqueId().toString();
+            final PlayerDataRepository repository = StaticAPI.getRepository();
+            final PlayerData data = repository.queryByUUID(uuid);
+            if (data == null) {
+                player.sendMessage(language.get("unbind", "invalid"));
+                return;
+            }
+            if (!data.getUserId().equals(qq)) {
+                player.sendMessage(language.get("unbind", "invalid-type"));
+                return;
+            }
+            if (data.getUuid() != null && data.getUuid().equals(uuid)) {
+                data.setUuid(null);
+            } else { // 正版
+                data.setValidUUID(null);
+            }
+            repository.update(data);
+            player.sendMessage(language.get("unbind", "success"));
         }
 
         @org.bukkit.event.EventHandler
