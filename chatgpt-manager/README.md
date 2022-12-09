@@ -1,4 +1,4 @@
-# Infinite Bot 3.1.0 - ChatGPTManager
+# Infinite Bot 3 - ChatGPTManager(人工智能聊天附属) 2.0
 
 ## 使用
 
