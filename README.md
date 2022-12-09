@@ -10,6 +10,7 @@ Expansions for InfiniteBot v3 - Minecraft
 - [[view-manager]](/view-manager)： 视图可视化附属
 - [[message-manager]](/message-manager)： 自定义消息附属
 - [[github-manager]](/github-manager)： Github小助手
+- [[chatgpt-manager]](/chatgpt-manager)：ChatGPT 聊天附属
 
 ## Installation
 
