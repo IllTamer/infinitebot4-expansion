@@ -91,7 +91,7 @@ public class CheckRunner extends BukkitRunnable {
                     .append("名称: ").append(releaseName).append(" (").append(branch).append(")\n")
                     .append("时间: ").append(FORMAT.format(date)).append('\n')
                     .append("成员: ").append(authorName).append('\n')
-                    .append("描述: \n").append(new String(body.getBytes("GBK"), StandardCharsets.UTF_8)).append('\n')
+                    .append("描述: \n").append(body/*new String(body.getBytes("GBK"), StandardCharsets.UTF_8)*/).append('\n')
                     .append("link: ").append(url);
         }
         return builder.toString();
