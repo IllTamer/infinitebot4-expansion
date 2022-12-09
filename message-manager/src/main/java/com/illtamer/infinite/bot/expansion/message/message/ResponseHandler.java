@@ -152,7 +152,7 @@ public class ResponseHandler {
             final Pattern pattern = Pattern.compile(command.getRegx());
             final Matcher matcher = pattern.matcher(event.getRawMessage());
             if (matcher.find()) {
-                for (int i = 0; i < matcher.groupCount(); i++)
+                for (int i = 0; i < matcher.groupCount() + 1; ++ i)
                     args.add(matcher.group(i));
             }
         }
@@ -180,7 +180,7 @@ public class ResponseHandler {
     }
 
     private static String replaceInput(String line, List<String> args) {
-        for (int i = 0; i < args.size(); i++) {
+        for (int i = 0; i < args.size(); ++ i) {
             line = line.replace("{input_" + i + "}", args.get(i));
         }
         return line;
