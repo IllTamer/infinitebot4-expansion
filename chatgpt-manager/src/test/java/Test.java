@@ -1,0 +1,26 @@
+import com.github.plexpt.chatgpt.Chatbot;
+import com.illtamer.infinite.bot.api.Response;
+import com.illtamer.infinite.bot.api.config.CQHttpWebSocketConfiguration;
+import com.illtamer.infinite.bot.api.handler.GetMessageHandler;
+import com.illtamer.infinite.bot.api.util.HttpRequestUtil;
+
+import java.util.Map;
+
+public class Test {
+
+    public static void main(String[] args) {
+//        System.out.println();
+//        Chatbot chatbot = new Chatbot("eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..tjX2HXdNaJ4Cu3CH.R6sCbomgLZR-4itozo61X1ET3AYcrHB6D0PbDxR3HiCqG_Y4H318_aSgWog9MGnV6ldpszPTSMnbQPgVpX9FOn0yZATbFF9BEsb_ZCtYEH2wJetI9q7H83vjzG4fOOglpkF8wVBs9aWQE9MMc-YnFwQyLZ-mc01eQMy4TwCPyp1zos30aG6A9t16A2LY1Hj8LpObICPMHhmR64hLfAJxXTl6TE5CaEK0MhRaEQIT_s-tDvXsBJry2rRyNThhSV1hMtaiY836XN97oMz0-S7GE82D2URIhFow5kFQilUsZPC_975Im31utPRCN90hRtyX_pnfR3FlqIA6V2fU-U7aHmoplfyZVeXCgn_AmSZgVl3hpbJpnq9dpmiPegLDmE9zkf2mCZnDA0kE5pu7iWIHTkCTyz2-lRuGej38p6cYCg6Epwff6TkJyUE6e7z-Nzeo3RAoYQg2z-edTXPWb4z-gLn6s9BHLXLCEgAu7famaiOCa2yWsh19-7nYqAlHX_f1rh252hByytpWIOABbB9pnCtI4Zf18g8MoK0en9Rl7_ICSoDMvDkRbO_iP2kM2ckvUXHX1eNm0953vOOVeI5Yqu1Q7vcr6tk8B9SBgSlbK5zSeFsYeCgoarVWYz914FAhbPS2S0oQ9Ohp0FfvOigTFyEF5WQg900p4_CY36Wjg9DEBxC0EB1Q2ZmCBBCsaqQJlrYniuvJsUDSHPmhc4pdbR90wd1MIhO5iTlSK5QoKj-Px8qVP0cYWauTw8qW5UXfwuKyYX_MuoUFUKt5mCu4fokFshNojaHtnrqTSKzoihYQ0SlNwiOvdzXbabhirb4bVyRO8oaXINXvJ13l3Jok7PavcDH605IY3daNuAyFJIRWhRJ42uPYeIGRTJMWZcwy84Mbs-qoDUH-5fJLOIPqop7vHGRpWFFRcyCmldDI1RHLj75ivxOHxMyL_ie_ZmOBLC3mocyDURAV2XIWOTqzIj9fKsOP5DqlLEWt1O82Nex8mO52cOS7OXESUM9fpIFAzZ9dhJq0kTu097GBYxP4GvJ9YFkLb0zFoyPRI0MdpIDw1XERrYPPrS4SQtSKsQ9VgvsGke2B5tWyF2WGWIIhG260vtf_HhSaTIXGG5O5mKGtNQFdfg0_G4DSWLbTwGy2N68w2mN-G4ZD-tuOOqdk1V2cnegElbNaNkKxHaI24ToJpEAkt7-ZlPmchAO7W61z08LwgSWeoy0E0Z5aJv1VABpgM_D7RtdcpUukW_YOx5_Vd8bfUptnHXAiG3VZ0WVE2SC95V4zuB1QIzif9UlgRYp1XAIaz2KCusRDsR_dhj0FKb6Eb6Kimv9YPQvwVrsryfOH0L_yFRJ3A--Ye5eZBJeVIfNLSCFisWVSFGfhmIPjeXLdE9ZVG0nQ7LXj05rSpzTgq4ETNJjMbdjigcmnttCYiJ0IZOtSuiEh885YmZnquu_0wR_O7hnlKu3L6Kg6-bPq3_Z72gEKhuSD0WLquHYST5yGrhqEAYpTp4Tmpvwn3XvN3D4mtnEKFT89ULI_xyzUgR8FjJy4jD-H0A2pRMLyA4gEGnLUvka56KoTAtqVntHAmH5kXn3VCCVsfk26PzDQyElviM0OJsQ-VdkO84nVkXbads1VCtEsfzrRDjcmJ9VODz99XQVfSWrplmIWJLhiHOTM388NWrAfUYWfRY3V_b5vc_wZkiJEF07wE0AQnee4BdN0ps6F_x9tObEz-4c76lwJIRhWc5NlAkoAg9JBh0AiR_Hzija_iIz4HLZhzPAp-tpRP92jYxFyZ1SEAUpFT3zQyBF0LAm9ZOkD1qPQfK62FafpgGh0uGAMYfb4zOQXEI2wAl7qDrT-_rTpXkgTJk0c8eEwXdgwyPgq-F-RbUBSBDdWp47Jpq4x9yz2xChntrIWULxD2B8-n32l2wAjKbHOOVvk3RC14Cu6jzfoGpNqh_rgieZhFwOYF37ooKSd5K3uoIpZh6VqCRgXOWE7ZofReZy2rZmh5OL6Tgo1kgev3-gOccGStCbwrCJo2cEwIt6pbFQyOpIrNGriW-jVwhKMoJw_rDRSTK9QFyjdE-doGsmvwahTrqNpORu-6SrJuirRrN_VzSienGrsl249rvsw3yepxzCCWPfv2IbUPaPGYuyz8NRqjzWNKwkIHWxkht97ClF7ybOCSzPr3vCEs9CBMwKT0oPF0PfnYgNmuC7OVdJGjzkjhbDNp4X3WZFb1el24M6oULyBKpnZW6hwcK5Y_W2c6sCoqIEKJwZnsaLS8WsCzRlpE0TVfezNNNNbar1YTd3Rl8CKui0fUGR4yfDlYibfYINvt-ccZD7Ag7xm.go8GzOMV-QgPBD9_P42fgg");
+//        Map<String, Object> chatResponse = chatbot.getChatResponse("hello");
+//        System.out.println(chatResponse);
+        CQHttpWebSocketConfiguration.setHttpUri("http://47.117.136.149:5700");
+        CQHttpWebSocketConfiguration.setAuthorization("root765743073");
+
+
+        final Response<Map<String, Object>> response = new GetMessageHandler()
+                .setMessageId(54625493)
+                .request();
+        System.out.println(response);
+    }
+
+}

@@ -1,0 +1,16 @@
+# Infinite Bot 3.1.0 - ChatGPTManager
+#
+# 向 chatgpt 进行提问: 输入 prefix+问题 后自动开启一段对话 (conversation)，并在一段时间未收到回复后过期
+
+# 获取 chatgpt token 的地址
+token-source: 'http://resource.illtamer.com/public/mc/token.txt'
+
+# 是否仅在管理的组中可用
+# 关闭则一切消息事件皆可触发
+group-only: true
+
+# 提问前缀
+prefix: '提问 '
+
+# 未收到回复后会话的过期时间 单位: 分钟
+timeout: 5
