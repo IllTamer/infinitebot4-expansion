@@ -15,7 +15,7 @@ public class DefenceManager extends InfiniteExpansion {
     @Override
     public void onEnable() {
         instance = this;
-        configFile = new ExpansionConfig("config.yml",  instance);
+        configFile = new ExpansionConfig("config.yml",  instance, 1);
         this.language = Language.of(this);
         EventExecutor.registerEvents(new AuthListener(configFile, language), instance);
         EventExecutor.registerBukkitEvent(new LoginListener(configFile), instance);

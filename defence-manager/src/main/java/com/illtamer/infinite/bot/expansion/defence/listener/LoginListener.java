@@ -39,11 +39,13 @@ public class LoginListener implements Listener {
     private final int threshold;
     private final int limit;
     private final boolean whiteList;
+    private final String accessPrefix;
 
     public LoginListener(ExpansionConfig configFile) {
         final FileConfiguration config = configFile.getConfig();
 //        this.authme = config.getBoolean("auth-me");
         this.whiteList = config.getBoolean("white-list");
+        this.accessPrefix = config.getString("access-prefix");
         this.limit = config.getInt("limit");
         this.kickMessages = config.getStringList("messages");
         this.defence = config.getBoolean("defence.enable");
@@ -74,6 +76,7 @@ public class LoginListener implements Listener {
                 if (offlinePlayer.getUniqueId().equals(event.getUniqueId())) return;
             }
         }
+        if (accessPrefix != null && accessPrefix.length() > 0 && event.getName().startsWith(accessPrefix)) return;
         final PlayerDataRepository repository = StaticAPI.getRepository();
         PlayerData data = repository.queryByUUID(event.getUniqueId());
         if (data != null) return;
