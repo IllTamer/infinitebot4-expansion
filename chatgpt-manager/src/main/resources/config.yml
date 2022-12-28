@@ -2,15 +2,34 @@
 #
 # 向 chatgpt 进行提问: 输入 prefix+问题 后自动开启一段对话 (conversation)，并在一段时间未收到回复后过期
 
-# 获取 chatgpt token 的地址
-token-source: 'http://resource.illtamer.com/public/mc/token.txt'
+setting:
+  # 是否仅在管理的组中可用
+  # 关闭则一切消息事件皆可触发
+  group-only: true
+  # 提问前缀
+  prefix: '提问 '
+  # 未收到回复后会话的过期时间 单位: 分钟
+  timeout: 5
 
-# 是否仅在管理的组中可用
-# 关闭则一切消息事件皆可触发
-group-only: true
-
-# 提问前缀
-prefix: '提问 '
-
-# 未收到回复后会话的过期时间 单位: 分钟
-timeout: 5
+chatgpt:
+  # 调用 ChatGPT 的模型，支持列表如下
+  # - text-davinci-002-render
+  # - text-davinci-003
+  model: 'text-davinci-002-render'
+  # ChatGPT-Token 配置
+  # 可填入网址 (http(s)://...) 或对应字符串
+  config:
+    # 注意：目前 text-davinci-002 调用非官方 API，模型免费，此项需填入账号的 session_token (InfiniteBot3免费提供)
+    #   text-davinci-003 对接官方接口，此项需填入 API keys
+    token: 'http://resource.illtamer.com/public/mc/session_token.txt'
+    # 注意：目前 text-davinci-002 调用非官方 API，模型免费，此项需填入账号的 cf_clearance (InfiniteBot3免费提供)
+    #   text-davinci-003 对接官方接口，此项无需填写
+    cf-clearance: 'http://resource.illtamer.com/public/mc/cf_clearance.txt'
+    user-agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+# 以下内容暂不支持
+#    # chatgpt 账号相关设置
+#    # 注：用于自动刷新 session_token，当账号密码均配置后使用 text-davinci-002-render
+#    #   模型时将优先以此方式获取 session_token
+#    account:
+#      email: ''
+#      password: ''

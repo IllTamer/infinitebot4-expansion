@@ -1,16 +1,18 @@
 package com.illtamer.infinite.bot.expansion.chatgpt.listener;
 
-import com.github.plexpt.chatgpt.Chatbot;
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.message.Message;
-import com.illtamer.infinite.bot.api.util.HttpRequestUtil;
+import com.illtamer.infinite.bot.expansion.chatgpt.Configuration;
+import com.illtamer.infinite.bot.expansion.chatgpt.driver.Davinci002Handler;
+import com.illtamer.infinite.bot.expansion.chatgpt.driver.Davinci003Handler;
+import com.illtamer.infinite.bot.expansion.chatgpt.driver.Handler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import org.bukkit.configuration.file.FileConfiguration;
+import com.illtamer.infinite.bot.minecraft.expansion.automation.Registration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,21 +21,27 @@ public class ChatListener implements Listener {
 
     // userId: conversationId&timeMillion
     private final Map<Long, Pair<String, Long>> conversationMap;
-    private final Chatbot chatbot;
     private final boolean groupOnly;
     private final String prefix;
     private final long timeoutMillionSecond;
+    private Handler handler;
 
-    public ChatListener(FileConfiguration config) {
-        final Pair<Integer, String> pair = HttpRequestUtil.getJson(config.getString("token-source"), null);
-        if (pair.getKey() != 200) {
-            throw new IllegalArgumentException("token 资源不可用，state: " + pair.getKey());
-        }
+    public ChatListener() {
+        final Configuration config = Registration.get(Configuration.class);
         this.conversationMap = new HashMap<>();
-        this.chatbot = new Chatbot(pair.getValue());
-        this.groupOnly = config.getBoolean("group-only");
-        this.prefix = config.getString("prefix");
-        this.timeoutMillionSecond = config.getInt("timeout") * 60L * 1000;
+        this.groupOnly = config.getGroupOnly();
+        this.prefix = config.getPrefix();
+        this.timeoutMillionSecond = config.getTimeout() * 60L * 1000;
+        switch (config.getModel()) {
+            case TEXT_DAVINCI_002_RENDER: {
+                handler = new Davinci002Handler();
+                break;
+            }
+            case TEXT_DAVINCI_003: {
+                handler = new Davinci003Handler();
+                break;
+            }
+        }
     }
 
     @EventHandler
@@ -55,11 +63,11 @@ public class ChatListener implements Listener {
                 conversationMap.remove(userId);
                 return;
             }
-            chatbot.setConversationId(pair.getKey());
-            final Map<String, Object> response = chatbot.getChatResponse(rawMessage);
+            final String response = handler.getResponse(rawMessage, pair.getKey());
             conversationMap.put(userId, new Pair<>(pair.getKey(), System.currentTimeMillis()));
-            event.reply((String) response.get("message"));
+            event.reply(response);
         }
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -80,9 +88,9 @@ public class ChatListener implements Listener {
         if (rawMessage.startsWith(prefix)) {
             rawMessage = rawMessage.substring(prefix.length());
         }
-        final Map<String, Object> response = chatbot.getChatResponse(rawMessage);
-        conversationMap.put(userId, new Pair<>((String) response.get("conversation_id"), System.currentTimeMillis()));
-        return (String) response.get("message");
+        Pair<String, String> pair = handler.createConversation(rawMessage);
+        conversationMap.put(userId, new Pair<>(pair.getValue(), System.currentTimeMillis()));
+        return pair.getKey();
     }
 
     private boolean isTimeout(long record) {

@@ -27,7 +27,7 @@
     <dependency>
       <groupId>com.illtamer.infinite.bot</groupId>
       <artifactId>minecraft</artifactId>
-      <version>3.1.5</version>
+      <version>3.1.6</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -50,6 +50,14 @@
       <version>1.19.1-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
+        <exclusion>
+          <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>gson</artifactId>
+          <groupId>com.google.code.gson</groupId>
+        </exclusion>
         <exclusion>
           <artifactId>bungeecord-chat</artifactId>
           <groupId>net.md-5</groupId>
