@@ -18,14 +18,19 @@ public class BasicManager extends InfiniteExpansion {
     public void onEnable() {
         instance = this;
         Placeholder.init();
-        configFile = new ExpansionConfig("config.yml", this, 1);
+        configFile = new ExpansionConfig("config.yml", this, 2);
         this.language = Language.of("language", 1, this);
         EventExecutor.registerBukkitEvent(new TipListener(configFile), instance);
         EventExecutor.registerEvents(new SubmitListener(configFile, language), instance);
-        EventExecutor.registerEvents(new MemberMenageListener(configFile), instance);
+        final boolean enable = configFile.getConfig().getBoolean("member-manage.enable");
         EventExecutor.registerEvents(new BasicBindListener(configFile, language), instance);
         EventExecutor.registerBukkitEvent(new BasicBindListener.PlayerConfirmListener(language), instance);
         EventExecutor.registerEvents(new KeyWordsListener(configFile, language), instance);
+        if (!enable) {
+            getLogger().info("成员管理监听已取消注册");
+            return;
+        }
+        EventExecutor.registerEvents(new MemberMenageListener(configFile), instance);
     }
 
     @Override

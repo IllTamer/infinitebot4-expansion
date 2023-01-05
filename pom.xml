@@ -17,6 +17,7 @@
         <module>test-expansion</module>
         <module>github-manager</module>
         <module>chatgpt-manager</module>
+        <module>game-landlords</module>
     </modules>
 
     <properties>
