@@ -3,6 +3,7 @@ package com.illtamer.infinite.bot.expansion.basic.listener;
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
+import com.illtamer.infinite.bot.api.event.request.FriendRequestEvent;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
@@ -33,11 +34,20 @@ public class BasicBindListener implements Listener {
     // Pair: data->status
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
     private final long limit;
+    private final boolean autoAccessFriend;
     private final Language language;
 
     public BasicBindListener(ExpansionConfig configFile, Language language) {
         this.limit = configFile.getConfig().getLong("bind.limit");
+        this.autoAccessFriend = configFile.getConfig().getBoolean("bind.auto-access-friend");
         this.language = language;
+    }
+
+    @EventHandler
+    public void onFriendRequest(FriendRequestEvent event) {
+        if (autoAccessFriend) {
+            event.approve(null);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
