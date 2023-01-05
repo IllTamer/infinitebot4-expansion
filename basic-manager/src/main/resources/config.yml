@@ -13,7 +13,7 @@
 #   玩家在游戏内发送 '解绑 先前绑定的QQ号'
 # 即可完成解绑
 
-version: 1
+version: 2
 
 # 默认关键字列表 []表示监听范围 ()表示权限等级
 #   - 今日新玩家 [全局] (管理员)
@@ -39,6 +39,8 @@ submit:
 bind:
   # 验证码有效时长 (单位: 分钟)
   limit: 5
+  # 自动同意好友申请
+  auto-access-friend: true
 
 # 群内提示信息 (支持 papi)
 tip:
@@ -53,6 +55,9 @@ tip:
 
 # 成员监听
 member-manage:
+  # 是否启用成员监听
+  # 若您的 Timings 中 MemberMenageListener 消耗资源过多，可关闭此项禁用该配置下一切监听
+  enable: true
   # 是否自动同意群成员加入
   auto-accept: true
   # 自动将发言过的玩家的群名片改成其游戏名
