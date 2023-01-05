@@ -1,6 +1,7 @@
 package com.illtamer.infinite.bot.expansion.view;
 
 import com.illtamer.infinite.bot.api.util.Assert;
+import com.illtamer.infinite.bot.expansion.view.hook.OpenInvHook;
 import com.illtamer.infinite.bot.expansion.view.listener.GroupMessageViewListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
@@ -27,6 +28,7 @@ public class ViewManager extends InfiniteExpansion {
             getLogger().warn("未检测到消息互通附属，功能增强已关闭");
         else
             getLogger().info("检测到消息互通附属，功能增强已开启");
+        OpenInvHook.init(instance);
         EventExecutor.registerEvents(new GroupMessageViewListener(configFile, language), instance);
     }
 

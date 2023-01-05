@@ -2,6 +2,7 @@ package com.illtamer.infinite.bot.expansion.view.listener;
 
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.message.MessageBuilder;
+import com.illtamer.infinite.bot.expansion.view.hook.OpenInvHook;
 import com.illtamer.infinite.bot.expansion.view.util.HologramUtil;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
@@ -82,8 +83,12 @@ public class GroupMessageViewListener implements Listener {
         }
         final OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
         if (player.getPlayer() == null || !player.isOnline()) {
-            event.reply(language.get("offline").replace("%player_name%", player.getName() == null ? "null" : player.getName()));
-            return null;
+            Player onlinePlayer = OpenInvHook.getOfflinePlayer(player);
+            if (onlinePlayer == null) {
+                event.reply(language.get("offline").replace("%player_name%", player.getName() == null ? "null" : player.getName()));
+                return null;
+            }
+            return onlinePlayer;
         }
         return player.getPlayer();
     }

@@ -32,6 +32,13 @@
             <scope>system</scope>
             <systemPath>E:/JCode/idea/plugin/infinite-bot-3-expansion/libs/VaultAPI-1.7.jar</systemPath>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.lishid</groupId>-->
+<!--            <artifactId>openinv</artifactId>-->
+<!--            <version>4.2.1</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>E:/JCode/idea/plugin/infinite-bot-3-expansion/libs/OpenInv.jar</systemPath>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.loohp</groupId>
             <artifactId>InteractiveChatDiscordSrvAddon</artifactId>
