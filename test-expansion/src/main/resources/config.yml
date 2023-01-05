@@ -1,0 +1,8 @@
+check: false
+
+config:
+  point:
+    # 名称
+    name: '11111'
+    # 值 000
+    value: 000
