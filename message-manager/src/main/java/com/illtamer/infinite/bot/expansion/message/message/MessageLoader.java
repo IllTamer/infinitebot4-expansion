@@ -2,15 +2,23 @@ package com.illtamer.infinite.bot.expansion.message.message;
 
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.util.Assert;
+import com.illtamer.infinite.bot.api.util.HttpRequestUtil;
 import com.illtamer.infinite.bot.expansion.message.InputStreamSupplier;
 import com.illtamer.infinite.bot.expansion.message.MessageManager;
 import com.illtamer.infinite.bot.expansion.message.pojo.Image;
 import com.illtamer.infinite.bot.expansion.message.pojo.*;
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
 import com.illtamer.infinite.bot.minecraft.util.ExpansionUtil;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,6 +39,7 @@ public class MessageLoader {
 
     private static int getImageTimeout;
     private static Pair<String, Integer> proxy;
+    private static RequestConfig requestConfig;
 
     public static void init(FileConfiguration configuration, File dataFolder, IExpansion expansion) {
         logger = MessageManager.getInstance().getLogger();
@@ -42,6 +51,13 @@ public class MessageLoader {
             proxy = new Pair<>(proxySection.getString("host"), proxySection.getInt("port"));
             logger.info("图片资源代理已配置：" + proxy);
         }
+        final RequestConfig.Builder builder = RequestConfig.custom()
+                .setConnectTimeout(getImageTimeout)
+                .setSocketTimeout(getImageTimeout);
+        if (proxy != null) {
+            builder.setProxy(new HttpHost(proxy.getKey(), proxy.getValue())).setAuthenticationEnabled(true);
+        }
+        requestConfig = builder.build();
         Optional.ofNullable(configuration.getConfigurationSection("custom-placeholder"))
                 .orElseThrow(() -> new IllegalArgumentException("custom-placeholder节点不存在！"))
                 .getValues(false).forEach((k, v) -> CUSTOM_PLACEHOLDERS.put(k, String.valueOf(v)));
@@ -200,19 +216,17 @@ public class MessageLoader {
     }
 
     private static Pair<Integer, InputStream> getInputStream(String url) throws IOException {
-        HttpClient client = new HttpClient();
-        if (proxy != null) {
-            client.getHostConfiguration().setProxy(proxy.getKey(), proxy.getValue());
-            client.getParams().setAuthenticationPreemptive(true);
+        int status;
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36");
+            httpGet.setConfig(requestConfig);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                status = response.getStatusLine().getStatusCode();
+                HttpEntity responseEntity = response.getEntity();
+                return new Pair<>(status, responseEntity.getContent());
+            }
         }
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(getImageTimeout);
-        client.getHttpConnectionManager().getParams().setSoTimeout(getImageTimeout);
-        client.getParams().setContentCharset("UTF-8");
-        GetMethod getMethod = new GetMethod(url);
-        getMethod.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        getMethod.setRequestHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36");
-        int status = client.executeMethod(getMethod);
-        return new Pair<>(status, getMethod.getResponseBodyAsStream());
     }
 
 }
