@@ -132,14 +132,14 @@ public class KeyWordsListener implements Listener {
                 return;
             }
             String opPrefix = "\n管理员：", playerPrefix = "\n玩家：";
-            StringBuilder opList = new StringBuilder(opPrefix);
-            StringBuilder playerList = new StringBuilder(playerPrefix);
+            StringJoiner opList = new StringJoiner(", ", opPrefix, "");
+            StringJoiner playerList = new StringJoiner(", ", playerPrefix, "");
             while (iterator.hasNext()) {
                 Player player = iterator.next();
                 if (player.isOp()) {
-                    opList.append(PluginUtil.clearColor(player.getDisplayName())).append(", ");
+                    opList.add(PluginUtil.clearColor(player.getDisplayName()));
                 } else {
-                    playerList.append(PluginUtil.clearColor(player.getDisplayName())).append(", ");
+                    playerList.add(PluginUtil.clearColor(player.getDisplayName()));
                 }
             }
             String format = String.format(language.get("key-word", "show-player"),
