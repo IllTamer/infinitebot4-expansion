@@ -29,7 +29,7 @@ public class ChatManager extends InfiniteExpansion {
     public void onEnable() {
         instance = this;
         Global.init(instance);
-        configFile = new ExpansionConfig("config.yml", instance);
+        configFile = new ExpansionConfig("config.yml", instance, 1);
         closeFile = new ExpansionConfig("close.yml", instance);
         AtUtil.init(configFile);
         prefixMapper = Lambda.nullableInvoke(section -> section.getValues(false), configFile.getConfig().getConfigurationSection("prefix-mapper"));

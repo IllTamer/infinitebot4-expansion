@@ -43,6 +43,7 @@ public class Group2GameListener implements Listener {
     private final String prefix;
     private final boolean global; // type
     private final int parseLevel;
+    private final boolean runCommand;
     private final Map<String, Object> prefixMapper;
     private final boolean expandChat;
     @Nullable
@@ -57,6 +58,7 @@ public class Group2GameListener implements Listener {
         this.prefix = PluginUtil.parseColor(section.getString("prefix", "[]"));
         this.global = "global".equalsIgnoreCase(section.getString("type"));
         this.parseLevel = section.getInt("parse-level");
+        this.runCommand = "click".equals(section.getString("show-image"));
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
         this.expandChat = configFile.getConfig().getBoolean("expand-chat");
         final List<String> keySet = section.getStringList("filter.key-set");
@@ -218,7 +220,9 @@ public class Group2GameListener implements Listener {
                 final TextComponent component = new TextComponent("§a[图片]" + ChatColor.RESET);
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(language.get("group-to-game", "click"))));
                 final UUID uuid = DispatchUtil.executeImageWrapper(image.getUrl(), false);
-                component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "vm-map//" + uuid));
+//                System.out.println("Generate image uuid: " + uuid);
+                ClickEvent.Action action = runCommand ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND;
+                component.setClickEvent(new ClickEvent(action, "vm-map//" + uuid));
                 return component;
             } else if (entity instanceof Redbag) {
                 final Redbag redbag = (Redbag) entity;

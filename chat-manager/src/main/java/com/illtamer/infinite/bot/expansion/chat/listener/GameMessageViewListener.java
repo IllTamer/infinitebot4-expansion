@@ -18,9 +18,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class GameMessageViewListener implements Listener {
+
+//    public GameMessageViewListener() {
+//        System.out.println(Arrays.toString(new String[] {
+//                InteractiveChat.itemPlaceholder.getKeyword().pattern(),
+//                InteractiveChat.itemPlaceholder.getRawKeyword().pattern(),
+//                InteractiveChat.invPlaceholder.getKeyword().pattern(),
+//                InteractiveChat.invPlaceholder.getRawKeyword().pattern(),
+//                InteractiveChat.enderPlaceholder.getKeyword().pattern(),
+//                InteractiveChat.enderPlaceholder.getRawKeyword().pattern()
+//        }));
+//    }
 
     @EventHandler
     public void onMessage(PreGame2GroupMessageEvent event) {
@@ -30,16 +42,16 @@ public class GameMessageViewListener implements Listener {
         String message = event.getCleanMessage();
         boolean item = false, inv = false, end = false;
 
-        if (InteractiveChat.itemPlaceholder.matcher(message).find()) {
-            message = message.replaceAll(InteractiveChat.itemPlaceholder.pattern(), "");
+        if (InteractiveChat.itemPlaceholder.getKeyword().matcher(message).find()) {
+            message = message.replaceAll(InteractiveChat.itemPlaceholder.getKeyword().pattern(), "");
             item = true;
         }
-        if (InteractiveChat.invPlaceholder.matcher(message).find()) {
-            message = message.replaceAll(InteractiveChat.invPlaceholder.pattern(), "");
+        if (InteractiveChat.invPlaceholder.getKeyword().matcher(message).find()) {
+            message = message.replaceAll(InteractiveChat.invPlaceholder.getKeyword().pattern(), "");
             inv = true;
         }
-        if (InteractiveChat.enderPlaceholder.matcher(message).find()) {
-            message = message.replaceAll(InteractiveChat.enderPlaceholder.pattern(), "");
+        if (InteractiveChat.enderPlaceholder.getKeyword().matcher(message).find()) {
+            message = message.replaceAll(InteractiveChat.enderPlaceholder.getKeyword().pattern(), "");
             end = true;
         }
         final MessageBuilder builder = MessageBuilder.json()
@@ -65,11 +77,17 @@ public class GameMessageViewListener implements Listener {
     public void onShowMapImage(AsyncPlayerChatEvent event) {
         final String message = event.getMessage();
         if (!message.startsWith("vm-map//")) return;
+        event.setCancelled(true);
         final GraphicsToPacketMapWrapper wrapper = InteractiveChatDiscordSrvAddonAPI.
                 getDiscordImageWrapperByUUID(UUID.fromString(message.substring("vm-map//".length())));
+
+        if (wrapper == null) {
+            event.getPlayer().sendMessage("Unknown uuid");
+            return;
+        }
+
         Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () ->
                 wrapper.show(event.getPlayer()));
-        event.setCancelled(true);
     }
 
 }

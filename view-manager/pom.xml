@@ -19,6 +19,10 @@
 
     <repositories>
         <repository>
+            <id>Scarsz-Nexus</id>
+            <url>https://nexus.scarsz.me/content/groups/public/</url>
+        </repository>
+        <repository>
             <id>loohp-repo</id>
             <url>https://repo.loohpjames.com/repository</url>
         </repository>
@@ -42,12 +46,17 @@
         <dependency>
             <groupId>com.loohp</groupId>
             <artifactId>InteractiveChatDiscordSrvAddon</artifactId>
-            <version>4.2.2.6</version>
+            <version>4.2.5.6</version>
         </dependency>
         <dependency>
             <groupId>com.loohp</groupId>
             <artifactId>InteractiveChat</artifactId>
-            <version>4.2.2.6</version>
+            <version>4.2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.discordsrv</groupId>
+            <artifactId>discordsrv</artifactId>
+            <version>1.26.0</version>
         </dependency>
     </dependencies>
 
