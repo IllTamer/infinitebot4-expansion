@@ -2,15 +2,12 @@ package com.illtamer.infinite.bot.expansion.landlords.listener;
 
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
-import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.event.message.PrivateMessageEvent;
-import com.illtamer.infinite.bot.api.event.request.FriendRequestEvent;
 import com.illtamer.infinite.bot.api.exception.APIInvokeException;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.api.message.Message;
 import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.expansion.landlords.config.Configuration;
-import com.illtamer.infinite.bot.expansion.landlords.core.ActionChecker;
 import com.illtamer.infinite.bot.expansion.landlords.core.GameCenter;
 import com.illtamer.infinite.bot.expansion.landlords.core.pojo.ActionType;
 import com.illtamer.infinite.bot.expansion.landlords.core.pojo.Card;
@@ -45,9 +42,12 @@ public class GameListener implements Listener {
         if (!event.getMessage().isTextOnly()) return;
         final Long userId = event.getUserId();
         final String message = event.getRawMessage();
-        final Participant player = playerMap.get(userId);
-        if (player == null || !GameCenter.start) return;
         if (configuration.getSee().equals(message)) {
+            final Participant player = playerMap.get(userId);
+            if (player == null || !GameCenter.start) {
+                event.reply("您尚未加入游戏或游戏还未开始");
+                return;
+            }
             event.reply(createHandCardListMessage(player));
         }
     }
