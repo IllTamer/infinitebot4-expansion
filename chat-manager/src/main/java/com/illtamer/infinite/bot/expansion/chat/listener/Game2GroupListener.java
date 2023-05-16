@@ -7,9 +7,12 @@ import com.illtamer.infinite.bot.expansion.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.chat.Global;
 import com.illtamer.infinite.bot.expansion.chat.event.PreGame2GroupMessageEvent;
 import com.illtamer.infinite.bot.expansion.chat.filter.MessageFilter;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
+import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
+import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.start.bungee.BungeeBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -83,9 +86,9 @@ public class Game2GroupListener implements Listener {
             Bukkit.getPluginManager().callEvent(messageEvent);
         };
         if (asyncRender) {
-            Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), runnable);
+            Bukkit.getScheduler().runTaskAsynchronously(((BukkitBootstrap) StaticAPI.getInstance()), runnable);
         } else {
-            Bukkit.getScheduler().runTask(Bootstrap.getInstance(), runnable);
+            Bukkit.getScheduler().runTask(((BukkitBootstrap) StaticAPI.getInstance()), runnable);
         }
     }
 
@@ -100,8 +103,7 @@ public class Game2GroupListener implements Listener {
                         .text(messageEvent.getCleanMessage())
                         .build() :
                 messageEvent.getMessage();
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(),
-                () -> messageEvent.getTargetGroups().forEach(messageConsumer(message)));
+        BotScheduler.runTask(() -> messageEvent.getTargetGroups().forEach(messageConsumer(message)));
     }
 
     // 最先触发

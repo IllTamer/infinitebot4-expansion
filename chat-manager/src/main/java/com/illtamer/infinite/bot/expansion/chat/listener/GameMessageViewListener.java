@@ -3,7 +3,8 @@ package com.illtamer.infinite.bot.expansion.chat.listener;
 import com.illtamer.infinite.bot.api.message.MessageBuilder;
 import com.illtamer.infinite.bot.expansion.chat.event.PreGame2GroupMessageEvent;
 import com.illtamer.infinite.bot.expansion.view.util.HologramUtil;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
+import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.loohp.interactivechat.InteractiveChat;
 import com.loohp.interactivechat.objectholders.ICPlayer;
 import com.loohp.interactivechat.objectholders.ICPlayerFactory;
@@ -18,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 public class GameMessageViewListener implements Listener {
@@ -86,7 +86,7 @@ public class GameMessageViewListener implements Listener {
             return;
         }
 
-        Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () ->
+        Bukkit.getScheduler().runTask(((BukkitBootstrap) StaticAPI.getInstance()), () ->
                 wrapper.show(event.getPlayer()));
     }
 
