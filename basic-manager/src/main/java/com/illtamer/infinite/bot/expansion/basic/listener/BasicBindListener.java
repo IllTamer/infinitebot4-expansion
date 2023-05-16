@@ -4,7 +4,7 @@ import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.event.request.FriendRequestEvent;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
@@ -20,24 +20,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 
 public class BasicBindListener implements Listener {
-    private static final HashMap<Long, BukkitTask> VERIFY = new HashMap<>();
+    private static final HashMap<Long, ScheduledFuture<?>> VERIFY = new HashMap<>();
     // Pair: data->status
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
+    private final boolean onlineMode;
     private final long limit;
     private final boolean autoAccessFriend;
     private final Language language;
 
     public BasicBindListener(ExpansionConfig configFile, Language language) {
+        this.onlineMode = configFile.getConfig().getBoolean("bind.online-mode");
         this.limit = configFile.getConfig().getLong("bind.limit");
         this.autoAccessFriend = configFile.getConfig().getBoolean("bind.auto-access-friend");
         this.language = language;
@@ -58,26 +60,12 @@ public class BasicBindListener implements Listener {
         String message = event.getRawMessage();
         if (message.startsWith("绑定 ")) {
             message = message.substring("绑定 ".length());
-            if (message.startsWith("正版 ")) {
-                event.setCancelled(true);
-                checkAndBindSinglePlayer(event, message.substring("正版 ".length()), true);
-            } else if (message.startsWith("离线 ")) {
-                event.setCancelled(true);
-                checkAndBindSinglePlayer(event, message.substring("离线 ".length()), false);
-            } else {
-                formatExceptionHandle(event);
-            }
+            event.setCancelled(true);
+            checkAndBindSinglePlayer(event, message, onlineMode);
         } else if (message.startsWith("改绑 ")) {
             message = message.substring("改绑 ".length());
-            if (message.startsWith("正版 ")) {
-                event.setCancelled(true);
-                checkAndRebindSinglePlayer(event, message.substring("正版 ".length()), true);
-            } else if (message.startsWith("离线 ")) {
-                event.setCancelled(true);
-                checkAndRebindSinglePlayer(event, message.substring("离线 ".length()), false);
-            } else {
-                formatExceptionHandle(event);
-            }
+            event.setCancelled(true);
+            checkAndRebindSinglePlayer(event, message, onlineMode);
         }
     }
 
@@ -94,16 +82,16 @@ public class BasicBindListener implements Listener {
         } else {
             if (valid) {
                 if (data.getValidUUID() != null) {
-                    String message = language.get("bind", "valid-exist").replace("%player_name%", Optional.ofNullable(Lambda.nullableInvoke(OfflinePlayer::getName,
-                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))).orElse("null"));
+                    String message = language.get("bind", "valid-exist").replace("%player_name%", String.valueOf(Lambda.nullableInvoke(OfflinePlayer::getName,
+                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))));
                     event.reply(message);
                     return;
                 }
                 status = Status.UPDATE_BIND_VALID;
             } else {
                 if (data.getUuid() != null) {
-                    String message = language.get("bind", "offline-exist").replace("%player_name%", Optional.ofNullable(Lambda.nullableInvoke(OfflinePlayer::getName,
-                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))).orElse("null"));
+                    String message = language.get("bind", "offline-exist").replace("%player_name%", String.valueOf(Lambda.nullableInvoke(OfflinePlayer::getName,
+                            Bukkit.getOfflinePlayer(UUID.fromString(data.getUuid())))));
                     event.reply(message);
                     return;
                 }
@@ -146,7 +134,7 @@ public class BasicBindListener implements Listener {
         }
         BIND_DATA.put(player, new Pair<>(data, status));
         final Long userId = data.getUserId();
-        VERIFY.put(userId, Bukkit.getScheduler().runTaskLater(Bootstrap.getInstance(), () -> {
+        VERIFY.put(userId, BotScheduler.runTaskLater(() -> {
             final Pair<PlayerData, Status> pair = BIND_DATA.remove(player);
             if (pair == null) return;
             PlayerData remove = pair.getKey();
@@ -234,7 +222,7 @@ public class BasicBindListener implements Listener {
                     return;
                 }
                 BIND_DATA.remove(player);
-                VERIFY.remove(qq).cancel();
+                VERIFY.remove(qq).cancel(true);
                 if (status.valid)
                     data.setValidUUID(player.getUniqueId().toString());
                 else
@@ -251,7 +239,7 @@ public class BasicBindListener implements Listener {
                     return;
                 }
                 BIND_DATA.remove(player);
-                VERIFY.remove(qq).cancel();
+                VERIFY.remove(qq).cancel(true);
                 if (status.valid)
                     data.setValidUUID(player.getUniqueId().toString());
                 else
