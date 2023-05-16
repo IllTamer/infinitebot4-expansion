@@ -32,8 +32,8 @@ key-word:
 submit:
   # 前缀 (例: 'cmd help')
   prefix: cmd
-  # 合并消息等待时长，若设置为 0 则不进行等待
-  delay-tick: 5
+  # 合并消息等待时长(秒)，若设置为 0 则不进行等待
+  delay-second: 1
   # 命令执行器的显示名称
   sender-name: 'console'
 
@@ -81,5 +81,5 @@ member-manage:
       - '欢迎{0}加入xxx'
   # 欢迎语的延时时间
   # 群成员加入时触发的事件优先级较高，此时群成员信息未完全载入（表现为@不生效），需延迟回复
-  # 单位：tick (1s=20tick)
-  welcome-delay: 20
+  # 单位：秒
+  welcome-delay: 1

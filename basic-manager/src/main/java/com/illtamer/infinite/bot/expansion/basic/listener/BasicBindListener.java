@@ -143,7 +143,7 @@ public class BasicBindListener implements Listener {
             PlayerData remove = pair.getKey();
             VERIFY.remove(userId);
             player.sendMessage(PluginUtil.parseColor(language.get("bind", "expired").replace("%qq%", remove.getUserId().toString())));
-        }, limit * 60 * 20L));
+        }, limit * 60));
         reply.accept(language.get("bind", "process").replace("%player_name%", player.getName()));
 
         String keyword = "确认" + (changeBind ? "改绑" : "绑定") + userId;

@@ -11,21 +11,20 @@ import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
-import com.illtamer.infinite.bot.minecraft.start.bungee.BungeeBootstrap;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class SubmitListener implements Listener {
 
     private final String prefix;
-    private final int delayTick;
+    private final int delaySeconds;
     private final String senderName;
     private final Language language;
 
     public SubmitListener(ExpansionConfig configFile, Language language) {
         final FileConfiguration config = configFile.getConfig();
         this.prefix = config.getString("submit.prefix");
-        this.delayTick = config.getInt("submit.delay-tick", 5);
+        this.delaySeconds = config.getInt("submit.delay-second", 5);
         this.senderName = config.getString("submit.sender-name", "InfiniteBot-BasicManager#SubmitSender");
         this.language = language;
         Assert.notNull(prefix, "'submit.prefix' can not be null !");
@@ -40,7 +39,7 @@ public class SubmitListener implements Listener {
                 final String reply = language.get("submit", "reply");
                 if (reply.length() != 0)
                     event.reply(reply);
-                SubmitSender sender = new SubmitSender(Bukkit.getServer(), event, delayTick, senderName);
+                SubmitSender sender = new SubmitSender(Bukkit.getServer(), event, delaySeconds, senderName);
                 // 主线程执行指令
                 Bukkit.getScheduler().runTask(((BukkitBootstrap) StaticAPI.getInstance()),
                         () -> Bukkit.dispatchCommand(sender, command));

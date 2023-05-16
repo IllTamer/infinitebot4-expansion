@@ -4,7 +4,6 @@ import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -22,13 +21,13 @@ public final class SubmitSender implements ConsoleCommandSender {
     private final List<String> cacheMessages = new ArrayList<>();
     private final Server server;
     private final MessageEvent event;
-    private final int delayTick;
+    private final int delaySeconds;
     private final String senderName;
 
-    public SubmitSender(Server server, MessageEvent event, int delayTick, String senderName) {
+    public SubmitSender(Server server, MessageEvent event, int delaySeconds, String senderName) {
         this.server = server;
         this.event = event;
-        this.delayTick = delayTick;
+        this.delaySeconds = delaySeconds;
         this.senderName = senderName;
     }
 
@@ -177,7 +176,7 @@ public final class SubmitSender implements ConsoleCommandSender {
                     event.reply(PluginUtil.clearColor(messages.get(0)));
                 else
                     event.reply(PluginUtil.clearColor(StringUtil.toString(messages)));
-            }, delayTick);
+            }, delaySeconds);
         } else {
             cacheMessages.add(s);
         }
