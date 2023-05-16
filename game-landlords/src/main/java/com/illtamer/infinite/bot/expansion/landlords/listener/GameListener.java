@@ -14,7 +14,7 @@ import com.illtamer.infinite.bot.expansion.landlords.core.pojo.Card;
 import com.illtamer.infinite.bot.expansion.landlords.core.pojo.Participant;
 import com.illtamer.infinite.bot.expansion.landlords.graphic.Brush;
 import com.illtamer.infinite.bot.expansion.landlords.util.ImageUtil;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
@@ -235,7 +235,7 @@ public class GameListener implements Listener {
         cardList.addAll(GameCenter.remain);
         Collections.sort(cardList);
         GameCenter.play = true;
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> OpenAPIHandling.sendMessage(createHandCardListMessage(grabPlayer), userId));
+        BotScheduler.runTask(() -> OpenAPIHandling.sendMessage(createHandCardListMessage(grabPlayer), userId));
     }
 
     private Message createHandCardListMessage(Participant p) {
