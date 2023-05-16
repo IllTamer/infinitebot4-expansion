@@ -6,7 +6,7 @@ import com.illtamer.infinite.bot.api.event.request.GroupRequestEvent;
 import com.illtamer.infinite.bot.api.exception.APIInvokeException;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.api.message.MessageBuilder;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
@@ -23,7 +23,8 @@ public class MemberMenageListener implements Listener {
     private final boolean autoRename;
     private final boolean changeAdmin;
     private final String defaultCard;
-    private final List<String> msgs;
+    private final boolean welcome;
+    private final List<String> welcomeMsgs;
     private final long welcomeDelay;
 
     public MemberMenageListener(ExpansionConfig configFile) {
@@ -31,7 +32,8 @@ public class MemberMenageListener implements Listener {
         this.autoRename = configFile.getConfig().getBoolean("member-manage.auto-change-card");
         this.defaultCard = configFile.getConfig().getString("member-manage.default-card");
         this.changeAdmin = configFile.getConfig().getBoolean("member-manage.change-admin");
-        this.msgs = configFile.getConfig().getStringList("member-manage.welcome");
+        this.welcome = configFile.getConfig().getBoolean("member-manage.welcome.enable");
+        this.welcomeMsgs = configFile.getConfig().getStringList("member-manage.welcome.messages");
         this.welcomeDelay = configFile.getConfig().getLong("member-manage.welcome-delay", 20);
     }
 
@@ -47,12 +49,12 @@ public class MemberMenageListener implements Listener {
 
     @EventHandler
     public void onJoin(GroupMemberJoinEvent event) {
-        if (StaticAPI.inGroups(event.getGroupId())) {
-            Bukkit.getScheduler().runTaskLater(Bootstrap.getInstance(), () -> {
+        if (welcome && StaticAPI.inGroups(event.getGroupId())) {
+            BotScheduler.runTaskLater(() -> {
                 event.sendGroupMessage(
                         MessageBuilder.json()
                                 .at(event.getUserId())
-                                .text(StringUtil.toString(msgs).replace("{0}", event.getUserId().toString()))
+                                .text(StringUtil.toString(welcomeMsgs).replace("{0}", event.getUserId().toString()))
                                 .build()
                 );
             }, welcomeDelay);
@@ -67,7 +69,7 @@ public class MemberMenageListener implements Listener {
         if (!changeAdmin && event.getSender().getRole().equals("admin")) {
             return;
         }
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
+        BotScheduler.runTask(() -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (data == null || (data.getPreferUUID() == null)) {
                 if (defaultCard == null || defaultCard.length() == 0) return;
