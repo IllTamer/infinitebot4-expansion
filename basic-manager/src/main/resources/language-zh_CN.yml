@@ -30,7 +30,7 @@ bind:
   except-status: '账号类型与绑定类型不符!'
   expired: '&cQQ(&f%qq%&c)向此账号申请的绑定已过期'
   process: '已向 %player_name% 发送申请, 请前往游戏进行验证!'
-  notice: '&eQQ(&f%qq%&e) 正向您申请绑定, 请核实后输入 &a%key_word% &e完成与该账号的绑定! &7&l[" %limit% "分钟内有效]'
+  notice: '&eQQ(&f%qq%&e) 正向您申请绑定, 请核实后&a|点击该条消息|&e或输入 &a%key_word% &e完成与该账号的绑定! &7&l[" %limit% "分钟内有效]'
   offline: '玩家: %player_name% 未在线'
   mistake: '请使用 `绑定/改绑 正版/离线 玩家名称` 的格式进行更改绑定!'
   result:

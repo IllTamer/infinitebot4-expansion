@@ -16,6 +16,9 @@ import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.ValidUtil;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -142,11 +145,15 @@ public class BasicBindListener implements Listener {
             player.sendMessage(PluginUtil.parseColor(language.get("bind", "expired").replace("%qq%", remove.getUserId().toString())));
         }, limit * 60 * 20L));
         reply.accept(language.get("bind", "process").replace("%player_name%", player.getName()));
-        player.sendMessage(PluginUtil.parseColor(language.get("bind", "notice")
+
+        String keyword = "确认" + (changeBind ? "改绑" : "绑定") + userId;
+        TextComponent text = new TextComponent(PluginUtil.parseColor(language.get("bind", "notice")
                 .replace("%qq%", userId.toString())
-                .replace("%key_word%", "确认" + (changeBind ? "改绑" : "绑定") + userId)
+                .replace("%key_word%", keyword)
                 .replace("%limit%", String.valueOf(limit))
         ));
+        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, keyword));
+        player.spigot().sendMessage(text);
     }
 
     @Nullable
