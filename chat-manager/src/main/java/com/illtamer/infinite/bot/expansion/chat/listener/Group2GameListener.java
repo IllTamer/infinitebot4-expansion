@@ -2,7 +2,9 @@ package com.illtamer.infinite.bot.expansion.chat.listener;
 
 import com.illtamer.infinite.bot.api.entity.Group;
 import com.illtamer.infinite.bot.api.entity.TransferEntity;
+import com.illtamer.infinite.bot.api.entity.enumerate.FaceType;
 import com.illtamer.infinite.bot.api.entity.transfer.*;
+import com.illtamer.infinite.bot.api.entity.transfer.Record;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.api.message.Message;
@@ -12,7 +14,7 @@ import com.illtamer.infinite.bot.expansion.chat.Global;
 import com.illtamer.infinite.bot.expansion.chat.filter.MessageFilter;
 import com.illtamer.infinite.bot.expansion.chat.util.AtUtil;
 import com.illtamer.infinite.bot.expansion.view.util.DispatchUtil;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
@@ -73,7 +75,7 @@ public class Group2GameListener implements Listener {
     public void onGroup(GroupMessageEvent event) {
         if (!enable) return;
         if (!prefixMapper.containsKey(event.getGroupId().toString())) return;
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
+        BotScheduler.runTask(() -> {
             if (global) { // console
                 Format format = new Format(0, event);
                 final String stringFormat = format.stringFormat();
@@ -212,7 +214,9 @@ public class Group2GameListener implements Listener {
                     }
                 }
             } else if (entity instanceof Face) {
-                return new TextComponent("§7[表情]" + ChatColor.RESET);
+                return new TextComponent("§e[" + FaceType.getFaceType(((Face) entity).getId()).getName() + "]" + ChatColor.RESET);
+            } else if (entity instanceof Forward) {
+                return new TextComponent("§7[合并转发消息]" + ChatColor.RESET);
             } else if (entity instanceof Image) {
                 if (!expandChat || !StaticAPI.hasExpansion("ViewManager", "IllTamer"))
                     return new TextComponent("§7[图片]" + ChatColor.RESET);
@@ -224,11 +228,13 @@ public class Group2GameListener implements Listener {
                 ClickEvent.Action action = runCommand ? ClickEvent.Action.RUN_COMMAND : ClickEvent.Action.SUGGEST_COMMAND;
                 component.setClickEvent(new ClickEvent(action, "vm-map//" + uuid));
                 return component;
+            } else if (entity instanceof JSON) {
+                return new TextComponent("§7[JSON消息]" + ChatColor.RESET);
+            } else if (entity instanceof Record) {
+                return new TextComponent("§7[语音]" + ChatColor.RESET);
             } else if (entity instanceof Redbag) {
                 final Redbag redbag = (Redbag) entity;
                 return new TextComponent("§7[红包](" + redbag.getTitle() + ')' + ChatColor.RESET);
-            } else if (entity instanceof Record) {
-                return new TextComponent("§7[语音]" + ChatColor.RESET);
             } else if (entity instanceof Reply) {
                 return new TextComponent("§f[回复消息]\n" + ChatColor.RESET);
             } else if (entity instanceof Share) {
@@ -239,6 +245,8 @@ public class Group2GameListener implements Listener {
                 return component;
             } else if (entity instanceof Video) {
                 return new TextComponent("§7[视频]" + ChatColor.RESET);
+            } else if (entity instanceof XML) {
+                return new TextComponent("§7[XML消息]" + ChatColor.RESET);
             } else {
                 return new TextComponent("§7[Unsupported]" + ChatColor.RESET);
             }
