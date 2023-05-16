@@ -1,7 +1,7 @@
 package com.illtamer.infinite.bot.expansion.basic.entity;
 
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import org.bukkit.Bukkit;
@@ -170,7 +170,7 @@ public final class SubmitSender implements ConsoleCommandSender {
     private void doSendMessage(String s) {
         if (cacheMessages.size() == 0) {
             cacheMessages.add(s);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Bootstrap.getInstance(), () -> {
+            BotScheduler.runTaskLater(() -> {
                 List<String> messages = new ArrayList<>(cacheMessages);
                 cacheMessages.clear();
                 if (messages.size() == 1)

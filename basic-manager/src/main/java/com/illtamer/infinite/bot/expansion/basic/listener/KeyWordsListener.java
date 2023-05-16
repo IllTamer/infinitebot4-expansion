@@ -3,7 +3,7 @@ package com.illtamer.infinite.bot.expansion.basic.listener;
 import com.illtamer.infinite.bot.api.event.message.GroupMessageEvent;
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.message.MessageBuilder;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
@@ -46,7 +46,7 @@ public class KeyWordsListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
+        BotScheduler.runTask(() -> {
             int count = 0;
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                 if (equals(new Date(System.currentTimeMillis()),new Date(player.getFirstPlayed()))) {
@@ -108,7 +108,7 @@ public class KeyWordsListener implements Listener {
                 if (player != null) players.add(player);
             }
             if (players.size() != 0) {
-                Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () -> players.forEach(player ->
+                BotScheduler.runTask(() -> players.forEach(player ->
                         player.kickPlayer(PluginUtil.parseColor(language.get("key-word", "kick").replace("%qq%", event.getSender().getUserId().toString())))
                 ));
                 event.reply(language.get("key-word", "kick-success"));
@@ -124,8 +124,8 @@ public class KeyWordsListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        Bukkit.getScheduler().runTaskAsynchronously(Bootstrap.getInstance(), () -> {
-            Collection<? extends Player> players = Bootstrap.getInstance().getServer().getOnlinePlayers();
+        BotScheduler.runTask(() -> {
+            Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
             Iterator<? extends Player> iterator = players.iterator();
             if (!iterator.hasNext()) {
                 event.reply(language.get("key-word", "no-player"));

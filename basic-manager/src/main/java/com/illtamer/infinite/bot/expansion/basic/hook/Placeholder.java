@@ -12,10 +12,12 @@ public class Placeholder {
     private static boolean deprecated;
 
     public static boolean init() {
-        if (enabled = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        enabled = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        if (enabled) {
             final String version = Bukkit.getPluginManager().getPlugin("PlaceholderAPI").getDescription().getVersion();
             final int v = Integer.parseInt(version.substring(0, version.lastIndexOf('.')).replace(".", ""));
-            if (deprecated = v <= 28) {
+            deprecated = v <= 28;
+            if (deprecated) {
                 System.out.println("您使用的 PlaceholderAPI 版本过低，可能影响部分变量替换，请及时升级！");
             }
         }

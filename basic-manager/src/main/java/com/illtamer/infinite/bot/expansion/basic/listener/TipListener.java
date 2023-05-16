@@ -2,8 +2,6 @@ package com.illtamer.infinite.bot.expansion.basic.listener;
 
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.expansion.basic.hook.Placeholder;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
-import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.configuration.config.BotConfiguration;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import org.bukkit.configuration.ConfigurationSection;

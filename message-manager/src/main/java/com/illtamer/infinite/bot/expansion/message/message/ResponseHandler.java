@@ -14,7 +14,10 @@ import com.illtamer.infinite.bot.expansion.message.pojo.Image.Setting;
 import com.illtamer.infinite.bot.expansion.message.pojo.MessageEntity;
 import com.illtamer.infinite.bot.expansion.message.util.ImageUtil;
 import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
+import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.start.bungee.BungeeBootstrap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -161,7 +164,7 @@ public class ResponseHandler {
         if (command.getType() == Command.Type.CONSOLE) {
             SubmitSender sender = new SubmitSender(Bukkit.getServer(), event, setOp, "message-manager#command-sender");
             for (String content : entity.getContent()) {
-                Bukkit.getScheduler().runTask(Bootstrap.getInstance(), () ->
+                Bukkit.getScheduler().runTask(((BukkitBootstrap) StaticAPI.getInstance()), () ->
                         Bukkit.dispatchCommand(sender, replaceInput(content, args)));
             }
         } else if (command.getType() == Command.Type.SELF) {

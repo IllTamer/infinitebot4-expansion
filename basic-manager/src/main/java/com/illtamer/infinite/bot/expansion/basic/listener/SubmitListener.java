@@ -4,13 +4,14 @@ import com.illtamer.infinite.bot.api.event.message.MessageEvent;
 import com.illtamer.infinite.bot.api.util.Assert;
 import com.illtamer.infinite.bot.expansion.basic.BasicManager;
 import com.illtamer.infinite.bot.expansion.basic.entity.SubmitSender;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
+import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.start.bungee.BungeeBootstrap;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -39,9 +40,9 @@ public class SubmitListener implements Listener {
                 final String reply = language.get("submit", "reply");
                 if (reply.length() != 0)
                     event.reply(reply);
-                SubmitSender sender = new SubmitSender(Bootstrap.getInstance().getServer(), event, delayTick, senderName);
+                SubmitSender sender = new SubmitSender(Bukkit.getServer(), event, delayTick, senderName);
                 // 主线程执行指令
-                Bukkit.getScheduler().runTask(Bootstrap.getInstance(),
+                Bukkit.getScheduler().runTask(((BukkitBootstrap) StaticAPI.getInstance()),
                         () -> Bukkit.dispatchCommand(sender, command));
                 BasicManager.getInstance().getLogger().info(String.format(language.get("submit", "log"), event.getSender().getUserId(), command));
                 event.setCancelled(true);
