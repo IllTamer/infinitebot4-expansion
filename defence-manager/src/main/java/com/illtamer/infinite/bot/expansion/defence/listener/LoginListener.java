@@ -4,7 +4,7 @@ import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.expansion.defence.DefenceManager;
 import com.illtamer.infinite.bot.expansion.defence.entity.AuthData;
 import com.illtamer.infinite.bot.expansion.defence.util.AuthUtil;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -18,18 +18,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 
 public class LoginListener implements Listener {
     private static final HashMap<UUID, AuthData> DATA_HASH_MAP = new HashMap<>();
-    private static final LinkedList<BukkitTask> authList = new LinkedList<>();
+    private static final LinkedList<ScheduledFuture<?>> authList = new LinkedList<>();
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final HashMap<String, Integer> ATTACKERS = new HashMap<>();
-    private static BukkitTask SCHEDULED;
+    private static ScheduledFuture<?> SCHEDULED;
     private static int joins;
 
 //    private final boolean authme;
@@ -56,18 +56,18 @@ public class LoginListener implements Listener {
         if (DATA_HASH_MAP.size() != 0) {
             DATA_HASH_MAP.clear();
         }
-        SCHEDULED = Bukkit.getScheduler().runTaskTimerAsynchronously(Bootstrap.getInstance(), () -> {
+        SCHEDULED = BotScheduler.runTaskTimer(() -> {
             if (joins > 0) -- joins;
             if (authList.size() > 256) {
                 DefenceManager.getInstance().getLogger().warn("短时间内验证人数过多(" + authList.size() + "次)! 自动清理缓存数据");
-                for (Iterator<BukkitTask> iterator = authList.iterator(); iterator.hasNext(); ) {
+                for (Iterator<ScheduledFuture<?>> iterator = authList.iterator(); iterator.hasNext(); ) {
                     try {
-                        iterator.next().cancel();
+                        iterator.next().cancel(true);
                         iterator.remove();
                     } catch (Exception ignore) {}
                 }
             }
-        }, 5 * 20, 20);
+        }, 5, 1);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -101,8 +101,8 @@ public class LoginListener implements Listener {
         AuthData authData = new AuthData(code, time, valid);
         DATA_HASH_MAP.put(uuid, authData);
 
-        authList.add(Bukkit.getScheduler().runTaskLater(Bootstrap.getInstance(), () ->
-                DATA_HASH_MAP.remove(uuid), limit * 60 * 20L)
+        authList.add(BotScheduler.runTaskLater(() ->
+                DATA_HASH_MAP.remove(uuid), limit * 60L)
         );
         kick(code, time, kickMessages, event);
     }
@@ -132,7 +132,7 @@ public class LoginListener implements Listener {
 
     public static void unregisterTask() {
         try {
-            SCHEDULED.cancel();
+            SCHEDULED.cancel(true);
         } catch (Exception ignore) {}
     }
 
