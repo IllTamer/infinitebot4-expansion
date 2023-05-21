@@ -1,7 +1,6 @@
 package com.illtamer.infinite.bot.expansion.view.hook;
 
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
-//import com.lishid.openinv.OpenInv;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

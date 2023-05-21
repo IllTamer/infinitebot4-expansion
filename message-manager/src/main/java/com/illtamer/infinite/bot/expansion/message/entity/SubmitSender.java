@@ -1,10 +1,9 @@
 package com.illtamer.infinite.bot.expansion.message.entity;
 
 import com.illtamer.infinite.bot.api.event.message.MessageEvent;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public final class SubmitSender implements ConsoleCommandSender {
-    private static final int delayTick = 5;
+    private static final int delaySeconds = 1;
     private final List<String> cacheMessages = new ArrayList<>();
     private final Server server;
     private final MessageEvent event;
@@ -171,14 +170,14 @@ public final class SubmitSender implements ConsoleCommandSender {
     private void doSendMessage(String s) {
         if (cacheMessages.size() == 0) {
             cacheMessages.add(s);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Bootstrap.getInstance(), () -> {
+            BotScheduler.runTaskLater(() -> {
                 List<String> messages = new ArrayList<>(cacheMessages);
                 cacheMessages.clear();
                 if (messages.size() == 1)
                     event.reply(PluginUtil.clearColor(messages.get(0)));
                 else
                     event.reply(PluginUtil.clearColor(StringUtil.toString(messages)));
-            }, delayTick);
+            }, delaySeconds);
         } else {
             cacheMessages.add(s);
         }

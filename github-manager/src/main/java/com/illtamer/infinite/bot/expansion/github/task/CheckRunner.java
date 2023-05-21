@@ -3,7 +3,7 @@ package com.illtamer.infinite.bot.expansion.github.task;
 import com.google.gson.JsonObject;
 import com.illtamer.infinite.bot.api.handler.OpenAPIHandling;
 import com.illtamer.infinite.bot.expansion.github.hook.APIHolder;
-import com.illtamer.infinite.bot.minecraft.Bootstrap;
+import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,13 +11,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
-public class CheckRunner extends BukkitRunnable {
+public class CheckRunner implements Runnable {
 
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final SimpleDateFormat PARSE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -27,6 +27,7 @@ public class CheckRunner extends BukkitRunnable {
     private final boolean enableCommit;
     private final boolean enableRelease;
     private final List<String> repoList;
+    private final ScheduledFuture<?> future;
 
     public CheckRunner(ExpansionConfig configFile) {
         final FileConfiguration config = configFile.getConfig();
@@ -38,7 +39,7 @@ public class CheckRunner extends BukkitRunnable {
         this.enableRelease = listener.getBoolean("enable-release");
         this.repoList = listener.getStringList("uri");
         final int periodMinute = listener.getInt("period");
-        runTaskTimerAsynchronously(Bootstrap.getInstance(), 0, periodMinute * 60 * 20L);
+        this.future = BotScheduler.runTaskTimer(this, 0, periodMinute * 60L);
     }
 
     @Override
@@ -122,6 +123,10 @@ public class CheckRunner extends BukkitRunnable {
                     .append("link: ").append(url);
         }
         return builder.toString();
+    }
+
+    public ScheduledFuture<?> getFuture() {
+        return future;
     }
 
 }

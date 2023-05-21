@@ -16,7 +16,6 @@ import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.ValidUtil;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;

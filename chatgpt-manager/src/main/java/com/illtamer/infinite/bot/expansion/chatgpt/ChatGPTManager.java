@@ -2,7 +2,6 @@ package com.illtamer.infinite.bot.expansion.chatgpt;
 
 import com.illtamer.infinite.bot.expansion.chatgpt.listener.ChatListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
-import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.automation.Registration;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
 

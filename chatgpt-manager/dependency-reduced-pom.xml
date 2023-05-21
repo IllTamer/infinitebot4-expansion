@@ -3,7 +3,7 @@
   <parent>
     <artifactId>main</artifactId>
     <groupId>com.illtamer.infinite.bot.expansion</groupId>
-    <version>2.0</version>
+    <version>3.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>chatgpt-manager</artifactId>
@@ -27,12 +27,24 @@
     <dependency>
       <groupId>com.illtamer.infinite.bot</groupId>
       <artifactId>minecraft</artifactId>
-      <version>3.1.7</version>
+      <version>3.2.0</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <artifactId>dependencydownload-runtime</artifactId>
+          <groupId>dev.vankka</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>mysql-connector-java</artifactId>
           <groupId>mysql</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>embedded-redis</artifactId>
+          <groupId>com.github.kstyrc</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jedis</artifactId>
+          <groupId>redis.clients</groupId>
         </exclusion>
         <exclusion>
           <artifactId>slf4j-api</artifactId>
@@ -70,8 +82,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
   </properties>
 </project>
 

@@ -5,6 +5,7 @@ import com.github.plexpt.chatgpt.Config;
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.expansion.chatgpt.Configuration;
 import com.illtamer.infinite.bot.minecraft.expansion.automation.Registration;
+
 import java.util.Map;
 
 public class Davinci002Handler implements Handler {

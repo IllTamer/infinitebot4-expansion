@@ -24,7 +24,7 @@ public class GithubManager extends InfiniteExpansion {
 
     @Override
     public void onDisable() {
-        checkRunner.cancel();
+        checkRunner.getFuture().cancel(true);
         instance = null;
     }
 

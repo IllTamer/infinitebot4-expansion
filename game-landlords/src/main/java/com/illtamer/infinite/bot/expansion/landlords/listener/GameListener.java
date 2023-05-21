@@ -19,7 +19,6 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.automation.Registration;
-import org.bukkit.Bukkit;
 
 import java.util.*;
 

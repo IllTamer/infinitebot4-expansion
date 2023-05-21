@@ -7,7 +7,7 @@
     <groupId>com.illtamer.infinite.bot.expansion</groupId>
     <artifactId>main</artifactId>
     <packaging>pom</packaging>
-    <version>2.0</version>
+    <version>3.0</version>
     <modules>
         <module>basic-manager</module>
         <module>defence-manager</module>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.illtamer.infinite.bot</groupId>
             <artifactId>minecraft</artifactId>
-            <version>3.1.7</version>
+            <version>3.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

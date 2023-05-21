@@ -2,7 +2,6 @@ package com.illtamer.infinite.bot.expansion.message.message;
 
 import com.illtamer.infinite.bot.api.Pair;
 import com.illtamer.infinite.bot.api.util.Assert;
-import com.illtamer.infinite.bot.api.util.HttpRequestUtil;
 import com.illtamer.infinite.bot.expansion.message.InputStreamSupplier;
 import com.illtamer.infinite.bot.expansion.message.MessageManager;
 import com.illtamer.infinite.bot.expansion.message.pojo.Image;
@@ -11,14 +10,11 @@ import com.illtamer.infinite.bot.minecraft.api.IExpansion;
 import com.illtamer.infinite.bot.minecraft.util.ExpansionUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -68,7 +64,7 @@ public class MessageLoader {
             logger.warn("消息节点资源文件夹不存在，默认目录与实例配置创建在: " + folder.getAbsolutePath());
             folder.mkdirs();
             InputStream input = expansion.getResource("message/examples.yml");
-            ExpansionUtil.savePluginResource(folderName + "/examples.yml", false, dataFolder, input);
+            ExpansionUtil.savePluginResource(folderName + "/examples.yml", false, dataFolder, (path) -> input);
         }
         final File[] files = folder.listFiles();
         if (files == null || files.length == 0) {

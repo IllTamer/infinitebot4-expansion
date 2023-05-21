@@ -5,12 +5,12 @@
     <parent>
         <artifactId>main</artifactId>
         <groupId>com.illtamer.infinite.bot.expansion</groupId>
-        <version>2.0</version>
+        <version>3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>view-manager</artifactId>
-    <version>2.0</version>
+    <version>3.0</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -29,13 +29,13 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
-            <scope>system</scope>
-            <systemPath>E:/JCode/idea/plugin/infinite-bot-3-expansion/libs/VaultAPI-1.7.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.MilkBowl</groupId>-->
+<!--            <artifactId>VaultAPI</artifactId>-->
+<!--            <version>1.7</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${parent.basedir}/libs/VaultAPI-1.7.jar</systemPath>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>com.lishid</groupId>-->
 <!--            <artifactId>openinv</artifactId>-->

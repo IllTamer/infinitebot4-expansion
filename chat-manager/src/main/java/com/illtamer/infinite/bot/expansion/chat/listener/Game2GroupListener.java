@@ -12,7 +12,6 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
-import com.illtamer.infinite.bot.minecraft.start.bungee.BungeeBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
