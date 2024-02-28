@@ -1,4 +1,4 @@
-# Infinite Bot 3.1.0 - ChatManager(群与游戏消息互通)
+# ChatManager(群与游戏消息互通)
 #
 # 互通支持
 # - @: 群内@成员/@全体成员时，若被@者在服务器内且绑定游戏玩家，则游戏中会同样@该玩家
@@ -22,15 +22,6 @@ prefix-mapper:
   # 群组: 消息前缀
   863522624: '#main'
 
-# 消息互通功能增强
-# 开启后，当游戏内发送 InteractiveChat 内配置的展示变量后，自动同步发送至QQ
-# 提示：默认展示变量
-# - [i] 或 [item], 展示手持物品
-# - [inv] 或 [inventory], 展示背包物品
-# - [e] 或 [ender], 展示末影箱物品
-# 注意：此功能仅在ib3加装 视图增强 附属后且 game-to-group.enable 节点设置为 true 时可用
-expand-chat: false
-
 # 群向游戏发送消息配置
 group-to-game:
   # 是否开启功能
@@ -42,7 +33,7 @@ group-to-game:
   # - %sender_id%: 发送消息的用户qq
   # - %sender_card% 发送消息的用户昵称
   # - %sender_name% 发送消息的群名片,失败则用户昵称,还失败则QQ号
-  prefix: '(%group_id%) &6&l[&3&l%sender_name%&6&l]&f'
+  prefix: '(%group_id%) &6&l[&3&l%sender_name%&6&l]&f '
   # 消息发送方式
   # - 'global': 控制台 console 发送消息，不可被屏蔽，
   #             注意：在此方式下消息解析等级始终为 0

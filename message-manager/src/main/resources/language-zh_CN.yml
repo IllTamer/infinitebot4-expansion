@@ -1,4 +1,0 @@
-limit: '%count% 个自定义回复处于冷却中'
-response:
-  web-api: 'Web API 请求失败，状态码：%code%'
-  offline: '账号绑定玩家未在线'

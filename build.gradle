@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    group 'com.illtamer.infinite.bot.expansion'
+
+    version = rootProject.version
+
+    repositories {
+        mavenLocal()
+        maven {url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'com.illtamer.infinite.bot:minecraft:4.0.0'
+        implementation 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+    }
+
+    shadowJar {
+        baseName = parent.name + '-' + project.name
+        version = project.version
+        classifier = 'all'
+        manifest {
+            attributes('Automatic-Module-Name': 'com.illtamer.infinite.bot.expansion')
+        }
+    }
+}

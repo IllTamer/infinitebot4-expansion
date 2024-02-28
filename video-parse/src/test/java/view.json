@@ -1,0 +1,143 @@
+{
+  "bvid": "BV1dj421X7hm",
+  "aid": 1650691825,
+  "videos": 1,
+  "tid": 171,
+  "tname": "电子竞技",
+  "copyright": 1,
+  "pic": "http://i0.hdslb.com/bfs/archive/1bc9321cb1c701d66e0cfcfbd6e9cbf67c8160c2.jpg",
+  "title": "【付费挨骂】纯靠枪法来弥补其他短板是不可能的，你只能卡在低分段永远上不去！",
+  "pubdate": 1708075800,
+  "ctime": 1708063948,
+  "desc": "水友群爆了，可以加二群：483757945\n看DEMO请关注后私信-",
+  "desc_v2": [
+    {
+      "raw_text": "水友群爆了，可以加二群：483757945\n看DEMO请关注后私信-",
+      "type": 1,
+      "biz_id": 0
+    }
+  ],
+  "state": 0,
+  "duration": 1289,
+  "mission_id": 1715929,
+  "rights": {
+    "bp": 0,
+    "elec": 0,
+    "download": 1,
+    "movie": 0,
+    "pay": 0,
+    "hd5": 0,
+    "no_reprint": 1,
+    "autoplay": 1,
+    "ugc_pay": 0,
+    "is_cooperation": 0,
+    "ugc_pay_preview": 0,
+    "no_background": 0,
+    "clean_mode": 0,
+    "is_stein_gate": 0,
+    "is_360": 0,
+    "no_share": 0,
+    "arc_pay": 0,
+    "free_watch": 0
+  },
+  "owner": {
+    "mid": 8942706,
+    "name": "DED1E123",
+    "face": "https://i0.hdslb.com/bfs/face/38ff72054053714b274ea4ec67c82aa6bde6cd32.jpg"
+  },
+  "stat": {
+    "aid": 1650691825,
+    "view": 40158,
+    "danmaku": 97,
+    "reply": 204,
+    "favorite": 79,
+    "coin": 29,
+    "share": 42,
+    "now_rank": 0,
+    "his_rank": 0,
+    "like": 818,
+    "dislike": 0,
+    "evaluation": "",
+    "vt": 0
+  },
+  "argue_info": {
+    "argue_msg": "",
+    "argue_type": 0,
+    "argue_link": ""
+  },
+  "dynamic": "",
+  "cid": 1441033944,
+  "dimension": {
+    "width": 1920,
+    "height": 1080,
+    "rotate": 0
+  },
+  "season_id": 1971185,
+  "premiere": null,
+  "teenage_mode": 0,
+  "is_chargeable_season": false,
+  "is_story": false,
+  "is_upower_exclusive": false,
+  "is_upower_play": false,
+  "is_upower_preview": false,
+  "enable_vt": 0,
+  "vt_display": "",
+  "no_cache": false,
+  "pages": [
+    {
+      "cid": 1441033944,
+      "page": 1,
+      "from": "vupload",
+      "part": "【付费挨骂】纯靠枪法来弥补其他短板是不可能的，你只能卡在低分段永远上不去！",
+      "duration": 1289,
+      "vid": "",
+      "weblink": "",
+      "dimension": {
+        "width": 1920,
+        "height": 1080,
+        "rotate": 0
+      },
+      "first_frame": "http://i0.hdslb.com/bfs/storyff/n240216saza2azpjn46f624s44cjrwo3_firsti.jpg"
+    }
+  ],
+  "subtitle": {
+    "allow_submit": false,
+    "list": []
+  },
+  "ugc_season": {
+    "id": 1971185,
+    "title": "付费挨骂",
+    "cover": "https://archive.biliimg.com/bfs/archive/fde7ef797fd6bf727352bdbbfd213e053ce0954c.jpg",
+    "mid": 8942706,
+    "intro": "",
+    "sign_state": 0,
+    "attribute": 140,
+    "stat": {
+      "season_id": 1971185,
+      "view": 1800568,
+      "danmaku": 12233,
+      "reply": 9149,
+      "fav": 4926,
+      "coin": 3733,
+      "share": 5880,
+      "now_rank": 0,
+      "his_rank": 0,
+      "like": 47802,
+      "vt": 0,
+      "vv": 0
+    },
+    "ep_count": 41,
+    "season_type": 1,
+    "is_pay_season": false,
+    "enable_vt": 0
+  },
+  "is_season_display": true,
+  "user_garb": {
+    "url_image_ani_cut": ""
+  },
+  "honor_reply": {},
+  "like_icon": "",
+  "need_jump_bv": false,
+  "disable_show_up_info": false,
+  "is_story_play": 1
+}

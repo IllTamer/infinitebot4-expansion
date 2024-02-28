@@ -1,0 +1,42 @@
+{
+  "from": "local",
+  "result": "suee",
+  "message": "",
+  "quality": 16,
+  "format": "mp4",
+  "timelength": 1288617,
+  "accept_format": "mp4",
+  "accept_description": [
+    "?? 360P"
+  ],
+  "accept_quality": [
+    16
+  ],
+  "video_codecid": 7,
+  "seek_param": "start",
+  "seek_type": "second",
+  "durl": [
+    {
+      "order": 1,
+      "length": 1288617,
+      "size": 64870132,
+      "ahead": "",
+      "vhead": "",
+      "url": "https://cn-ahwh-ct-01-03.bilivideo.com/upgcxcode/44/39/1441033944/1441033944-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1708280966&gen=playurlv2&os=bcache&oi=2043500563&trid=00008278aaa5576e411eadba220495e05a83h&mid=0&platform=html5&upsig=e616e912291afecb4b0fed786e75702a&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&cdnid=63403&bvc=vod&nettype=0&f=h_0_0&bw=50365&logo=80000000",
+      "backup_url": null
+    }
+  ],
+  "support_formats": [
+    {
+      "quality": 16,
+      "format": "mp4",
+      "new_description": "360P ??",
+      "display_desc": "360P",
+      "superscript": "",
+      "codecs": null
+    }
+  ],
+  "high_format": null,
+  "last_play_time": 0,
+  "last_play_cid": 0
+}
