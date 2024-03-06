@@ -1,0 +1,40 @@
+version: 1
+
+submit:
+  reply: '指令执行中, 请稍后'
+  log: 'Id [%s] dispatched a command `%s`'
+
+key-word:
+  new-player: '今日新玩家数量: %s 人'
+  unchecked: '暂未查询到您的信息，请绑定后重试'
+  bind-valid: '已绑定正版玩家ID: %s|%s'
+  bind-offline: '已绑定离线玩家ID: %s|%s'
+  kick: '&c您已被(QQ: %qq%)强制下线'
+  kick-success: '强制下线成功'
+  offline: '您的账号并未在线'
+  no-player: '当前无玩家在线！'
+  show-player: '服务器当前总人数：%d%s%s'
+
+unbind:
+  user_id-mistake: '请输入正确的qq号'
+  invalid: '当前账号类型未绑定qq'
+  invalid-type: '目标qq与账号绑定qq不符'
+  success: '当前账号类型解绑成功'
+
+bind:
+  valid-exist: '您已绑定正版玩家: %player_name%'
+  offline-exist: '您已绑定离线玩家: %player_name%'
+  invalid: '您未绑定过玩家'
+  invalid-valid: '您未绑定过正版玩家'
+  invalid-offline: '您未绑定过离线玩家'
+  except-status: '账号类型与绑定类型不符!'
+  expired: '&cQQ(&f%qq%&c)向此账号申请的绑定已过期'
+  process: '已向 %player_name% 发送申请, 请前往游戏进行验证!'
+  notice: '&eQQ(&f%qq%&e) 正向您申请绑定, 请核实后输入 &a%key_word% &e完成与该账号的绑定! &7&l[" %limit% "分钟内有效]'
+  offline: '玩家: %player_name% 未在线'
+  mistake: '请使用 `绑定/改绑 正版/离线 玩家名称` 的格式进行更改绑定!'
+  result:
+    bad-bind: '关键字回复错误，您当前状态为：待绑定'
+    success-bind: '&a绑定成功!'
+    bad-rebind: '关键字回复错误，您当前状态为：待改绑'
+    success-rebind: '&a改绑成功!'

@@ -1,0 +1,77 @@
+# BasicManager(基础管理)
+#
+# 基础申请绑定: [组] (无)
+#   玩家在群内发送 '绑定 正版/离线 玩家名称'
+# 在游戏内按指示输入即可完成绑定
+#
+# 更改绑定: [组] (无)
+#   玩家在群内发送 '改绑 正版/离线 玩家名称'
+# 在游戏内按指示输入即可完成改定
+#
+# 解除绑定
+#   玩家在游戏内发送 '解绑 先前绑定的QQ号'
+# 即可完成解绑
+
+version: 1
+
+# 默认关键字列表 []表示监听范围 ()表示权限等级
+#   - 今日新玩家 [全局] (管理员)
+#   - 我的绑定 [全局] (无)
+#   - 强制下线 [全局] (无)
+#   - 服务器在线 [组] (无)
+key-word:
+  new-player: '今日新玩家'
+  my-bind: '我的绑定'
+  login-out: '强制下线'
+  online: '服务器在线'
+
+# QQ提交服务器指令 [全局] (管理员)
+submit:
+  # 前缀 (例: 'cmd help')
+  prefix: cmd
+  # 合并消息等待时长，若设置为 0 则不进行等待
+  delay-tick: 5
+  # 命令执行器的显示名称
+  sender-name: 'console'
+
+# 基础绑定设置
+bind:
+  # 验证码有效时长 (单位: 分钟)
+  limit: 5
+  # 自动同意好友申请
+  auto-access-friend: true
+
+# 群内提示信息 (支持 papi)
+tip:
+  # 玩家进入服务器提示
+  join:
+    enable: true
+    message: '玩家 %player_name% 进入服务器'
+  # 玩家离开服务器提示
+  quit:
+    enable: true
+    message: '玩家 %player_name% 离开服务器'
+
+# 成员监听
+member-manage:
+  # 是否启用成员监听
+  # 若您的 Timings 中 MemberMenageListener 消耗资源过多，可关闭此项禁用该配置下一切监听
+  enable: true
+  # 是否自动同意群成员加入
+  auto-accept: true
+  # 自动将发言过的玩家的群名片改成其游戏名
+  # 优先选取离线UUID名称
+  auto-change-card: true
+  # 默认群名片
+  # 当成员未绑定角色时，设置为该名片
+  default-card: '待绑定'
+  # 是否修改群管理员的名片
+  change-admin: false
+  # 群成员加入时欢迎语 (自动@该成员)
+  # 局部变量 {0}-成员QQ
+  welcome:
+    - '欢迎{0}加入xxx'
+  # 欢迎语的延时时间
+  # 群成员加入时触发的事件优先级较高，此时群成员信息未完全载入（表现为@不生效），需延迟回复
+  # 单位：tick (1s=20tick)
+  welcome-delay: 20
