@@ -16,6 +16,8 @@ import com.illtamer.perpetua.sdk.Pair;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
 import com.illtamer.perpetua.sdk.event.request.FriendRequestEvent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -35,11 +37,13 @@ public class BasicBindListener implements Listener {
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
     private final long limit;
     private final boolean autoAccessFriend;
+    private final int type;
     private final Language language;
 
     public BasicBindListener(ExpansionConfig configFile, Language language) {
         this.limit = configFile.getConfig().getLong("bind.limit");
         this.autoAccessFriend = configFile.getConfig().getBoolean("bind.auto-access-friend");
+        this.type = configFile.getConfig().getInt("bind.type");
         this.language = language;
     }
 
@@ -58,23 +62,23 @@ public class BasicBindListener implements Listener {
         String message = event.getRawMessage();
         if (message.startsWith("绑定 ")) {
             message = message.substring("绑定 ".length());
-            if (message.startsWith("正版 ")) {
+            if (type == 1) {
                 event.setCancelled(true);
-                checkAndBindSinglePlayer(event, message.substring("正版 ".length()), true);
-            } else if (message.startsWith("离线 ")) {
+                checkAndBindSinglePlayer(event, message, true);
+            } else if (type == 0) {
                 event.setCancelled(true);
-                checkAndBindSinglePlayer(event, message.substring("离线 ".length()), false);
+                checkAndBindSinglePlayer(event, message, false);
             } else {
                 formatExceptionHandle(event);
             }
         } else if (message.startsWith("改绑 ")) {
             message = message.substring("改绑 ".length());
-            if (message.startsWith("正版 ")) {
+            if (type == 1) {
                 event.setCancelled(true);
-                checkAndRebindSinglePlayer(event, message.substring("正版 ".length()), true);
-            } else if (message.startsWith("离线 ")) {
+                checkAndRebindSinglePlayer(event, message, true);
+            } else if (type == 0) {
                 event.setCancelled(true);
-                checkAndRebindSinglePlayer(event, message.substring("离线 ".length()), false);
+                checkAndRebindSinglePlayer(event, message, false);
             } else {
                 formatExceptionHandle(event);
             }
@@ -154,11 +158,15 @@ public class BasicBindListener implements Listener {
             player.sendMessage(PluginUtil.parseColor(language.get("bind", "expired").replace("%qq%", remove.getUserId().toString())));
         }, limit * 60 * 20L));
         reply.accept(language.get("bind", "process").replace("%player_name%", player.getName()));
-        player.sendMessage(PluginUtil.parseColor(language.get("bind", "notice")
+
+        String keywords = "确认" + (changeBind ? "改绑" : "绑定") + userId;
+        TextComponent component = new TextComponent(PluginUtil.parseColor(language.get("bind", "notice")
                 .replace("%qq%", userId.toString())
-                .replace("%key_word%", "确认" + (changeBind ? "改绑" : "绑定") + userId)
+                .replace("%key_word%", keywords)
                 .replace("%limit%", String.valueOf(limit))
         ));
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, keywords));
+        player.spigot().sendMessage(component);
     }
 
     @Nullable

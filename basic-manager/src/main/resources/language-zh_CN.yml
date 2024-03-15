@@ -32,7 +32,7 @@ bind:
   process: '已向 %player_name% 发送申请, 请前往游戏进行验证!'
   notice: '&eQQ(&f%qq%&e) 正向您申请绑定, 请核实后输入 &a%key_word% &e完成与该账号的绑定! &7&l[" %limit% "分钟内有效]'
   offline: '玩家: %player_name% 未在线'
-  mistake: '请使用 `绑定/改绑 正版/离线 玩家名称` 的格式进行更改绑定!'
+  mistake: '请使用 `绑定/改绑 玩家名称` 的格式进行更改绑定!或联系管理人员设置正确的验证类型'
   result:
     bad-bind: '关键字回复错误，您当前状态为：待绑定'
     success-bind: '&a绑定成功!'
