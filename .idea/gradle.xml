@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/basic-manager" />
             <option value="$PROJECT_DIR$/chat-manager" />
+            <option value="$PROJECT_DIR$/defence-manager" />
             <option value="$PROJECT_DIR$/video-parse" />
           </set>
         </option>
