@@ -29,9 +29,9 @@ subprojects {
     }
 
     shadowJar {
-        baseName = parent.name + '-' + project.name
+        archiveBaseName = parent.name + '-' + project.name
         version = project.version
-        classifier = 'all'
+        archiveClassifier = 'all'
         manifest {
             attributes('Automatic-Module-Name': 'com.illtamer.infinite.bot.expansion')
         }
