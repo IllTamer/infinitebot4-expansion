@@ -1,0 +1,10 @@
+name: BotShop
+version: '1.2-SNAPSHOT'
+main: online.baikele.plugins.botshop.BotShop
+depend:
+  - InfiniteBot4
+  - PlaceholderAPI
+commands:
+  botshop:
+    aliases:
+      - botshop
