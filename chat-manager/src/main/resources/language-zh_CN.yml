@@ -11,6 +11,7 @@ group-to-game:
     message: '&b[@] &e>>> &a%sender_name% &b@了你'
 
 game-to-group:
-  change-on: '切换消息接收状态为：屏蔽'
-  change-close: '切换消息接收状态为：接收'
+  change-on: '切换群 %group_id% 的消息接收状态为：屏蔽'
+  change-close: '切换群 %group_id% 的消息接收状态为：接收'
+  change-null: '请输入目标群号'
 

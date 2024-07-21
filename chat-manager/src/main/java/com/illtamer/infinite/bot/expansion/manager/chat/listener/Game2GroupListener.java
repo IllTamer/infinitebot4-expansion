@@ -4,6 +4,7 @@ import com.illtamer.infinite.bot.expansion.manager.chat.ChatManager;
 import com.illtamer.infinite.bot.expansion.manager.chat.Global;
 import com.illtamer.infinite.bot.expansion.manager.chat.event.PreGame2GroupMessageEvent;
 import com.illtamer.infinite.bot.expansion.manager.chat.filter.MessageFilter;
+import com.illtamer.infinite.bot.expansion.manager.chat.util.CheckUtil;
 import com.illtamer.infinite.bot.minecraft.api.BotScheduler;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
@@ -109,18 +110,26 @@ public class Game2GroupListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChange(AsyncPlayerChatEvent event) {
         final String message = event.getMessage();
-        if (message.length() == 7 && "#change".equalsIgnoreCase(message)) {
-            final String uuid = event.getPlayer().getUniqueId().toString();
-            final Map<String, Object> closeMap = Global.getCloseMap();
-            final Object close = closeMap.get(uuid);
-            if (close == null || !((boolean) close)) { // close: false
-                closeMap.put(uuid, true);
-                event.getPlayer().sendMessage(language.get("game-to-group", "change-on"));
-            } else { // close: true
-                closeMap.put(uuid, false);
-                event.getPlayer().sendMessage(language.get("game-to-group", "change-close"));
-            }
+        if (message.startsWith("#change")) {
             event.setCancelled(true);
+
+            String[] splits = message.split(" ");
+            if (splits.length != 2 || !CheckUtil.isNum(splits[1])) {
+                event.getPlayer().sendMessage(language.get("game-to-group", "change-null"));
+                return;
+            }
+
+            String uuid = event.getPlayer().getUniqueId().toString();
+            String key = Global.gCloseKey(uuid, splits[1]);
+            final Map<String, Object> closeMap = Global.getCloseMap();
+            final Object close = closeMap.get(key);
+            if (close == null || !((boolean) close)) { // close: false
+                closeMap.put(key, true);
+                event.getPlayer().sendMessage(language.get("game-to-group", "change-on").replace("%group_id%", splits[1]));
+            } else { // close: true
+                closeMap.put(key, false);
+                event.getPlayer().sendMessage(language.get("game-to-group", "change-close").replace("%group_id%", splits[1]));
+            }
         }
     }
 

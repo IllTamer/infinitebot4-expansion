@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
 public class Group2GameListener implements Listener {
 
     private final boolean enable;
-    private final String prefix;
+    private final String  defaultPrefix;
+    private final Map<Long, String> prefixRoute;
     private final boolean global; // type
     private final int parseLevel;
     private final Map<String, Object> prefixMapper;
@@ -53,7 +54,21 @@ public class Group2GameListener implements Listener {
         if (section == null)
             section = configFile.getConfig().createSection("group-to-game");
         this.enable = section.getBoolean("enable", false);
-        this.prefix = PluginUtil.parseColor(section.getString("prefix", "[]"));
+        this.defaultPrefix = PluginUtil.parseColor(section.getString("default-prefix", "[]"));
+        this.prefixRoute = new HashMap<>();
+
+        for (Object route : section.getMapList("prefix-route")) {
+            Map<String, Object> routeMap = new HashMap<>();
+            ((Map<String, Object>) route).entrySet()
+                    .stream()
+                    .filter(e -> !e.getValue().equals("注释"))
+                    .forEach(e -> routeMap.put(e.getKey(), e.getValue()));
+            if (routeMap.isEmpty()) {
+                continue;
+            }
+            prefixRoute.put(((Integer) routeMap.get("group")).longValue(), (String)  routeMap.get("prefix"));
+        }
+
         this.global = "global".equalsIgnoreCase(section.getString("type"));
         this.parseLevel = section.getInt("parse-level");
         this.prefixMapper = ChatManager.getInstance().getPrefixMapper();
@@ -68,7 +83,8 @@ public class Group2GameListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onGroup(GroupMessageEvent event) {
         if (!enable) return;
-        if (!prefixMapper.containsKey(event.getGroupId().toString())) return;
+        String groupIdStr = event.getGroupId().toString();
+        if (!prefixMapper.containsKey(groupIdStr)) return;
         BotScheduler.runTask(() -> {
             if (global) { // console
                 Format format = new Format(0, event);
@@ -78,11 +94,14 @@ public class Group2GameListener implements Listener {
             } else { // private
                 final Collection<? extends Player> players = Bukkit.getOnlinePlayers().stream()
                         .filter(player -> {
-                            final Object close = Global.getCloseMap().get(player.getUniqueId().toString());
+                            String key = Global.gCloseKey(player.getUniqueId().toString(), groupIdStr);
+                            final Object close = Global.getCloseMap().get(key);
                             return close == null || !((boolean) close);
                         })
                         .collect(Collectors.toList());
-                if (players.size() == 0) return;
+                if (players.isEmpty()) {
+                    return;
+                }
                 Format format = new Format(parseLevel, event);
                 if (format.isStringFormat()) {
                     final String stringFormat = format.stringFormat();
@@ -136,7 +155,9 @@ public class Group2GameListener implements Listener {
             String senderName = event.getSender().getCard();
             senderName = senderName.trim().length() == 0 ? event.getSender().getNickname() : senderName;
             senderName = senderName.trim().length() == 0 ? String.valueOf(event.getSender().getUserId()) : senderName;
-            this.replacedPrefix = PluginUtil.parseColor(prefix
+            String routePrefix = prefixRoute.get(event.getGroupId());
+            routePrefix = routePrefix == null ? defaultPrefix : routePrefix;
+            this.replacedPrefix = PluginUtil.parseColor(routePrefix
                     .replace("%group_id%", event.getGroupId().toString())
                     .replace("%group_card%", getGroupName(event.getGroupId()))
                     .replace("%sender_id%", senderId.toString())
