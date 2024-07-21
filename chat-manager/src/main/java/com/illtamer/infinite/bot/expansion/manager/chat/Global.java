@@ -35,4 +35,12 @@ public class Global {
         closeFile.save();
     }
 
+    public static String gCloseKey(String uuid, String groupId) {
+        return new StringBuffer()
+                .append(uuid)
+                .append("#")
+                .append(groupId)
+                .toString();
+    }
+
 }
