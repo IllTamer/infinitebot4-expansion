@@ -19,12 +19,13 @@ subprojects {
 
     repositories {
         mavenLocal()
+        maven {url "https://maven.illtamer.com/releases"}
         maven {url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
         mavenCentral()
     }
 
     dependencies {
-        implementation 'com.illtamer.infinite.bot:minecraft:4.0.0'
+        implementation 'com.illtamer.infinite.bot:minecraft:4.0.2'
         implementation 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
     }
 
