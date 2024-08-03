@@ -32,7 +32,6 @@ public class Sign implements Listener {
     @EventHandler
     public void onEvent(GroupMessageEvent event) throws IOException {
         String msg = event.getRawMessage();
-        System.out.println(msg);
 
         long userId = event.getSender().getUserId();
         Date date1 = new Date();
