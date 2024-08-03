@@ -1,0 +1,22 @@
+#签到
+Sign:
+  message: "#签到"
+  send:
+    - "签到成功！"
+    - "积分+%ap%"
+    - "当前积分:%p%"
+  not:
+    - "签到失败！"
+    - "你今天已经签到了！"
+  points: "1-3"
+points:
+  message: '#查询'
+  send:
+    - "你当前拥有 %p% 的积分"
+Message:
+  invalid: '您未绑定过玩家2333'
+  notpoints: '你的积分不够'
+  reload: '重载完毕'
+  tokemsg: '成功扣除%p%积分'
+  addmsg: '成功添加%p%积分'
+  notpremission: '你没有 botshop.admin 权限'

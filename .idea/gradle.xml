@@ -4,14 +4,15 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/basic-manager" />
+            <option value="$PROJECT_DIR$/bot-shop" />
             <option value="$PROJECT_DIR$/chat-manager" />
             <option value="$PROJECT_DIR$/defence-manager" />
+            <option value="$PROJECT_DIR$/placeholder-hook" />
             <option value="$PROJECT_DIR$/video-parse" />
           </set>
         </option>

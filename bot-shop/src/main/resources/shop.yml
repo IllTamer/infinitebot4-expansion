@@ -1,0 +1,74 @@
+Shop:
+  Title: '§a§l签到兑换商店'
+  Size: 9
+Item:
+  一个钻石:
+    item: "DIAMOND_BLOCK"
+    name: ""
+    lore:
+      - ""
+      - "§a点击领取"
+      - ""
+    command:
+      - "op:give %player% stone 1"
+      - "player:give %player% stone 1"
+      - "chat:give %player% stone 1"
+      - "tell:give %player% stone 1"
+      - "console:give %player% stone 1"
+    points: 2
+  一个钻石1:
+    item: "DIAMOND_BLOCK"
+    name: ""
+    lore:
+      - ""
+      - "§a点击领取"
+      - ""
+    command:
+      - "op:give %player% stone 1"
+      - "player:give %player% stone 1"
+      - "chat:give %player% stone 1"
+      - "tell:give %player% stone 1"
+      - "console:give %player% stone 1"
+    points: 3
+  一个钻石2:
+    item: "DIAMOND_BLOCK"
+    name: ""
+    lore:
+      - ""
+      - "§a点击领取"
+      - ""
+    command:
+      - "op:give %player% stone 1"
+      - "player:give %player% stone 1"
+      - "chat:give %player% stone 1"
+      - "tell:give %player% stone 1"
+      - "console:give %player% stone 1"
+    points: 4
+  一个钻石3:
+    item: "DIAMOND_BLOCK"
+    name: ""
+    lore:
+      - ""
+      - "§a点击领取"
+      - ""
+    command:
+      - "op:give %player% stone 1"
+      - "player:give %player% stone 1"
+      - "chat:give %player% stone 1"
+      - "tell:give %player% stone 1"
+      - "console:give %player% stone 1"
+    points: 5
+  一个钻石4:
+    item: "DIAMOND_BLOCK"
+    name: ""
+    lore:
+      - ""
+      - "§a点击领取"
+      - ""
+    command:
+      - "op:give %player% stone 1"
+      - "player:give %player% stone 1"
+      - "chat:give %player% stone 1"
+      - "tell:give %player% stone 1"
+      - "console:give %player% stone 1"
+    points: 6
