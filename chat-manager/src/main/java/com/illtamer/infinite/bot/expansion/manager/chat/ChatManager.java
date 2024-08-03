@@ -1,12 +1,16 @@
 package com.illtamer.infinite.bot.expansion.manager.chat;
 
+import com.illtamer.infinite.bot.expansion.hook.papi.PlaceholderAPIHook;
 import com.illtamer.infinite.bot.expansion.manager.chat.filter.AccessStartFilter;
 import com.illtamer.infinite.bot.expansion.manager.chat.filter.DenyContainsFilter;
 import com.illtamer.infinite.bot.expansion.manager.chat.filter.MessageFilter;
+import com.illtamer.infinite.bot.expansion.manager.chat.hook.PAPIHook;
 import com.illtamer.infinite.bot.expansion.manager.chat.listener.Game2GroupListener;
 import com.illtamer.infinite.bot.expansion.manager.chat.listener.Group2GameListener;
 import com.illtamer.infinite.bot.expansion.manager.chat.util.AtUtil;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
+import com.illtamer.infinite.bot.minecraft.api.IExpansion;
+import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
@@ -37,10 +41,19 @@ public class ChatManager extends InfiniteExpansion {
         this.language = Language.of(this);
         EventExecutor.registerEvents(new Group2GameListener(configFile, language), instance);
         EventExecutor.registerBukkitEvent(new Game2GroupListener(configFile, language), instance);
+        if (StaticAPI.hasExpansion("PlaceholderAPIHook", "IllTamer")) {
+            PAPIHook.register();
+            getLogger().warn("检测到 placeholder-hook 附属，拓展变量已注册");
+        } else {
+            getLogger().warn("未检测到 placeholder-hook 附属，拓展变量已禁用");
+        }
     }
 
     @Override
     public void onDisable() {
+        if (StaticAPI.hasExpansion("PlaceholderAPIHook", "IllTamer")) {
+            PAPIHook.unregister();
+        }
         Global.save(closeFile);
         instance = null;
     }

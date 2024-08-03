@@ -9,6 +9,13 @@
 
 玩家在聊天界面输入 `#change 群号`，可针对群号切换自身消息接收状态 `接收`/`屏蔽`
 
+## 变量
+
+> 注意，下列变量需要 `placeholder-hook` 作为前置附属
+
+- `%ib4_check-forward-group_{group_id}%` 检查玩家是否监听了某个群（玩家默认监听所有群）
+- `%ib4_get-close-groups%` 获取玩家拒绝监听的所有群列表
+
 ## 配置文件
 
 [[config.yml]](./src/main/resources/config.yml)
