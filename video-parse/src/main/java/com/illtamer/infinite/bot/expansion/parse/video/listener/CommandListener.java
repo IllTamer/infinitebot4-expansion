@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.parse.video.listener;
 
+import com.illtamer.infinite.bot.expansion.parse.video.ParseVideoExpansion;
 import com.illtamer.infinite.bot.expansion.parse.video.api.BiliVideo;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
@@ -30,8 +31,10 @@ public class CommandListener implements Listener {
                 } catch (Exception e) {
                     if (e instanceof InterruptedIOException)
                         System.out.println("API 调用超时: " + e.getMessage());
-                    else
-                        e.printStackTrace();
+                    else {
+                        ParseVideoExpansion.getInstance().getLogger().warn("解析视频链接失败: " + args[2], e);
+                        event.reply("视频解析失败");
+                    }
                 }
                 break;
             }
