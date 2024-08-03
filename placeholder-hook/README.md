@@ -11,6 +11,18 @@
 - `%ib4_check-in-group_{group_id}%` 检查玩家是否在机器人也存在的某个群组中
 - `%ib4_get-group-card_{group_id}%` 获取玩家在指定群组中的群名片
 
+## 注册变量示例
+
+```java
+    PlaceholderAPIHook hook = (PlaceholderAPIHook) StaticAPI.getExpansion("PlaceholderAPIHook", "IllTamer");
+    hook.getHandlerList().add(new PHandlerEnum("sub-id", (offlinePlayer, arg) -> {
+        if (offlinePlayer == null) {
+            return PHandler.ONLY_PLAYER;
+        }
+        return "hello world";
+    }));
+```
+
 ## 演示
 
 ### 传参变量

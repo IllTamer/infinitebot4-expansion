@@ -1,6 +1,7 @@
 package com.illtamer.infinite.bot.expansion.hook.papi.hook;
 
 import com.illtamer.infinite.bot.expansion.hook.papi.PHandlerEnum;
+import com.illtamer.infinite.bot.expansion.hook.papi.PlaceholderAPIHook;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,7 +14,7 @@ public class PAPIHook extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onRequest(@Nullable OfflinePlayer player, @NotNull String params) {
-        for (PHandlerEnum pHEnum : PHandlerEnum.HANDLER_LIST) {
+        for (PHandlerEnum pHEnum : PlaceholderAPIHook.getInstance().getHandlerList()) {
             String subId = pHEnum.getSubId();
             if (params.startsWith(subId)) {
                 String arg = params.substring(subId.length());
