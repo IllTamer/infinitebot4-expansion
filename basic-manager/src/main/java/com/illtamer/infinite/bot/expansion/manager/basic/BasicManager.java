@@ -44,7 +44,7 @@ public class BasicManager extends InfiniteExpansion {
 
     @Override
     public String getVersion() {
-        return "2.0";
+        return "2.1";
     }
 
     @Override

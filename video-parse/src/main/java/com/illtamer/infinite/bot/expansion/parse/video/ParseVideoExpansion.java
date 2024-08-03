@@ -26,7 +26,7 @@ public class ParseVideoExpansion extends InfiniteExpansion {
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "1.1";
     }
 
     @Override

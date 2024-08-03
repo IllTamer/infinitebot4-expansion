@@ -1,3 +1,5 @@
+version '1.0-SNAPSHOT'
+
 repositories {
     maven {url 'https://repo.extendedclip.com/content/repositories/placeholderapi/'}
 }
