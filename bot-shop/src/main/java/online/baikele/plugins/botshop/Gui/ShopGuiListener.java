@@ -78,8 +78,13 @@ public class ShopGuiListener implements Listener {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), PlaceholderAPI.setPlaceholders(player, string));
                     break;
                 case "op":
-                    player.setOp(true);
-                    player.chat("/" + PlaceholderAPI.setPlaceholders(player, string));
+                    boolean wasOp = player.isOp();
+                    try {
+                        player.setOp(true);
+                        player.chat("/" + PlaceholderAPI.setPlaceholders(player, string)); 
+                    } finally {
+                        player.setOp(wasOp);
+                    }
                     break;
                 case "tell":
                     player.sendMessage(PlaceholderAPI.setPlaceholders(player, string));
