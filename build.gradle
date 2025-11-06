@@ -19,14 +19,21 @@ subprojects {
 
     repositories {
         mavenLocal()
-        maven {url "https://maven.illtamer.com/releases"}
+//        maven {url "https://maven.illtamer.com/releases"}
+        maven {
+        	url "http://ipv6.illtamer.com:7070/releases"
+        	allowInsecureProtocol = true
+       	}
+       	maven {url 'https://repo.extendedclip.com/content/repositories/placeholderapi/'}
         maven {url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
+        maven {url 'https://repo1.maven.org/maven2'}
         mavenCentral()
     }
 
     dependencies {
         implementation 'com.illtamer.infinite.bot:minecraft:4.0.2'
         implementation 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
+        compileOnly 'me.clip:placeholderapi:2.11.7'
     }
 
     shadowJar {
