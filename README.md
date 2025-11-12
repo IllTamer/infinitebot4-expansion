@@ -14,6 +14,7 @@
 - [x] [bot-shop (机器人签到商店附属)](./bot-shop)
 - [x] [chat-manager (聊天互通附属)](./chat-manager)
 - [x] [defence-manager (白名单附属)](./defence-manager)
+- [x] [ip-manager (IP锁附属)](./ip-manager)
 - [x] [placeholder-hook (papi变量拓展附属)](./placeholder-hook)
 - [x] [video-parse (视频解析附属)](./video-parse)
 

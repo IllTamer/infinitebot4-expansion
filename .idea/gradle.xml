@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/bot-shop" />
             <option value="$PROJECT_DIR$/chat-manager" />
             <option value="$PROJECT_DIR$/defence-manager" />
+            <option value="$PROJECT_DIR$/ip-manager" />
             <option value="$PROJECT_DIR$/placeholder-hook" />
             <option value="$PROJECT_DIR$/video-parse" />
           </set>

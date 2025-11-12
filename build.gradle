@@ -31,9 +31,15 @@ subprojects {
     }
 
     dependencies {
-        implementation 'com.illtamer.infinite.bot:minecraft:4.0.2'
+        implementation 'com.illtamer.infinite.bot:minecraft:4.0.4-SNAPSHOT'
         implementation 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
         compileOnly 'me.clip:placeholderapi:2.11.7'
+
+        compileOnly 'org.projectlombok:lombok:1.18.42'
+        annotationProcessor 'org.projectlombok:lombok:1.18.42'
+
+        testCompileOnly 'org.projectlombok:lombok:1.18.42'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
 
     shadowJar {

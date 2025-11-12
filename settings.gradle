@@ -5,4 +5,4 @@ include 'basic-manager'
 include 'defence-manager'
 include 'bot-shop'
 include 'placeholder-hook'
-
+include 'ip-manager'
