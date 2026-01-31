@@ -168,15 +168,17 @@ public final class SubmitSender implements ConsoleCommandSender {
     }
 
     private void doSendMessage(String s) {
-        if (cacheMessages.size() == 0) {
+        System.out.println("收到消息：" + s);
+        if (cacheMessages.isEmpty()) {
             cacheMessages.add(s);
             Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitBootstrap.getInstance(), () -> {
                 List<String> messages = new ArrayList<>(cacheMessages);
                 cacheMessages.clear();
-                if (messages.size() == 1)
+                if (messages.size() == 1) {
                     event.reply(PluginUtil.clearColor(messages.get(0)));
-                else
+                } else {
                     event.reply(PluginUtil.clearColor(StringUtil.toString(messages)));
+                }
             }, delayTick);
         } else {
             cacheMessages.add(s);

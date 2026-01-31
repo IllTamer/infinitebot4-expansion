@@ -37,8 +37,9 @@ public class SubmitListener implements Listener {
             if (rawMessage.startsWith(prefix) && rawMessage.length() >= prefix.length() +  2) {
                 String command = rawMessage.substring(prefix.length() + 1);
                 final String reply = language.get("submit", "reply");
-                if (reply.length() != 0)
+                if (!reply.isEmpty()) {
                     event.reply(reply);
+                }
                 SubmitSender sender = new SubmitSender(BukkitBootstrap.getInstance().getServer(), event, delayTick, senderName);
                 // 主线程执行指令
                 Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(),

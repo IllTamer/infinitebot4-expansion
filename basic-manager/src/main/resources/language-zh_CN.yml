@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 submit:
   reply: '指令执行中, 请稍后'
@@ -13,7 +13,6 @@ key-word:
   kick-success: '强制下线成功'
   offline: '您的账号并未在线'
   no-player: '当前无玩家在线！'
-  show-player: '服务器当前总人数：%d%s%s'
 
 unbind:
   user_id-mistake: '请输入正确的qq号'
