@@ -1,6 +1,7 @@
 package com.illtamer.infinite.bot.expansion.manager.basic.listener;
 
 import com.google.gson.Gson;
+import com.illtamer.infinite.bot.expansion.manager.basic.distribute.Context;
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
@@ -46,11 +47,11 @@ public class DistributeHelper {
      * @param clazz 其他客户端返回数据的类型
      * @apiNote 如果存在其他支持此事件的客户端，则进行分发，否则自身正常调用
      * */
-    public <T> void tryHandle(String param, Consumer<DistributeContext<T>> dataConsumer, Consumer<Exception> eConsumer, String broadcastKey, Class<T> clazz) {
+    public <T> void tryHandle(String param, Consumer<Context<T>> dataConsumer, Consumer<Exception> eConsumer, String broadcastKey, Class<T> clazz) {
         Function<String, T> function = (Function<String, T>) broadcastMap.get(broadcastKey);
         Assert.notNull(function, "No function connect broadcastKey: %s", broadcastKey);
 
-        DistributeContext<T> context = new DistributeContext<>();
+        Context<T> context = new Context<>();
 
         Client client = StaticAPI.getClient();
         List<Client> clientList = OpenAPIHandling.getClientList();
@@ -83,7 +84,7 @@ public class DistributeHelper {
     public <T> Listener newBroadCastListener(@NonNull Function<String, T> function, @NonNull String broadcastKey) {
         broadcastMap.put(broadcastKey, function);
         return new Listener() {
-            // 接收端监听
+            // 接收端监听指令，返回客户端对分布指令响应
             @EventHandler
             public void onClientBroadcast(ClientBroadcastEvent event) {
                 Client client = StaticAPI.getClient();

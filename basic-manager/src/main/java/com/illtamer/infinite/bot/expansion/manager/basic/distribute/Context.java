@@ -1,4 +1,4 @@
-package com.illtamer.infinite.bot.expansion.manager.basic.listener;
+package com.illtamer.infinite.bot.expansion.manager.basic.distribute;
 
 import com.illtamer.perpetua.sdk.entity.transfer.entity.Client;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DistributeContext<T> {
+public class Context<T> {
 
     /**
      * 触发时当前客户端信息
