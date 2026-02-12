@@ -2,11 +2,12 @@ package com.illtamer.infinite.bot.expansion.manager.basic.pojo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class DataOnShowPlayers {
+public class DataOnShowPlayers implements Serializable {
 
     // op 名称列表
     private List<String> opList = new ArrayList<>();

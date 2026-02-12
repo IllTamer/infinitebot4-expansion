@@ -13,6 +13,7 @@ key-word:
   kick-success: '强制下线成功'
   offline: '您的账号并未在线'
   no-player: '当前无玩家在线！'
+  error: '关键词调用失败'
 
 unbind:
   user_id-mistake: '请输入正确的qq号'

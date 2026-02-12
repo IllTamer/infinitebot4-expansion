@@ -1,15 +1,16 @@
-package com.illtamer.infinite.bot.expansion.manager.basic.distribute;
+package com.illtamer.infinite.bot.expansion.manager.basic.pojo;
 
 import lombok.Data;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 登录登出事件数据
  */
 @Data
-public class LoginOutData {
+public class LoginOutData implements Serializable {
 
     /**
      * 是否执行成功
