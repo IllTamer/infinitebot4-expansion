@@ -11,7 +11,6 @@
 ## 长期维护的附属列表（LTS）
 
 - [x] [basic-manager (基础管理附属)](./basic-manager)
-- [x] [bot-shop (机器人签到商店附属)](./bot-shop)
 - [x] [chat-manager (聊天互通附属)](./chat-manager)
 - [x] [defence-manager (白名单附属)](./defence-manager)
 - [x] [ip-manager (IP锁附属)](./ip-manager)
@@ -21,6 +20,7 @@
 ## 计划开发的附属列表
 
 - [ ] view-manager (可视化附属)
+- [ ] message-manager (自定义消息附属)
 
 ## 贡献者名单
 

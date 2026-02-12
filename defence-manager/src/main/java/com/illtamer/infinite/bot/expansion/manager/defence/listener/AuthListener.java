@@ -2,6 +2,7 @@ package com.illtamer.infinite.bot.expansion.manager.defence.listener;
 
 import com.illtamer.infinite.bot.expansion.manager.defence.DefenceManager;
 import com.illtamer.infinite.bot.expansion.manager.defence.entity.AuthData;
+import com.illtamer.infinite.bot.expansion.manager.defence.util.AuthUtil;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
@@ -52,6 +53,9 @@ public class AuthListener implements Listener {
         final PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
 
         if (LoginListener.getDATA_HASH_MAP().isEmpty()) {
+            return;
+        }
+        if (!AuthUtil.isCodeRegx(msg)) {
             return;
         }
         event.setCancelled(true);

@@ -70,13 +70,13 @@ public class MemberMenageListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(BukkitBootstrap.getInstance(), () -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (data == null || (data.getPreferUUID() == null)) {
-                if (defaultCard == null || defaultCard.length() == 0) return;
-                if (event.getSender().getNickname().equals(defaultCard)) return;
+                if (defaultCard == null || defaultCard.isEmpty()) return;
+                if (event.getSender().getCard().equals(defaultCard)) return;
                 OpenAPIHandling.setGroupMemberCard(event.getGroupId(), event.getSender().getUserId(), defaultCard);
                 return;
             }
             String name = Bukkit.getOfflinePlayer(UUID.fromString(data.getPreferUUID())).getName();
-            if (!event.getSender().getNickname().equals(name)) {
+            if (!event.getSender().getCard().equals(name)) {
                 try {
                     OpenAPIHandling.setGroupMemberCard(event.getGroupId(), event.getSender().getUserId(), name);
                 } catch (APIInvokeException e) {
