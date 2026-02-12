@@ -168,7 +168,6 @@ public final class SubmitSender implements ConsoleCommandSender {
     }
 
     private void doSendMessage(String s) {
-        System.out.println("收到消息：" + s);
         if (cacheMessages.isEmpty()) {
             cacheMessages.add(s);
             Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitBootstrap.getInstance(), () -> {
