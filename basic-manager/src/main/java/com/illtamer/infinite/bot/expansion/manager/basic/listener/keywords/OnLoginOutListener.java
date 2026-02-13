@@ -48,7 +48,7 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
 
         // 创建事件上下文
         DistributedEventContext context = new DistributedEventContext();
-        context.setParam("userId", event.getUserId());
+        context.setParam("userId", String.valueOf(event.getUserId()));
         context.setParam("sender", event.getSender());
 
         getProcessor().tryProcessEvent(getIdentifier(), context, result -> {
@@ -78,9 +78,10 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
 
     @Override
     public LoginOutData handle(DistributedEventContext context) {
-        Long userId = context.getParam("userId");
+        Long userId = Long.parseLong(context.getParam("userId"));
         LoginOutData result = new LoginOutData(StaticAPI.getClient().getClientName());
 
+        // TODO 优化为分发前获取数据
         PlayerData data = StaticAPI.getRepository().queryByUserId(userId);
         if (data == null || (data.getUuid() == null && data.getValidUUID() == null)) {
             return result;
