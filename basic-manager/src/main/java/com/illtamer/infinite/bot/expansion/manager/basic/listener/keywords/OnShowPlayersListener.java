@@ -111,9 +111,9 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
 
         for (Player player : players) {
             if (player.isOp()) {
-                data.getOpList().add(PluginUtil.clearColor(player.getDisplayName()));
+                data.getOpList().add(player.getName());
             } else {
-                data.getPlayerList().add(PluginUtil.clearColor(player.getDisplayName()));
+                data.getPlayerList().add(player.getName());
             }
         }
         return data;
