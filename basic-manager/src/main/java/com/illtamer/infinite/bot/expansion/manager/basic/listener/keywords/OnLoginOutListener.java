@@ -65,7 +65,7 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
                 event.reply(reply.toString());
             } else if (result.isPartialSuccess()) {
                 // 部分成功
-                event.reply(language.get("key-word", "partial-success"));
+                event.reply(language.get("key-word", "kick-partial-success"));
             } else {
                 // 全部失败
                 event.reply(language.get("key-word", "offline"));

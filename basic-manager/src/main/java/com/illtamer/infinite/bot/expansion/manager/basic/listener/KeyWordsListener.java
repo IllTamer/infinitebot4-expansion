@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.manager.basic.listener;
 
+import com.illtamer.infinite.bot.expansion.manager.basic.listener.keywords.OnGlobalCmdListener;
 import com.illtamer.infinite.bot.expansion.manager.basic.listener.keywords.OnLoginOutListener;
 import com.illtamer.infinite.bot.expansion.manager.basic.listener.keywords.OnShowPlayersListener;
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
@@ -41,6 +42,7 @@ public class KeyWordsListener implements Listener {
 
         new OnLoginOutListener(configFile, language, expansion).register();
         new OnShowPlayersListener(configFile, language, expansion).register();
+        new OnGlobalCmdListener(configFile, language, expansion).register();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

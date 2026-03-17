@@ -37,29 +37,8 @@ public class LoginOutData implements Serializable {
      */
     private String clientName;
 
-    public LoginOutData() {}
-
-    public LoginOutData(boolean success, String message) {
-        this.success = success;
-        this.message = message;
-    }
-
     public LoginOutData(String clientName) {
         this.clientName = clientName;
-    }
-
-    /**
-     * 创建成功结果
-     */
-    public static LoginOutData success(String message) {
-        return new LoginOutData(true, message);
-    }
-
-    /**
-     * 创建失败结果
-     */
-    public static LoginOutData failure(String message) {
-        return new LoginOutData(false, message);
     }
 
     /**

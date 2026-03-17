@@ -4,6 +4,11 @@ import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
@@ -17,17 +22,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public final class SubmitSender implements ConsoleCommandSender {
     private final List<String> cacheMessages = new ArrayList<>();
     private final Server server;
-    private final MessageEvent event;
+    private final Consumer<String> respConsumer;
     private final int delayTick;
     private final String senderName;
 
-    public SubmitSender(Server server, MessageEvent event, int delayTick, String senderName) {
+    public SubmitSender(Server server, Consumer<String> respConsumer, int delayTick, String senderName) {
         this.server = server;
-        this.event = event;
+        this.respConsumer = respConsumer;
         this.delayTick = delayTick;
         this.senderName = senderName;
     }
@@ -65,6 +71,31 @@ public final class SubmitSender implements ConsoleCommandSender {
     @Override
     public @NotNull Spigot spigot() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public @NotNull Component name() {
+        return null;
+    }
+
+    @Override
+    public void sendMessage(@NotNull Identity identity, @NotNull Component message, @NotNull MessageType type) {
+        sendMessage(LegacyComponentSerializer.legacySection().serialize(message));
+    }
+
+    @Override
+    public void sendRichMessage(@NotNull String message) {
+        sendMessage(message);
+    }
+
+    @Override
+    public void sendRichMessage(@NotNull String message, @NotNull TagResolver... resolvers) {
+        sendMessage(message);
+    }
+
+    @Override
+    public void sendPlainMessage(@NotNull String message) {
+        sendMessage(message);
     }
 
     @Override
@@ -174,9 +205,9 @@ public final class SubmitSender implements ConsoleCommandSender {
                 List<String> messages = new ArrayList<>(cacheMessages);
                 cacheMessages.clear();
                 if (messages.size() == 1) {
-                    event.reply(PluginUtil.clearColor(messages.get(0)));
+                    respConsumer.accept(PluginUtil.clearColor(messages.get(0)));
                 } else {
-                    event.reply(PluginUtil.clearColor(StringUtil.toString(messages)));
+                    respConsumer.accept(PluginUtil.clearColor(StringUtil.toString(messages)));
                 }
             }, delayTick);
         } else {

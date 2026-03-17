@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version '1.0-SNAPSHOT'
@@ -20,6 +20,7 @@ subprojects {
     repositories {
         mavenLocal()
         maven {url "https://maven.illtamer.com/releases"}
+        maven {url "https://repo.papermc.io/repository/maven-public/"}
        	maven {url 'https://repo.extendedclip.com/content/repositories/placeholderapi/'}
         maven {url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
         maven {url 'https://repo1.maven.org/maven2'}
@@ -28,8 +29,7 @@ subprojects {
 
     dependencies {
         compileOnly 'com.illtamer.infinite.bot:minecraft:4.1.0-SNAPSHOT'
-        compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
-//        implementation 'org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT'
+        compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
         compileOnly 'me.clip:placeholderapi:2.11.7'
 
         compileOnly 'org.projectlombok:lombok:1.18.42'

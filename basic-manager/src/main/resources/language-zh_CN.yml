@@ -5,12 +5,18 @@ submit:
   log: 'Id [%s] dispatched a command `%s`'
 
 key-word:
+  global-cmd-empty: "全局指令为空"
+  global-cmd-success: "全局指令执行成功"
+  global-cmd-error: "全局指令执行失败"
+  global-cmd-log: "执行全局指令 {}"
   new-player: '今日新玩家数量: %s 人'
   unchecked: '暂未查询到您的信息，请绑定后重试'
   bind-valid: '已绑定正版玩家ID: %s|%s'
   bind-offline: '已绑定离线玩家ID: %s|%s'
   kick: '&c您已被(QQ: %qq%)强制下线'
   kick-success: '强制下线成功'
+  kick-partial-success: '强制下线成功'
+  client-offline: '子服客户端均无响应'
   offline: '您的账号并未在线'
   no-player: '当前无玩家在线！'
   error: '关键词调用失败'

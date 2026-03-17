@@ -5,5 +5,5 @@ repositories {
 }
 
 dependencies {
-
+    compileOnly 'com.mojang:brigadier:1.0.18'
 }
