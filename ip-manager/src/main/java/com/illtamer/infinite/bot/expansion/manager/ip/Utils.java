@@ -5,9 +5,12 @@ import java.util.Random;
 public class Utils {
 
     private static final Random random = new Random();
+    private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public static String getCode() {
         StringBuilder stringBuilder = new StringBuilder();
+        char randomLetter = LETTERS.charAt(random.nextInt(LETTERS.length()));
+        stringBuilder.append(randomLetter);
         for (int x = 0; x < 5; x++) {
             stringBuilder.append(random.nextInt(10));
         }

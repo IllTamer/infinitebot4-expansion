@@ -34,7 +34,7 @@ public class GroupListener implements Listener {
                 continue;
             }
             BindData data = entry.getValue();
-            if (!data.getCode().equals(msg)) {
+            if (!data.getCode().equalsIgnoreCase(msg)) {
                 continue;
             }
             config.set(data.getUuid(), null);
