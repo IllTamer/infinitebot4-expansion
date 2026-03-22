@@ -1,9 +1,6 @@
 version '2.1-SNAPSHOT'
 
-repositories {
-
-}
-
 dependencies {
+    compileOnly 'io.papermc.paper:paper-server-mojmap:1.21.11-R0.1-SNAPSHOT'
     compileOnly 'com.mojang:brigadier:1.0.18'
 }
