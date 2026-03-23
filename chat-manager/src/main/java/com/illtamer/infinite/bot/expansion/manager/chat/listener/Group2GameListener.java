@@ -236,7 +236,7 @@ public class Group2GameListener implements Listener {
                 return new TextComponent("§7[图片]" + ChatColor.RESET);
             } else if (entity instanceof JSON) {
                 return new TextComponent("§7[JSON消息]" + ChatColor.RESET);
-            } else if (entity instanceof Record) {
+            } else if (entity instanceof com.illtamer.perpetua.sdk.entity.transfer.segment.Record) {
                 return new TextComponent("§7[语音]" + ChatColor.RESET);
             } else if (entity instanceof Redbag) {
                 final Redbag redbag = (Redbag) entity;
