@@ -91,7 +91,7 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
                 });
             }
 
-            String totalAmount = "服务器当前总人数: " + (opTotal == 0 ? playerTotal : String.format("%d(op: %d人)", opTotal + playerTotal, opTotal));
+            String totalAmount = "服务器当前总人数: " + ((!showOp || opTotal == 0) ? playerTotal : String.format("%d(op: %d人)", opTotal + playerTotal, opTotal));
             String msgBuilder = totalAmount + opStr + playerStr +
                     (failedClientList.isEmpty() ? "" : "\n访问超时的子服: " + failedClientList.stream().map(Client::getClientName).collect(Collectors.joining(",")));
             event.reply(msgBuilder);
