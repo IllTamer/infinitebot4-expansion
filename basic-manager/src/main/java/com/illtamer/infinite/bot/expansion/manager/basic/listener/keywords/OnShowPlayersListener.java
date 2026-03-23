@@ -10,16 +10,18 @@ import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
-import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.entity.transfer.entity.Client;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,7 +42,7 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onShowPlayers(GroupMessageEvent event) {
-        if (!online.equals(event.getRawMessage()) || !StaticAPI.isMaster()) {
+        if (StringUtil.isBlank(online) || !online.equals(event.getRawMessage()) || !StaticAPI.isMaster()) {
             return;
         }
         event.setCancelled(true);
@@ -48,18 +50,17 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
         // 创建事件上下文
         DistributedEventContext context = new DistributedEventContext();
 
-        // TODO 优化方法调用，提取到本体中
         getProcessor().tryProcessEvent(getIdentifier(), context, result -> {
             List<DataOnShowPlayers> dataList = result.getDataList();
             List<Client> failedClientList = result.getFailedClientList();
 
             int opTotal = 0, playerTotal = 0;
-            Map<String, Set<String>> serverOpMap = new HashMap<>();
-            Map<String, Set<String>> serverPlayerMap = new HashMap<>();
+            Map<String, Set<String>> serverOpMap = new LinkedHashMap<>();
+            Map<String, Set<String>> serverPlayerMap = new LinkedHashMap<>();
             for (DataOnShowPlayers data : dataList) {
                 String clientName = StringUtil.isBlank(data.getClientName()) ? "未命名客户端" : data.getClientName();
-                serverOpMap.computeIfAbsent(clientName, k -> new HashSet<>()).addAll(data.getOpList());
-                serverPlayerMap.computeIfAbsent(clientName, k -> new HashSet<>()).addAll(data.getPlayerList());
+                serverOpMap.computeIfAbsent(clientName, k -> new LinkedHashSet<>()).addAll(data.getOpList());
+                serverPlayerMap.computeIfAbsent(clientName, k -> new LinkedHashSet<>()).addAll(data.getPlayerList());
                 opTotal += data.getOpList().size();
                 playerTotal += data.getPlayerList().size();
             }
@@ -95,7 +96,7 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
                     (failedClientList.isEmpty() ? "" : "\n访问超时的子服: " + failedClientList.stream().map(Client::getClientName).collect(Collectors.joining(",")));
             event.reply(msgBuilder);
         }, e -> {
-            log.error("<服务器在线>分布式事件处理异常", e);
+            log.error("[ShowPlayers] 分布式事件处理异常", e);
             event.reply(language.get("key-word", "error"));
         });
     }
@@ -103,8 +104,23 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
     @Override
     public DataOnShowPlayers handle(DistributedEventContext context) {
         DataOnShowPlayers data = new DataOnShowPlayers();
-        data.setClientName(StaticAPI.getClient().getClientName());
-        Collection<? extends Player> players = BukkitBootstrap.getInstance().getServer().getOnlinePlayers();
+        String clientName = StaticAPI.getClient().getClientName();
+        data.setClientName(clientName);
+
+        // 必须在主线程获取在线玩家列表，使用 CompletableFuture 等待结果
+        CompletableFuture<Collection<? extends Player>> future = new CompletableFuture<>();
+        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(),
+                () -> future.complete(BukkitBootstrap.getInstance().getServer().getOnlinePlayers()));
+
+        Collection<? extends Player> players;
+        try {
+            players = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("[ShowPlayers] 节点 [{}] 获取在线玩家列表失败", clientName, e);
+            Thread.currentThread().interrupt();
+            return data;
+        }
+
         if (players.isEmpty()) {
             return data;
         }

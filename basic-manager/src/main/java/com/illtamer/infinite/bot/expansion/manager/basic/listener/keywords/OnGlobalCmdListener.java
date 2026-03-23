@@ -44,7 +44,7 @@ public class OnGlobalCmdListener extends AbstractDistributedListener<CmdResponse
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoginOut(MessageEvent event) {
-        if (!event.getRawMessage().startsWith(globalCmd) || !StaticAPI.isMaster()) {
+        if (StringUtil.isBlank(globalCmd) || !event.getRawMessage().startsWith(globalCmd) || !StaticAPI.isMaster()) {
             return;
         }
         if (!StaticAPI.isAdmin(event.getSender().getUserId())) {

@@ -13,6 +13,7 @@ import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
+import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLoginOut(MessageEvent event) {
-        if (!loginOut.equals(event.getRawMessage()) || !StaticAPI.isMaster()) {
+        if (StringUtil.isBlank(loginOut) || !loginOut.equals(event.getRawMessage()) || !StaticAPI.isMaster()) {
             return;
         }
         event.setCancelled(true);
