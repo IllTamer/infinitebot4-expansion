@@ -1,0 +1,69 @@
+messages:
+  # 节点名称，唯一即可
+  纯文本消息:
+    # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
+    # 注意，以下任意配置项匹配上均可触发
+    condition:
+      # 正则表达式，为空则不进行此项检测
+      regex: '测试.*'
+      # 完全匹配关键词列表
+      keyword:
+        - '测试'
+    # [通用配置节点] 触发权限校验，若未通过返回语言文件中 no-permission 响应
+    permission:
+      # 是否为机器人管理员，为false则不强制要求为管理员
+      # - 调用 com.illtamer.infinite.bot.minecraft.api.StaticAPI.isAdmin 实现
+      admin: false
+      # 判断发送者qq绑定的uuid是否拥有 LuckPerms 权限
+      # - 调用 LuckPermsHook 实现
+      luckperms:
+        - 'ib4.expansion.message.纯文本消息'
+    # 纯文本消息（与 command 节点互斥）
+    # 此处支持根据发送者qq绑定的uuid解析玩家变量
+    text:
+      - '你好 %player_name%'
+
+  指令消息:
+    # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
+    # 注意，以下任意配置项匹配上均可触发
+    condition:
+      # 正则表达式，为空则不进行此项检测
+      regex: ''
+      # 完全匹配关键词列表
+      keyword:
+        - '给我打钱'
+    # [通用配置节点] 触发权限校验，若未通过返回语言文件中 no-permission 响应
+    permission:
+      # 是否为机器人管理员，为false则不强制要求为管理员
+      # - 调用 com.illtamer.infinite.bot.minecraft.api.StaticAPI.isAdmin 实现
+      admin: true
+      # 判断发送者qq绑定的uuid是否拥有 LuckPerms 权限
+      # 为空则不检查权限
+      luckperms: []
+    # [通用配置节点] 触发绑定校验，若未通过返回语言文件中 no-bind 响应
+    # 仅当前qq账号有绑定玩家才允许触发，默认 false
+    only-bind: true
+    # 触发的指令
+    # 此处支持根据发送者qq绑定的uuid解析玩家变量
+    command:
+      - 'points give %player_name% 999'
+
+  图片消息:
+    # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
+    # 注意，以下任意配置项匹配上均可触发
+    condition:
+      # 正则表达式，为空则不进行此项检测
+      regex: ''
+      # 完全匹配关键词列表
+      keyword:
+        - '我的信息'
+    # [通用配置节点] 触发权限校验，若未通过返回语言文件中 no-permission 响应
+    permission:
+      # 是否为机器人管理员，为false则不强制要求为管理员
+      # - 调用 com.illtamer.infinite.bot.minecraft.api.StaticAPI.isAdmin 实现
+      admin: false
+      # 判断发送者qq绑定的uuid是否拥有 LuckPerms 权限
+      # 为空则不检查权限
+      luckperms: []
+    # 图片配置
+    image: // TODO
