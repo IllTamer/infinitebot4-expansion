@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.manager.message;
 
+import com.illtamer.infinite.bot.expansion.manager.message.hook.Placeholder;
 import com.illtamer.infinite.bot.expansion.manager.message.listener.GroupMessageListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
@@ -20,6 +21,7 @@ public class MessageManager extends InfiniteExpansion {
         instance = this;
         configFile = new ExpansionConfig("config.yml", this);
         this.language = Language.of("language", this);
+        Placeholder.init();
         EventExecutor.registerEvents(new GroupMessageListener(), this);
     }
 

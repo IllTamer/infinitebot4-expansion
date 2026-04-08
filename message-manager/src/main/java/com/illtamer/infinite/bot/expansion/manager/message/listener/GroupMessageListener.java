@@ -7,7 +7,7 @@ import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 public class GroupMessageListener implements Listener {
 
     @EventHandler
-    public void onChat(GroupMessageEvent event) {
+    public void onMessage(GroupMessageEvent event) {
 
     }
 
