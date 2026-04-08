@@ -3,6 +3,7 @@ package com.illtamer.infinite.bot.expansion.manager.message;
 import com.illtamer.infinite.bot.expansion.manager.message.hook.Placeholder;
 import com.illtamer.infinite.bot.expansion.manager.message.listener.GroupMessageListener;
 import com.illtamer.infinite.bot.minecraft.api.EventExecutor;
+import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
