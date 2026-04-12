@@ -1,5 +1,6 @@
 package com.illtamer.infinite.bot.expansion.hook.papi;
 
+import com.illtamer.infinite.bot.expansion.hook.papi.driver.CheckPlayerOnlineDriver;
 import com.illtamer.infinite.bot.expansion.hook.papi.hook.PAPIHook;
 import com.illtamer.infinite.bot.minecraft.configuration.config.BotConfiguration;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
@@ -20,9 +21,13 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
      * */
     private final List<PHandlerEnum> handlerList = new LinkedList<>();
 
+    private CheckPlayerOnlineDriver checkPlayerOnlineDriver;
+
     @Override
     public void onEnable() {
         instance = this;
+        checkPlayerOnlineDriver = new CheckPlayerOnlineDriver(this);
+        checkPlayerOnlineDriver.register();
         initHandlerList();
         if (!PAPIHook.tryRegister()) {
             getLogger().error("Placeholder API 变量注册失败，附属功能已禁用");
@@ -32,6 +37,7 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
     @Override
     public void onDisable() {
         PAPIHook.tryUnregister();
+        checkPlayerOnlineDriver = null;
         instance = null;
     }
 
@@ -85,6 +91,14 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
                         return PHandler.NO_DATA;
                     }
                     return member.getCard() == null ? member.getNickname() : member.getCard();
+                }),
+
+                // 检查玩家是否在任意子服在线
+                new PHandlerEnum("check-player-online", (offlinePlayer, arg) -> {
+                    if (offlinePlayer == null) {
+                        return PHandler.ONLY_PLAYER;
+                    }
+                    return checkPlayerOnlineDriver.isPlayerOnline(offlinePlayer) ? "在线" : "离线";
                 })
         ));
     }
