@@ -1,6 +1,22 @@
+# 资源路径配置（附属启动时加载）
+resources:
+  # 图片资源目录（系统绝对路径）
+  image-dir: '/opt/infinitebot/images'
+  # 字体资源目录（系统绝对路径）
+  font-dir: '/opt/infinitebot/fonts'
+
+# 指令执行配置
+command-settings:
+  # 控制台指令执行结果回复延迟（tick）
+  delay-tick: 5
+  # 控制台指令执行者名称
+  sender-name: 'InfiniteBot'
+
 messages:
   # 节点名称，唯一即可
   纯文本消息:
+    # 是否使用回复消息（true=reply，false=普通群消息发送）
+    reply: true
     # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
     # 注意，以下任意配置项匹配上均可触发
     condition:
@@ -18,52 +34,125 @@ messages:
       # - 调用 LuckPermsHook 实现
       luckperms:
         - 'ib4.expansion.message.纯文本消息'
-    # 纯文本消息（与 command 节点互斥）
+    # 纯文本消息（与 command / image 节点互斥）
     # 此处支持根据发送者qq绑定的uuid解析玩家变量
     text:
       - '你好 %player_name%'
 
   指令消息:
-    # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
-    # 注意，以下任意配置项匹配上均可触发
+    # 是否使用回复消息（true=reply，false=普通群消息发送）
+    reply: true
     condition:
-      # 正则表达式，为空则不进行此项检测
       regex: ''
-      # 完全匹配关键词列表
       keyword:
         - '给我打钱'
-    # [通用配置节点] 触发权限校验，若未通过返回语言文件中 no-permission 响应
     permission:
-      # 是否为机器人管理员，为false则不强制要求为管理员
-      # - 调用 com.illtamer.infinite.bot.minecraft.api.StaticAPI.isAdmin 实现
       admin: true
-      # 判断发送者qq绑定的uuid是否拥有 LuckPerms 权限
-      # 为空则不检查权限
       luckperms: []
     # [通用配置节点] 触发绑定校验，若未通过返回语言文件中 no-bind 响应
     # 仅当前qq账号有绑定玩家才允许触发，默认 false
     only-bind: true
-    # 触发的指令
+    # 触发的指令（与 text / image 节点互斥）
     # 此处支持根据发送者qq绑定的uuid解析玩家变量
     command:
-      - 'points give %player_name% 999'
+      # 执行身份: console（控制台，可返回指令执行结果）/ player（玩家身份）
+      identity: 'console'
+      list:
+        - 'points give %player_name% 999'
 
   图片消息:
-    # [通用配置节点] 触发条件判断，未触发则不进行操作，触发后执行后续逻辑
-    # 注意，以下任意配置项匹配上均可触发
+    # 是否使用回复消息（true=reply，false=普通群消息发送）
+    reply: true
     condition:
-      # 正则表达式，为空则不进行此项检测
       regex: ''
-      # 完全匹配关键词列表
       keyword:
         - '我的信息'
-    # [通用配置节点] 触发权限校验，若未通过返回语言文件中 no-permission 响应
     permission:
-      # 是否为机器人管理员，为false则不强制要求为管理员
-      # - 调用 com.illtamer.infinite.bot.minecraft.api.StaticAPI.isAdmin 实现
       admin: false
-      # 判断发送者qq绑定的uuid是否拥有 LuckPerms 权限
-      # 为空则不检查权限
       luckperms: []
-    # 图片配置
-    image: // TODO
+    only-bind: true
+    # 图片配置（与 text / command 节点互斥，或与 text 共存构成组合消息）
+    image:
+      # 背景图片文件名（从 resources.image-dir 读取）
+      background: 'info_bg.png'
+      # 输出图片宽高（像素），不配置则使用背景图原始尺寸
+      width: 800
+      height: 600
+      # 图层列表，按顺序从下到上绘制
+      layers:
+        - type: 'text'
+          # 支持 PlaceholderAPI 变量
+          content: '玩家: %player_name%'
+          # 绘制坐标（左上角原点，x向右，y向下；text类型y为基线位置）
+          x: 50
+          y: 80
+          font:
+            # 字体文件名（从 resources.font-dir 读取）
+            file: 'MiSans-Regular.ttf'
+            size: 28
+            # 颜色支持 #RRGGBB 或 #AARRGGBB 格式
+            color: '#FFFFFF'
+            # 字体样式: plain / bold / italic
+            style: 'bold'
+        - type: 'text'
+          content: '等级: %player_level%'
+          x: 50
+          y: 130
+          font:
+            file: 'MiSans-Regular.ttf'
+            size: 24
+            color: '#CCCCCC'
+            style: 'plain'
+        - type: 'image'
+          # 图片文件名（从 resources.image-dir 读取）
+          file: 'avatar_frame.png'
+          x: 600
+          y: 30
+          # 不配置则使用图片原始尺寸
+          width: 150
+          height: 150
+
+  # 纯图片消息（无需绑定，直接返回静态图片）
+  静态图片:
+    # 是否使用回复消息（true=reply，false=普通群消息发送）
+    reply: true
+    condition:
+      regex: ''
+      keyword:
+        - '服务器地图'
+    permission:
+      admin: false
+      luckperms: []
+    image:
+      background: 'server_map.png'
+      layers: []
+
+  # 文字+图片组合消息（text 与 image 同时存在）
+  组合消息:
+    # 是否使用回复消息（true=reply，false=普通群消息发送）
+    reply: true
+    condition:
+      regex: ''
+      keyword:
+        - '服务器信息'
+    permission:
+      admin: false
+      luckperms: []
+    only-bind: true
+    # 组合消息：先发图片，再发文字
+    text:
+      - '以上是你的服务器信息卡片'
+    image:
+      background: 'info_bg.png'
+      width: 800
+      height: 400
+      layers:
+        - type: 'text'
+          content: '欢迎 %player_name%'
+          x: 50
+          y: 50
+          font:
+            file: 'MiSans-Regular.ttf'
+            size: 32
+            color: '#FFD700'
+            style: 'bold'
