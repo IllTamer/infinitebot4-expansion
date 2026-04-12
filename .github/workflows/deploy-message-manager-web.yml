@@ -1,0 +1,66 @@
+name: Deploy message-manager web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "message-manager/web/**"
+      - ".github/workflows/deploy-message-manager-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+          cache-dependency-path: message-manager/web/yarn.lock
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate Yarn 4
+        run: corepack prepare yarn@4.12.0 --activate
+
+      - name: Install dependencies
+        working-directory: message-manager/web
+        run: yarn install --immutable
+
+      - name: Build web app
+        working-directory: message-manager/web
+        run: yarn build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: message-manager/web/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
