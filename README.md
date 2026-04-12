@@ -14,13 +14,17 @@
 - [x] [chat-manager (聊天互通附属)](./chat-manager)
 - [x] [defence-manager (白名单附属)](./defence-manager)
 - [x] [ip-manager (IP锁附属)](./ip-manager)
+- [x] [message-manager (自定义消息附属)](./message-manager)
 - [x] [placeholder-hook (papi变量拓展附属)](./placeholder-hook)
 - [x] [video-parse (视频解析附属)](./video-parse)
+
+## 配套前端工具
+
+- [message-manager/web](./message-manager/web)：MessageManager 图片配置编辑器，已配置 GitHub Pages 自动部署
 
 ## 计划开发的附属列表
 
 - [ ] view-manager (可视化附属)
-- [ ] message-manager (自定义消息附属)
 
 ## 贡献者名单
 
