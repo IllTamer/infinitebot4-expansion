@@ -42,3 +42,8 @@ bin/
 .DS_Store
 .narrafork/
 .worktrees/
+
+### Web ###
+node_modules/
+.yarn/
+.pnp.cjs
