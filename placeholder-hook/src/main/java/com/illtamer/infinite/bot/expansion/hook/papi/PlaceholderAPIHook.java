@@ -28,6 +28,7 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
         instance = this;
         checkPlayerOnlineDriver = new CheckPlayerOnlineDriver(this);
         checkPlayerOnlineDriver.register();
+        checkPlayerOnlineDriver.startRefreshTask();
         initHandlerList();
         if (!PAPIHook.tryRegister()) {
             getLogger().error("Placeholder API 变量注册失败，附属功能已禁用");
@@ -36,6 +37,9 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
 
     @Override
     public void onDisable() {
+        if (checkPlayerOnlineDriver != null) {
+            checkPlayerOnlineDriver.stopRefreshTask();
+        }
         PAPIHook.tryUnregister();
         checkPlayerOnlineDriver = null;
         instance = null;
