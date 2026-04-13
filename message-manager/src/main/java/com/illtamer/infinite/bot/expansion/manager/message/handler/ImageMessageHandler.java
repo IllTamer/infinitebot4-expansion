@@ -4,17 +4,15 @@ import com.illtamer.infinite.bot.expansion.manager.message.config.ImageConfig;
 import com.illtamer.infinite.bot.expansion.manager.message.config.MessageConfig;
 import com.illtamer.infinite.bot.expansion.manager.message.hook.Placeholder;
 import com.illtamer.infinite.bot.expansion.manager.message.render.ImageRenderer;
-import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
+import com.illtamer.infinite.bot.expansion.manager.message.util.MessageUtil;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionLogger;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 import com.illtamer.perpetua.sdk.message.MessageBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 图片消息处理器（含纯图片和文字+图片组合消息）
@@ -39,7 +37,7 @@ public class ImageMessageHandler implements MessageHandler {
 
     @Override
     public void handle(GroupMessageEvent event, MessageConfig config) {
-        OfflinePlayer player = getPlayer(event);
+        OfflinePlayer player = MessageUtil.getPlayer(event);
         ImageConfig imageConfig = config.getImage();
 
         try {
@@ -66,16 +64,6 @@ public class ImageMessageHandler implements MessageHandler {
         } catch (IOException e) {
             logger.warn("[MessageManager] 图片渲染异常: " + e.getMessage());
             responseSender.sendText(event, config, language.get("image-render-error"));
-        }
-    }
-
-    private OfflinePlayer getPlayer(GroupMessageEvent event) {
-        var data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-        if (data == null || data.getPreferUUID() == null) return null;
-        try {
-            return Bukkit.getOfflinePlayer(UUID.fromString(data.getPreferUUID()));
-        } catch (Exception e) {
-            return null;
         }
     }
 

@@ -1,22 +1,17 @@
 package com.illtamer.infinite.bot.expansion.manager.message.listener;
 
 import com.illtamer.infinite.bot.expansion.manager.message.config.MessageConfig;
-import com.illtamer.infinite.bot.expansion.manager.message.handler.CommandMessageHandler;
-import com.illtamer.infinite.bot.expansion.manager.message.handler.ImageMessageHandler;
-import com.illtamer.infinite.bot.expansion.manager.message.handler.MessageHandler;
-import com.illtamer.infinite.bot.expansion.manager.message.handler.MessageResponseSender;
-import com.illtamer.infinite.bot.expansion.manager.message.handler.TextMessageHandler;
+import com.illtamer.infinite.bot.expansion.manager.message.handler.*;
 import com.illtamer.infinite.bot.expansion.manager.message.hook.LuckPermsHook;
+import com.illtamer.infinite.bot.expansion.manager.message.util.MessageUtil;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
-import java.util.UUID;
 
 public class GroupMessageListener implements Listener {
 
@@ -78,7 +73,7 @@ public class GroupMessageListener implements Listener {
 
         // LuckPerms 权限校验
         if (!perm.getLuckperms().isEmpty()) {
-            OfflinePlayer player = getPlayer(event);
+            OfflinePlayer player = MessageUtil.getPlayer(event);
             if (player == null) {
                 responseSender.sendText(event, config, language.get("no-bind"));
                 return false;
@@ -102,16 +97,6 @@ public class GroupMessageListener implements Listener {
             return false;
         }
         return true;
-    }
-
-    private OfflinePlayer getPlayer(GroupMessageEvent event) {
-        var data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
-        if (data == null || data.getPreferUUID() == null) return null;
-        try {
-            return Bukkit.getOfflinePlayer(UUID.fromString(data.getPreferUUID()));
-        } catch (Exception e) {
-            return null;
-        }
     }
 
 }
