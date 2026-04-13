@@ -5,12 +5,12 @@ import com.illtamer.infinite.bot.expansion.manager.message.hook.Placeholder;
 import com.illtamer.infinite.bot.expansion.manager.message.util.ResourceManager;
 import org.bukkit.OfflinePlayer;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
-import javax.imageio.ImageIO;
 
 /**
  * 图片渲染引擎，使用 Java2D 合成图片
