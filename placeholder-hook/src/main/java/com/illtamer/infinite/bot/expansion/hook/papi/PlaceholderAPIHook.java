@@ -41,6 +41,7 @@ public class PlaceholderAPIHook extends InfiniteExpansion {
             checkPlayerOnlineDriver.stopRefreshTask();
         }
         PAPIHook.tryUnregister();
+        handlerList.clear();
         checkPlayerOnlineDriver = null;
         instance = null;
     }
