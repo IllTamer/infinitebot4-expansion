@@ -8,6 +8,7 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
+import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 import org.bukkit.OfflinePlayer;
 
@@ -37,10 +38,9 @@ public class GroupMessageListener implements Listener {
 
     @EventHandler
     public void onMessage(GroupMessageEvent event) {
-        if (!StaticAPI.inGroups(event.getGroupId())) return;
-
-        String rawMessage = event.getRawMessage();
-        if (rawMessage == null || rawMessage.isEmpty()) return;
+        if (!StaticAPI.inGroups(event.getGroupId()) || event.getMessage().getCleanMessage().isEmpty()) return;
+        String rawMessage = event.getMessage().getCleanMessage().get(0).trim();
+        if (StringUtil.isBlank(rawMessage)) return;
 
         for (MessageConfig config : configs) {
             // 1. 条件匹配
