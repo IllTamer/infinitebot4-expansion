@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
     private static final long REFRESH_INTERVAL_TICKS = 60L;
     private static final long REQUEST_TIMEOUT_MILLIS = 2500L;
     private static final long MANUAL_TARGET_TTL_MILLIS = TimeUnit.MINUTES.toMillis(10);
+    private static final long REFRESH_WARNING_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
+    private static final int MANUAL_TARGET_MAX_SIZE = 512;
 
     private static final String CONTEXT_TARGETS = "targets";
 
@@ -46,6 +49,7 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
 
     private volatile BukkitTask refreshTask;
+    private volatile long lastRefreshWarningTime;
 
     public CheckPlayerOnlineDriver(IExpansion expansion) {
         super(expansion, OnlineData.class);
@@ -83,6 +87,7 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
         final String key = offlinePlayer.getUniqueId().toString();
         QueryTarget target = manualTargets.get(key);
         if (target == null) {
+            trimManualTargetsIfNeeded();
             target = buildTargetForManualTrack(offlinePlayer);
             manualTargets.put(key, target);
         }
@@ -110,9 +115,9 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
         return new QueryTarget(key, key, bindUuid, validUuid, name);
     }
 
-    private QueryTarget buildTargetFromOfflineSnapshot(OfflinePlayer offlinePlayer) {
-        final String key = offlinePlayer.getUniqueId().toString();
-        return new QueryTarget(key, key, null, null, offlinePlayer.getName());
+    private QueryTarget buildTargetFromPlayerSnapshot(Player player) {
+        final String key = player.getUniqueId().toString();
+        return new QueryTarget(key, key, null, null, player.getName());
     }
 
     private void refreshOnlineCache() {
@@ -136,14 +141,16 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
                 Thread.currentThread().interrupt();
                 return;
             } catch (TimeoutException e) {
-                log.warn("[CheckPlayerOnline] 3s 批量在线状态刷新超时");
+                warnRefreshLimited("[CheckPlayerOnline] 3s 批量在线状态刷新超时", e);
                 return;
             } catch (ExecutionException e) {
-                log.error("[CheckPlayerOnline] 3s 批量在线状态刷新失败", e);
+                warnRefreshLimited("[CheckPlayerOnline] 3s 批量在线状态刷新失败", e);
                 return;
             }
 
             mergeCacheWithSnapshot(snapshot.keySet(), onlineKeys);
+        } catch (Exception e) {
+            warnRefreshLimited("[CheckPlayerOnline] 批量在线状态刷新异常", e);
         } finally {
             refreshing.set(false);
         }
@@ -152,11 +159,11 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
     private Map<String, QueryTarget> buildSnapshotTargets() {
         Map<String, QueryTarget> snapshot = new LinkedHashMap<>();
 
-        for (OfflinePlayer offlinePlayer : getOfflinePlayersSnapshot()) {
-            if (offlinePlayer == null || offlinePlayer.getUniqueId() == null) {
+        for (Player player : getOnlinePlayersSnapshot()) {
+            if (player == null || player.getUniqueId() == null) {
                 continue;
             }
-            QueryTarget target = buildTargetFromOfflineSnapshot(offlinePlayer);
+            QueryTarget target = buildTargetFromPlayerSnapshot(player);
             snapshot.put(target.getKey(), target);
         }
 
@@ -164,15 +171,15 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
         return snapshot;
     }
 
-    private OfflinePlayer[] getOfflinePlayersSnapshot() {
+    private Collection<? extends Player> getOnlinePlayersSnapshot() {
         if (Bukkit.isPrimaryThread()) {
-            return Bukkit.getOfflinePlayers();
+            return new ArrayList<>(Bukkit.getOnlinePlayers());
         }
 
-        CompletableFuture<OfflinePlayer[]> future = new CompletableFuture<>();
+        CompletableFuture<Collection<? extends Player>> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
             try {
-                future.complete(Bukkit.getOfflinePlayers());
+                future.complete(new ArrayList<>(Bukkit.getOnlinePlayers()));
             } catch (Exception e) {
                 future.completeExceptionally(e);
             }
@@ -182,10 +189,10 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
             return future.get(REQUEST_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return new OfflinePlayer[0];
+            return Collections.emptyList();
         } catch (ExecutionException | TimeoutException e) {
-            log.warn("[CheckPlayerOnline] 获取 Bukkit 离线玩家快照失败", e);
-            return new OfflinePlayer[0];
+            warnRefreshLimited("[CheckPlayerOnline] 获取 Bukkit 在线玩家快照失败", e);
+            return Collections.emptyList();
         }
     }
 
@@ -197,9 +204,50 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
                 staleKeys.add(entry.getKey());
             }
         }
-        for (String staleKey : staleKeys) {
-            manualTargetAccess.remove(staleKey);
-            manualTargets.remove(staleKey);
+        removeManualTargets(staleKeys);
+        trimManualTargetsIfNeeded();
+    }
+
+    private void trimManualTargetsIfNeeded() {
+        int overflow = manualTargets.size() - MANUAL_TARGET_MAX_SIZE;
+        if (overflow <= 0) {
+            return;
+        }
+
+        for (String key : manualTargets.keySet()) {
+            manualTargetAccess.putIfAbsent(key, 0L);
+        }
+        List<Map.Entry<String, Long>> entries = new ArrayList<>(manualTargetAccess.entrySet());
+        entries.sort(Map.Entry.comparingByValue(Comparator.nullsFirst(Long::compareTo)));
+
+        List<String> trimKeys = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : entries) {
+            if (overflow-- <= 0) {
+                break;
+            }
+            trimKeys.add(entry.getKey());
+        }
+        removeManualTargets(trimKeys);
+    }
+
+    private void removeManualTargets(List<String> keys) {
+        for (String key : keys) {
+            manualTargetAccess.remove(key);
+            manualTargets.remove(key);
+            onlineCache.remove(key);
+        }
+    }
+
+    private void warnRefreshLimited(String message, Throwable throwable) {
+        long now = System.currentTimeMillis();
+        if (now - lastRefreshWarningTime < REFRESH_WARNING_INTERVAL_MILLIS) {
+            return;
+        }
+        lastRefreshWarningTime = now;
+        if (throwable == null) {
+            log.warn(message);
+        } else {
+            log.warn(message, throwable);
         }
     }
 
