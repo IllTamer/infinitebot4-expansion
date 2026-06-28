@@ -6,42 +6,40 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Map;
 
 public class GroupListener implements Listener {
 
-    private final FileConfiguration config;
+    private final ExpansionConfig configFile;
     private final Language lang;
     private final Map<Long, BindData> bind;
 
     public GroupListener(IPManager instance) {
-        config = instance.getConfigFile().getConfig();
+        configFile = instance.getConfigFile();
         lang = instance.getLanguage();
         bind = instance.getBind();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onGroupMessage(GroupMessageEvent event) {
-        String msg = event.getRawMessage();
-
-        for (Map.Entry<Long, BindData> entry : bind.entrySet()) {
-            if (!event.getUserId().equals(entry.getKey())) {
-                continue;
-            }
-            BindData data = entry.getValue();
-            if (!data.getCode().equalsIgnoreCase(msg)) {
-                continue;
-            }
-            config.set(data.getUuid(), null);
-            event.reply(PluginUtil.parseColor(lang.get("message", "success")));
-            bind.remove(entry.getKey());
+        String msg = event.getRawMessage().trim();
+        long qq = event.getUserId();
+        BindData data = bind.get(qq);
+        if (data == null || !data.getCode().equalsIgnoreCase(msg)) {
             return;
         }
+
+        synchronized (configFile) {
+            configFile.getConfig().set(data.getUuid(), data.getIp());
+            configFile.save();
+        }
+        bind.remove(qq, data);
+        event.reply(PluginUtil.parseColor(lang.get("message", "success")));
     }
 
     @EventHandler

@@ -8,6 +8,7 @@ import lombok.Data;
 public class BindData {
 
     private String uuid;
+    private String ip;
     private String code;
 
 }

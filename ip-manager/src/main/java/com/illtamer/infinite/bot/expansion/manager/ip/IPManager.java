@@ -8,8 +8,8 @@ import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.expansion.manager.InfiniteExpansion;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class IPManager extends InfiniteExpansion {
@@ -20,7 +20,7 @@ public class IPManager extends InfiniteExpansion {
     private Language language;
 
     // qq -> obj
-    private final Map<Long, BindData> bind = new HashMap<>();
+    private final Map<Long, BindData> bind = new ConcurrentHashMap<>();
 
     @Override
     public void onEnable() {
