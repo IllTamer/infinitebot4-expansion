@@ -34,7 +34,6 @@ public class LoginListener implements Listener {
     private static BukkitTask SCHEDULED;
     private static int joins;
 
-    //    private final boolean authme;
     private final List<String> kickMessages;
     private final boolean defence;
     private final boolean tips;
@@ -45,7 +44,6 @@ public class LoginListener implements Listener {
 
     public LoginListener(ExpansionConfig configFile) {
         final FileConfiguration config = configFile.getConfig();
-//        this.authme = config.getBoolean("auth-me");
         this.whiteList = config.getBoolean("white-list");
         this.accessPrefix = config.getString("access-prefix");
         this.limit = config.getInt("limit");
@@ -70,9 +68,10 @@ public class LoginListener implements Listener {
         }, 5 * 20, 20);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onLogin(AsyncPlayerPreLoginEvent event) {
-//        if (authme && AuthMeApi.getInstance().isRegistered(event.getName())) return;
+        // AuthMe 等插件在 LOWEST 完成昵称合法性校验，若昵称非法已被拒绝，则不再触发绑定
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
         if (whiteList) {
             for (OfflinePlayer offlinePlayer : Bukkit.getWhitelistedPlayers()) {
                 if (offlinePlayer.getUniqueId().equals(event.getUniqueId())) return;
