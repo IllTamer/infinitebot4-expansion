@@ -8,10 +8,10 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
 import com.illtamer.perpetua.sdk.message.MessageBuilder;
@@ -51,10 +51,10 @@ public class KeyWordsListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitBootstrap.getInstance(), () -> {
+        MinecraftScheduler.runTaskAsync(() -> {
             int count = 0;
             for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                if (equals(new Date(System.currentTimeMillis()),new Date(player.getFirstPlayed()))) {
+                if (equals(new Date(System.currentTimeMillis()), new Date(player.getFirstPlayed()))) {
                     count ++;
                 }
             }

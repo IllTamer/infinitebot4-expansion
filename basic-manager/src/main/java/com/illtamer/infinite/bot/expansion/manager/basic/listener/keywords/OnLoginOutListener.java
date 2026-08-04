@@ -7,10 +7,10 @@ import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedLis
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
@@ -99,12 +99,18 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
         }
 
         if (!players.isEmpty()) {
-            Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
-                players.forEach(player -> {
-                    player.kickPlayer(PluginUtil.parseColor(language.get("key-word", "kick").replace("%qq%", String.valueOf(userId))));
-                    result.addKickedPlayer(player.getName());
-                });
-            });
+            final String kickReason = PluginUtil.parseColor(language.get("key-word", "kick").replace("%qq%", String.valueOf(userId)));
+            for (Player player : players) {
+                try {
+                    String kicked = MinecraftScheduler.callSyncEntity(player, () -> {
+                        player.kickPlayer(kickReason);
+                        return player.getName();
+                    });
+                    result.addKickedPlayer(kicked);
+                } catch (IllegalStateException e) {
+                    log.warn("[LoginOut] 踢出玩家 {} 失败", player.getName(), e);
+                }
+            }
         }
 
         return result;

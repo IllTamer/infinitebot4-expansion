@@ -7,9 +7,9 @@ import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedLis
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.entity.transfer.entity.Client;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
@@ -20,8 +20,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -107,17 +105,12 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
         String clientName = StaticAPI.getClient().getClientName();
         data.setClientName(clientName);
 
-        // 必须在主线程获取在线玩家列表，使用 CompletableFuture 等待结果
-        CompletableFuture<Collection<? extends Player>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(),
-                () -> future.complete(BukkitBootstrap.getInstance().getServer().getOnlinePlayers()));
-
+        // 在全局区域线程获取在线玩家列表（Folia 与 Paper 通用）
         Collection<? extends Player> players;
         try {
-            players = future.get();
-        } catch (InterruptedException | ExecutionException e) {
+            players = MinecraftScheduler.callSyncGlobal(() -> new ArrayList<>(Bukkit.getOnlinePlayers()));
+        } catch (IllegalStateException e) {
             log.error("[ShowPlayers] 节点 [{}] 获取在线玩家列表失败", clientName, e);
-            Thread.currentThread().interrupt();
             return data;
         }
 

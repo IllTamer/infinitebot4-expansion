@@ -9,6 +9,7 @@ import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedLis
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
@@ -16,13 +17,11 @@ import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.entity.transfer.entity.Client;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 @Slf4j
 public class OnGlobalCmdListener extends AbstractDistributedListener<CmdResponse> {
@@ -95,7 +94,7 @@ public class OnGlobalCmdListener extends AbstractDistributedListener<CmdResponse
         CompletableFuture<String> future = new CompletableFuture<>();
 
         SubmitSender sender = new SubmitSender(BukkitBootstrap.getInstance().getServer(), future::complete, delayTick, senderName);
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> SubmitListener.executeAndCapture(sender, cmd));
+        MinecraftScheduler.runTask(() -> SubmitListener.executeAndCapture(sender, cmd));
         try {
             response.setResponse(future.get());
         } catch (ExecutionException | InterruptedException e) {

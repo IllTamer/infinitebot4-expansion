@@ -4,11 +4,12 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.WrappedTask;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.repository.PlayerDataRepository;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
 import com.illtamer.infinite.bot.minecraft.util.Lambda;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.ValidUtil;
@@ -22,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class BasicBindListener implements Listener {
-    private static final HashMap<Long, BukkitTask> VERIFY = new HashMap<>();
+    private static final HashMap<Long, WrappedTask> VERIFY = new HashMap<>();
     // Pair: data->status
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
     private final long limit;
@@ -150,13 +150,26 @@ public class BasicBindListener implements Listener {
         }
         BIND_DATA.put(player, new Pair<>(data, status));
         final Long userId = data.getUserId();
-        VERIFY.put(userId, Bukkit.getScheduler().runTaskLater(BukkitBootstrap.getInstance(), () -> {
+        final Runnable expireRunnable = () -> {
             final Pair<PlayerData, Status> pair = BIND_DATA.remove(player);
             if (pair == null) return;
             PlayerData remove = pair.getKey();
             VERIFY.remove(userId);
             player.sendMessage(PluginUtil.parseColor(language.get("bind", "expired").replace("%qq%", remove.getUserId().toString())));
-        }, limit * 60 * 20L));
+        };
+        final Runnable retiredRunnable = () -> {
+            BIND_DATA.remove(player);
+            VERIFY.remove(userId);
+        };
+        final WrappedTask task = MinecraftScheduler.runEntityTaskLater(player, expireRunnable, retiredRunnable, limit * 60 * 20L);
+        if (task != null) {
+            VERIFY.put(userId, task);
+        } else {
+            // 玩家在提交前已离线，清理暂存并回复
+            BIND_DATA.remove(player);
+            reply.accept(language.get("bind", "offline").replace("%player_name%", player.getName()));
+            return;
+        }
         reply.accept(language.get("bind", "process").replace("%player_name%", player.getName()));
 
         String keywords = "确认" + (changeBind ? "改绑" : "绑定") + userId;
@@ -185,6 +198,13 @@ public class BasicBindListener implements Listener {
 
     private void formatExceptionHandle(MessageEvent event) {
         event.reply(language.get("bind", "mistake"));
+    }
+
+    private static void cancelVerifyTask(long userId) {
+        final WrappedTask task = VERIFY.remove(userId);
+        if (task != null) {
+            task.cancel();
+        }
     }
 
     public static class PlayerConfirmListener implements org.bukkit.event.Listener {
@@ -242,7 +262,7 @@ public class BasicBindListener implements Listener {
                     return;
                 }
                 BIND_DATA.remove(player);
-                VERIFY.remove(qq).cancel();
+                cancelVerifyTask(qq);
                 if (status.valid)
                     data.setValidUUID(player.getUniqueId().toString());
                 else
@@ -259,7 +279,7 @@ public class BasicBindListener implements Listener {
                     return;
                 }
                 BIND_DATA.remove(player);
-                VERIFY.remove(qq).cancel();
+                cancelVerifyTask(qq);
                 if (status.valid)
                     data.setValidUUID(player.getUniqueId().toString());
                 else
