@@ -17,6 +17,12 @@ subprojects {
 
     version = rootProject.version
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
     repositories {
         mavenLocal()
         maven {url "https://maven.illtamer.com/releases"}
@@ -28,13 +34,16 @@ subprojects {
     }
 
     dependencies {
-        compileOnly 'com.illtamer.infinite.bot:minecraft:4.1.0-SNAPSHOT'
+        compileOnly 'com.illtamer.infinite.bot:minecraft:4.2.0-SNAPSHOT'
         compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
         compileOnly 'me.clip:placeholderapi:2.11.7'
 
         compileOnly 'org.projectlombok:lombok:1.18.42'
         annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
+        testCompileOnly 'com.illtamer.infinite.bot:minecraft:4.2.0-SNAPSHOT'
+        testCompileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+        testCompileOnly 'me.clip:placeholderapi:2.11.7'
         testCompileOnly 'org.projectlombok:lombok:1.18.42'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
@@ -46,5 +55,11 @@ subprojects {
         manifest {
             attributes('Automatic-Module-Name': 'com.illtamer.infinite.bot.expansion')
         }
+    }
+
+    // 项目历史上把 sandbox main() 放在 src/test/java（无 @Test 注解），
+    // 只需编译通过而无需真正执行 JUnit，避免 Gradle 将其误当作测试类加载。
+    tasks.withType(Test).configureEach {
+        enabled = false
     }
 }
