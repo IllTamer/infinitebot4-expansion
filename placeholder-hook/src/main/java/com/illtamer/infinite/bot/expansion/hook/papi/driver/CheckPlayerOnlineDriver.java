@@ -4,6 +4,8 @@ import com.illtamer.infinite.bot.expansion.hook.papi.context.OnlineData;
 import com.illtamer.infinite.bot.minecraft.api.IExpansion;
 import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedListener;
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.WrappedTask;
 import com.illtamer.infinite.bot.minecraft.configuration.config.BotConfiguration;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
@@ -12,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineData> {
 
     private static final long REFRESH_INTERVAL_TICKS = 60L;
+    private static final long REFRESH_INITIAL_DELAY_MILLIS = 1000L;
+    private static final long REFRESH_PERIOD_MILLIS = REFRESH_INTERVAL_TICKS * 50L;
     private static final long REQUEST_TIMEOUT_MILLIS = 2500L;
     private static final long MANUAL_TARGET_TTL_MILLIS = TimeUnit.MINUTES.toMillis(10);
     private static final long REFRESH_WARNING_INTERVAL_MILLIS = TimeUnit.SECONDS.toMillis(30);
@@ -48,7 +51,7 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
     private final Map<String, Boolean> onlineCache = new ConcurrentHashMap<>();
     private final AtomicBoolean refreshing = new AtomicBoolean(false);
 
-    private volatile BukkitTask refreshTask;
+    private volatile WrappedTask refreshTask;
     private volatile long lastRefreshWarningTime;
 
     public CheckPlayerOnlineDriver(IExpansion expansion) {
@@ -59,16 +62,16 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
         if (refreshTask != null) {
             return;
         }
-        refreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
-                BukkitBootstrap.getInstance(),
+        refreshTask = MinecraftScheduler.runTaskTimerAsync(
                 this::refreshOnlineCache,
-                20L,
-                REFRESH_INTERVAL_TICKS
+                REFRESH_INITIAL_DELAY_MILLIS,
+                REFRESH_PERIOD_MILLIS,
+                TimeUnit.MILLISECONDS
         );
     }
 
     public void stopRefreshTask() {
-        BukkitTask task = refreshTask;
+        WrappedTask task = refreshTask;
         refreshTask = null;
         if (task != null) {
             task.cancel();
@@ -172,25 +175,9 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
     }
 
     private Collection<? extends Player> getOnlinePlayersSnapshot() {
-        if (Bukkit.isPrimaryThread()) {
-            return new ArrayList<>(Bukkit.getOnlinePlayers());
-        }
-
-        CompletableFuture<Collection<? extends Player>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
-            try {
-                future.complete(new ArrayList<>(Bukkit.getOnlinePlayers()));
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        });
-
         try {
-            return future.get(REQUEST_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return Collections.emptyList();
-        } catch (ExecutionException | TimeoutException e) {
+            return MinecraftScheduler.callSyncGlobal(() -> new ArrayList<>(Bukkit.getOnlinePlayers()));
+        } catch (IllegalStateException e) {
             warnRefreshLimited("[CheckPlayerOnline] 获取 Bukkit 在线玩家快照失败", e);
             return Collections.emptyList();
         }
@@ -339,25 +326,9 @@ public class CheckPlayerOnlineDriver extends AbstractDistributedListener<OnlineD
             return Collections.emptySet();
         }
 
-        if (Bukkit.isPrimaryThread()) {
-            return collectOnlineKeysNow(targets);
-        }
-
-        CompletableFuture<Set<String>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
-            try {
-                future.complete(collectOnlineKeysNow(targets));
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        });
-
         try {
-            return future.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return Collections.emptySet();
-        } catch (ExecutionException e) {
+            return MinecraftScheduler.callSyncGlobal(() -> collectOnlineKeysNow(targets));
+        } catch (IllegalStateException e) {
             log.error("[CheckPlayerOnline] 节点在线状态批量匹配失败", e);
             return Collections.emptySet();
         }

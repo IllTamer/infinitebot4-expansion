@@ -2,7 +2,7 @@ package com.illtamer.infinite.bot.expansion.hook.papi.hook;
 
 import com.illtamer.infinite.bot.expansion.hook.papi.PHandlerEnum;
 import com.illtamer.infinite.bot.expansion.hook.papi.PlaceholderAPIHook;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -53,11 +53,11 @@ public class PAPIHook extends PlaceholderExpansion {
             return false;
         }
 
-        if (Bukkit.isPrimaryThread()) {
+        if (MinecraftScheduler.isGlobalThread()) {
             return registerNow();
         }
 
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> registerNow());
+        MinecraftScheduler.runTask(PAPIHook::registerNow);
         return true;
     }
 
@@ -67,12 +67,12 @@ public class PAPIHook extends PlaceholderExpansion {
             return;
         }
 
-        if (Bukkit.isPrimaryThread()) {
+        if (MinecraftScheduler.isGlobalThread()) {
             unregisterNow(hook);
             return;
         }
 
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> unregisterNow(hook));
+        MinecraftScheduler.runTask(() -> unregisterNow(hook));
     }
 
     private static boolean registerNow() {
