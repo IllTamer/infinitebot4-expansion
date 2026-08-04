@@ -1,6 +1,6 @@
 package com.illtamer.infinite.bot.expansion.manager.message.eneity;
 
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import net.kyori.adventure.audience.MessageType;
@@ -8,7 +8,6 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
@@ -21,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public final class SubmitSender implements ConsoleCommandSender {
@@ -200,7 +200,7 @@ public final class SubmitSender implements ConsoleCommandSender {
     private void doSendMessage(String s) {
         if (cacheMessages.isEmpty()) {
             cacheMessages.add(s);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitBootstrap.getInstance(), () -> {
+            MinecraftScheduler.runTaskLaterAsync(() -> {
                 List<String> messages = new ArrayList<>(cacheMessages);
                 cacheMessages.clear();
                 if (messages.size() == 1) {
@@ -208,7 +208,7 @@ public final class SubmitSender implements ConsoleCommandSender {
                 } else {
                     respConsumer.accept(PluginUtil.clearColor(StringUtil.toString(messages)));
                 }
-            }, delayTick);
+            }, delayTick * 50L, TimeUnit.MILLISECONDS);
         } else {
             cacheMessages.add(s);
         }

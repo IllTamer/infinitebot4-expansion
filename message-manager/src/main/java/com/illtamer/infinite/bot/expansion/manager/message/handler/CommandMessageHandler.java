@@ -5,7 +5,7 @@ import com.illtamer.infinite.bot.expansion.manager.message.eneity.CapturingComma
 import com.illtamer.infinite.bot.expansion.manager.message.eneity.SubmitSender;
 import com.illtamer.infinite.bot.expansion.manager.message.hook.Placeholder;
 import com.illtamer.infinite.bot.expansion.manager.message.util.MessageUtil;
-import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
+import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
 import com.illtamer.perpetua.sdk.event.message.GroupMessageEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.permissions.PermissionSet;
@@ -54,7 +54,7 @@ public class CommandMessageHandler implements MessageHandler {
                 delayTick,
                 senderName
         );
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
+        MinecraftScheduler.runTask(() -> {
             for (String cmd : commands) {
                 executeAndCapture(sender, cmd);
             }
@@ -65,7 +65,7 @@ public class CommandMessageHandler implements MessageHandler {
         if (offlinePlayer == null) return;
         Player player = offlinePlayer.getPlayer();
         if (player == null || !player.isOnline()) return;
-        Bukkit.getScheduler().runTask(BukkitBootstrap.getInstance(), () -> {
+        MinecraftScheduler.runEntityTask(player, () -> {
             for (String cmd : commands) {
                 player.performCommand(cmd);
             }
