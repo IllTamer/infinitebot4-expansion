@@ -1,0 +1,38 @@
+# InfiniteBot4 - LoginManager (AuthMe 集成版)
+# 玩家在 AuthMe 要求输入密码时，附属通过 QQ 私聊向玩家绑定的 QQ 发送验证请求，
+# 玩家回复"确认"后可跳过密码输入直接登录。
+#
+# 触发条件：
+#   1) 服务器已安装并启用 AuthMe
+#   2) 玩家进服后被 AuthMe 判定为未登录
+#   3) 玩家在数据库中已绑定 QQ (PlayerData.userId 非空)
+#   4) 且该 QQ 已添加机器人为好友
+# 满足以上条件才会发送 QQ 私聊；不满足任一条件都不打扰 AuthMe 正常密码流程。
+
+# 配置文件版本，请勿手动修改
+version: 2
+
+# 待验证请求的兜底清理时长 (秒)
+# 仅用于防止内存中堆积过期的旧请求，与"允许登录"无关：
+# 玩家每次进服都会重新发送验证消息并覆盖旧请求，玩家断线也会立即清理。
+notice-timeout: 300
+
+# 好友列表缓存 TTL (秒)。超过 TTL 后下一次进服触发时会重新拉取好友列表。
+friend-cache: 300
+
+# 内网 / 回环 IP 直接跳过归属地查询
+skip-local-ip: true
+
+# IP 归属地查询配置
+#   默认使用 useragentinfo 免费接口，返回 JSON 里的顶层 province/city/isp 字段。
+#   若需要替换成其它接口，把 url 里的 %ip% 保留为占位符，并按接口返回的 JSON
+#   结构填 field 里的字段名（支持 a.b.c 形式的嵌套路径）。
+ip-api:
+  enable: true
+  url: 'https://ip.taobao.com/outGetIpInfo?ip=%ip%&accessKey=alibaba-inc'
+  field:
+    province: 'data.region'
+    city: 'data.city'
+    isp: 'data.isp'
+  # 同一 IP 的归属地缓存 TTL (秒)，避免重复请求
+  cache: 300

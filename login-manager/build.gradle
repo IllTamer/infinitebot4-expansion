@@ -1,0 +1,28 @@
+version '1.0-SNAPSHOT'
+
+// 生产服务器运行 Java 21 (class file version 65)，本模块降级编译以兼容
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations.all {
+    // 覆盖父项目声明的 4.2.0-SNAPSHOT (Java 25 编译，Java 21 无法加载)
+    resolutionStrategy {
+        force 'com.illtamer.infinite.bot:minecraft:4.1.0-SNAPSHOT'
+    }
+}
+
+repositories {
+    maven { url 'https://repo.codemc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'fr.xephi:authme:5.6.0'
+}
+
+shadowJar {
+    archiveBaseName = project.name
+    archiveClassifier = ''
+}

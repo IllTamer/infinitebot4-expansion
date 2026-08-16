@@ -1,0 +1,18 @@
+message:
+  # 发送到玩家 QQ 的验证请求 (占位符: %player% %province% %city% %isp%)
+  qq-notice: |-
+    检测到你的账号 %player% 进入了服务器
+    登陆地为 %province% %city% %isp%
+    回复 确认 允许该账户登录
+    若非本人登录请忽略本消息
+  # 玩家回复"确认"且免密登录成功 (占位符: %player%)
+  reply-success: '验证成功！角色 %player% 已免密登录，请立即回到游戏'
+  # 玩家回复"确认"但角色已离线 (占位符: %player%)
+  reply-offline: '角色 %player% 已离线，请重新连接服务器后再进行验证'
+  # 验证请求已过期 (占位符: %player%)
+  reply-expired: '该验证请求已过期，请重新连接服务器以获取新的验证消息'
+location:
+  # 内网 / 回环 IP 展示文案
+  local: '内网'
+  # 查询失败或字段缺失时的兜底
+  unknown: '未知'
