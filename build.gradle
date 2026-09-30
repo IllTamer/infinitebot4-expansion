@@ -48,6 +48,20 @@ subprojects {
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
     }
 
+    // 输出 Java 21 字节码（class file 65），兼容 Paper 1.21 服务器运行时
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 21
+    }
+
+    // minecraft:4.2.0-SNAPSHOT 的模块元数据声明 jvm.version=25，
+    // 但实际只需在编译期可见，放宽属性以允许解析
+    configurations.all {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+        }
+    }
+
     shadowJar {
         archiveBaseName = parent.name + '-' + project.name
         version = project.version
