@@ -7,18 +7,18 @@ import net.minecraft.network.chat.Component;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CapturingCommandSource implements CommandSource {
 
-    private final List<String> capturedMessages = new ArrayList<>();
+    private final List<String> capturedMessages = Collections.synchronizedList(new ArrayList<>());
 
     private final CommandSender sender;
 
     @Override
     public void sendSystemMessage(Component message) {
-        System.out.println("sendSystemMessage=");
         // 捕获所有系统消息（包括指令响应）
         String text = message.getString();
         capturedMessages.add(text);

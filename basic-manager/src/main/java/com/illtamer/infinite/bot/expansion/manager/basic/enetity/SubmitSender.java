@@ -1,6 +1,6 @@
 package com.illtamer.infinite.bot.expansion.manager.basic.enetity;
 
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
 import com.illtamer.infinite.bot.minecraft.util.PluginUtil;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
 import com.illtamer.perpetua.sdk.event.message.MessageEvent;
@@ -31,6 +31,9 @@ public final class SubmitSender implements ConsoleCommandSender {
     private final int delayTick;
     private final String senderName;
 
+    /**
+     * @param delayTick 小于等于 0 时每条消息立即回调（不做防抖合并），便于调用方自行收集
+     * */
     public SubmitSender(Server server, Consumer<String> respConsumer, int delayTick, String senderName) {
         this.server = server;
         this.respConsumer = respConsumer;
@@ -199,19 +202,29 @@ public final class SubmitSender implements ConsoleCommandSender {
     }
 
     private void doSendMessage(String s) {
-        if (cacheMessages.isEmpty()) {
-            cacheMessages.add(s);
-            MinecraftScheduler.runTaskLaterAsync(() -> {
-                List<String> messages = new ArrayList<>(cacheMessages);
-                cacheMessages.clear();
+        final String text = PluginUtil.clearColor(s);
+        if (delayTick <= 0) {
+            respConsumer.accept(text);
+            return;
+        }
+        final boolean schedule;
+        synchronized (cacheMessages) {
+            schedule = cacheMessages.isEmpty();
+            cacheMessages.add(text);
+        }
+        if (schedule) {
+            SchedulerCompat.runTaskLaterAsync(() -> {
+                final List<String> messages;
+                synchronized (cacheMessages) {
+                    messages = new ArrayList<>(cacheMessages);
+                    cacheMessages.clear();
+                }
                 if (messages.size() == 1) {
-                    respConsumer.accept(PluginUtil.clearColor(messages.get(0)));
+                    respConsumer.accept(messages.get(0));
                 } else {
-                    respConsumer.accept(PluginUtil.clearColor(StringUtil.toString(messages)));
+                    respConsumer.accept(StringUtil.toString(messages));
                 }
             }, delayTick * 50L, TimeUnit.MILLISECONDS);
-        } else {
-            cacheMessages.add(s);
         }
     }
 

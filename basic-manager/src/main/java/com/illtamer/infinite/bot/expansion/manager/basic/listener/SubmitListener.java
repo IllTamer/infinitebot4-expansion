@@ -7,7 +7,7 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.start.bukkit.BukkitBootstrap;
@@ -51,7 +51,12 @@ public class SubmitListener implements Listener {
                 }
                 SubmitSender sender = new SubmitSender(BukkitBootstrap.getInstance().getServer(), event::reply, delayTick, senderName);
                 // 全局区域线程执行指令
-                MinecraftScheduler.runTask(() -> executeAndCapture(sender, command));
+                SchedulerCompat.runTask(() -> {
+                    // 原版指令输出经 CapturingCommandSource 捕获，需回流到 SubmitSender 才会回复给用户
+                    for (String message : executeAndCapture(sender, command)) {
+                        sender.sendMessage(message);
+                    }
+                });
                 BasicManager.getInstance().getLogger().info(String.format(language.get("submit", "log"), event.getSender().getUserId(), command));
                 event.setCancelled(true);
             }
