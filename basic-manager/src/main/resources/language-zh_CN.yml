@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 submit:
   reply: '指令执行中, 请稍后'
@@ -9,6 +9,11 @@ key-word:
   global-cmd-success: "全局指令执行成功"
   global-cmd-error: "全局指令执行失败"
   global-cmd-log: "执行全局指令 {}"
+  global-cmd-title: '全局指令: %s'
+  global-cmd-summary: '执行完成 | 成功 %d / 失败 %d'
+  global-cmd-no-output: '(无输出)'
+  global-cmd-timeout: '(执行超时, 以上为已收集的输出)'
+  global-cmd-failed: '调用失败(未响应)'
   new-player: '今日新玩家数量: %s 人'
   unchecked: '暂未查询到您的信息，请绑定后重试'
   bind-valid: '已绑定正版玩家ID: %s|%s'

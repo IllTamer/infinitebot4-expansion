@@ -22,7 +22,7 @@ public class BasicManager extends InfiniteExpansion {
         instance = this;
         Placeholder.init();
         configFile = new ExpansionConfig("config.yml", this, 3);
-        this.language = Language.of("language", 2, this);
+        this.language = Language.of("language", 3, this);
         EventExecutor.registerBukkitEvent(new TipListener(configFile), instance);
         EventExecutor.registerEvents(new SubmitListener(configFile, language), instance);
         final boolean enable = configFile.getConfig().getBoolean("member-manage.enable");

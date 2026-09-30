@@ -12,4 +12,7 @@ public class CmdResponse implements Serializable {
     // 服务器名称
     private String clientName;
 
+    // 是否执行超时（response 中可能仅为部分输出）
+    private boolean timeout;
+
 }
