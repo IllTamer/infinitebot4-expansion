@@ -4,8 +4,8 @@ import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.WrappedTask;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
+import org.bukkit.scheduler.BukkitTask;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class BasicBindListener implements Listener {
-    private static final HashMap<Long, WrappedTask> VERIFY = new HashMap<>();
+    private static final HashMap<Long, BukkitTask> VERIFY = new HashMap<>();
     // Pair: data->status
     private static final HashMap<Player, Pair<PlayerData, Status>> BIND_DATA = new HashMap<>();
     private final long limit;
@@ -161,7 +161,7 @@ public class BasicBindListener implements Listener {
             BIND_DATA.remove(player);
             VERIFY.remove(userId);
         };
-        final WrappedTask task = MinecraftScheduler.runEntityTaskLater(player, expireRunnable, retiredRunnable, limit * 60 * 20L);
+        final BukkitTask task = SchedulerCompat.runEntityTaskLater(player, expireRunnable, retiredRunnable, limit * 60 * 20L);
         if (task != null) {
             VERIFY.put(userId, task);
         } else {
@@ -201,7 +201,7 @@ public class BasicBindListener implements Listener {
     }
 
     private static void cancelVerifyTask(long userId) {
-        final WrappedTask task = VERIFY.remove(userId);
+        final BukkitTask task = VERIFY.remove(userId);
         if (task != null) {
             task.cancel();
         }

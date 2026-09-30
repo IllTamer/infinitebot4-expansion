@@ -7,7 +7,7 @@ import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedLis
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -102,7 +102,7 @@ public class OnLoginOutListener extends AbstractDistributedListener<LoginOutData
             final String kickReason = PluginUtil.parseColor(language.get("key-word", "kick").replace("%qq%", String.valueOf(userId)));
             for (Player player : players) {
                 try {
-                    String kicked = MinecraftScheduler.callSyncEntity(player, () -> {
+                    String kicked = SchedulerCompat.callSyncEntity(player, () -> {
                         player.kickPlayer(kickReason);
                         return player.getName();
                     });

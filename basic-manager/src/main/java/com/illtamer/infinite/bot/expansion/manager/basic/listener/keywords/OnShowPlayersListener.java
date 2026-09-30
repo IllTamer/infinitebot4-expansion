@@ -7,7 +7,7 @@ import com.illtamer.infinite.bot.minecraft.api.distribute.AbstractDistributedLis
 import com.illtamer.infinite.bot.minecraft.api.distribute.DistributedEventContext;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.EventPriority;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.expansion.Language;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
@@ -108,7 +108,7 @@ public class OnShowPlayersListener extends AbstractDistributedListener<DataOnSho
         // 在全局区域线程获取在线玩家列表（Folia 与 Paper 通用）
         Collection<? extends Player> players;
         try {
-            players = MinecraftScheduler.callSyncGlobal(() -> new ArrayList<>(Bukkit.getOnlinePlayers()));
+            players = SchedulerCompat.callSyncGlobal(() -> new ArrayList<>(Bukkit.getOnlinePlayers()));
         } catch (IllegalStateException e) {
             log.error("[ShowPlayers] 节点 [{}] 获取在线玩家列表失败", clientName, e);
             return data;

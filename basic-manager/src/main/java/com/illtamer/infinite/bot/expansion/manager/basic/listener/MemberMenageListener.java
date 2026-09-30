@@ -3,7 +3,7 @@ package com.illtamer.infinite.bot.expansion.manager.basic.listener;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.api.event.EventHandler;
 import com.illtamer.infinite.bot.minecraft.api.event.Listener;
-import com.illtamer.infinite.bot.minecraft.api.scheduler.MinecraftScheduler;
+import com.illtamer.infinite.bot.expansion.manager.basic.util.SchedulerCompat;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
 import com.illtamer.infinite.bot.minecraft.util.StringUtil;
@@ -49,7 +49,7 @@ public class MemberMenageListener implements Listener {
     @EventHandler
     public void onJoin(GroupMemberJoinEvent event) {
         if (StaticAPI.inGroups(event.getGroupId())) {
-            MinecraftScheduler.runTaskLaterAsync(() -> {
+            SchedulerCompat.runTaskLaterAsync(() -> {
                 event.sendGroupMessage(
                         MessageBuilder.json()
                                 .at(event.getUserId())
@@ -68,7 +68,7 @@ public class MemberMenageListener implements Listener {
         if (!changeAdmin && event.getSender().getRole().equals("admin")) {
             return;
         }
-        MinecraftScheduler.runTaskAsync(() -> {
+        SchedulerCompat.runTaskAsync(() -> {
             PlayerData data = StaticAPI.getRepository().queryByUserId(event.getSender().getUserId());
             if (data == null || (data.getPreferUUID() == null)) {
                 if (defaultCard == null || defaultCard.isEmpty()) return;
