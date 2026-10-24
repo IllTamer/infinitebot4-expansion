@@ -1,0 +1,124 @@
+# MvgExpansion(图像渲染附属)
+#
+# 依赖本机运行的 minecraft-view-generator(mvg) 渲染服务，把游戏内的真实数据
+# 渲染成原版界面图片并回发到 QQ。
+#
+# 查询指令（群聊 / 私聊均可，默认仅能查询自己绑定的账号）:
+#   - 查看背包            渲染绑定玩家的背包界面(含 3D 玩家模型与装备)
+#   - 查看主手            渲染绑定玩家主手物品的 tooltip
+#   - 查看副手            渲染绑定玩家副手物品的 tooltip
+#   - 查看末影箱          渲染绑定玩家的末影箱
+#   - 查看在线            渲染全服(含 Velocity 子服)在线玩家列表
+#   除"查看在线"外，管理员可在指令后追加玩家名查询他人，例如: 查看背包 Steve
+#
+# 说明:
+#   - 首次启动时附属会向 mvg 请求准备 1.21.11 的资源并轮询进度，
+#     资源就绪前查询会收到"正在预热"的提示；
+#   - mvg 的渲染接口硬编码只支持 1.21.11，服务器版本不同时依然按 1.21.11 渲染；
+#   - 安装 SkinsRestorer 时优先从其读取皮肤，否则回退到玩家档案；
+#     皮肤会缓存在附属数据目录并转成内联 base64，mvg 不接受网络图片地址。
+
+version: 3
+
+# mvg 渲染服务连接设置
+mvg:
+  base-url: 'http://127.0.0.1:4666'
+  # 与 mvg 的 API_KEY 环境变量一致，留空表示服务端未开启鉴权
+  api-key: ''
+  connect-timeout-seconds: 5
+  request-timeout-seconds: 30
+  # 留空时自动读取服务器版本；非 1.21.11 会被强制纠正为 1.21.11
+  minecraft-version: ''
+  # 子服名称，用于在线列表分组，留空时取服务器名
+  server-name: ''
+
+# 资源预热
+warmup:
+  enabled: true
+  # 轮询资源准备进度的间隔(秒)
+  poll-interval-seconds: 3
+  # 整体等待上限(分钟)，超时后按失败处理
+  timeout-minutes: 30
+  # 预热失败后的重试间隔(秒)，<= 0 表示不重试
+  retry-delay-seconds: 60
+
+# 玩家皮肤缓存
+skin:
+  # 缓存有效期(天)，<= 0 表示永不过期
+  cache-days: 7
+  # 玩家进服时异步刷新皮肤
+  refresh-on-join: true
+  # 进服解析时用来源指纹校验缓存：玩家换过皮肤就重新下载，不必等 cache-days 到期
+  verify-on-join: true
+  # 单个皮肤文件的下载大小上限(字节)
+  max-download-bytes: 262144
+  # 拿不到皮肤模型信息时使用的兜底模型: classic | slim
+  fallback-model: 'classic'
+  # SkinsRestorer 与在线档案都拿不到时，按玩家名向 Mojang 查询皮肤。
+  # 离线服(玩家档案里没有 textures)且 SkinsRestorer 只装在代理端时，这是主力来源
+  mojang-lookup: true
+  mojang-api-base: 'https://api.mojang.com'
+  session-api-base: 'https://sessionserver.mojang.com'
+  # 皮肤贴图下载地址，依次尝试；占位符: {hash} {uuid} {name}
+  # 国内线路访问 textures.minecraft.net 不稳定时，可加上镜像（如 mc-heads.net）
+  texture-hosts:
+    - 'https://textures.minecraft.net/texture/{hash}'
+    - 'https://mc-heads.net/skin/{uuid}'
+
+# 关键词列表，注释掉任意一项即可关闭对应功能
+key-word:
+  inventory: '查看背包'
+  main-hand: '查看主手'
+  off-hand: '查看副手'
+  ender-chest: '查看末影箱'
+  online: '查看在线'
+
+# 渲染选项
+render:
+  # tooltip 文本模式
+  # - chinese: 附属自行生成中文 tooltip(物品名/附魔/属性/耐久全中文)
+  # - vanilla: 交给 mvg 按原版顺序生成(附魔与属性行会显示英文)
+  tooltip-mode: 'chinese'
+  # tooltip 左侧是否绘制物品图标(原版悬停框默认不绘制)
+  tooltip-icon: false
+  # 成品图放大倍率(mvg 的 options.scale)，四类视图各自独立配置
+  # 0 或 1 表示不放大，允许小数(如 1.5)，上限 16
+  scale:
+    # 查看背包(原生画布 176x166)
+    inventory: 2.0
+    # 查看末影箱(原生画布 176x167)
+    enderchest: 2.0
+    # 查看主手/副手(原生宽 360，高由内容决定)
+    tooltip: 2.0
+    # 查看在线(原生画布本身已按 2 倍渲染，叠加后等于 4 倍文字)
+    playerlist: 2.0
+  # 物品带有自定义模型数据时，是否把它作为 item.customData 传给 mvg
+  # 需要 mvg 侧配置好 ItemsAdder 的 contents/ 与 items_ids_cache.yml；
+  # 关闭后所有物品都按原版材质渲染
+  itemsadder: true
+  # customData 的下发范围
+  # - always: 只要物品带正整数 custom_model_data 就下发(默认)。索引键是「基础材料 + 数值」，
+  #   mvg 查不到就按原版材质渲染并记一条 WARN，因此不需要先替它判断"是不是自定义物品"
+  # - itemsadder: 只下发 ItemsAdder API 判定为自定义物品的物品。混合服慎用 ——
+  #   钓鱼/MMO 武器等插件常复用 ItemsAdder 的 custom_model_data 数值来吃它的贴图，
+  #   这类物品并不由 ItemsAdder 创建，isCustomItem() 一律返回 false，会被整批挡在门外
+  custom-data: 'always'
+  # 标题与在线列表文本支持 & 或 § 颜色与格式码
+  inventory-title: '%player% 的背包'
+  enderchest-title: '%player% 的末影箱'
+  playerlist-header: '&a服务器在线 %total% 人'
+  playerlist-footer: '&7%servers%'
+  # 在线列表列数，0 表示按人数自动
+  playerlist-columns: 0
+  # 在线列表最多渲染的玩家数，超出会截断(皮肤数据随跨服广播传输，过大可能影响延迟)
+  playerlist-max-players: 80
+  # 在线列表是否携带真实皮肤，关闭后使用内置默认皮肤以减小广播体积
+  online-include-skin: true
+  # 图片发送方式
+  # - base64: 直接以 base64:// 形式发送，适用于 bot 与服务器不同机
+  # - file: 先落盘再把绝对路径交给 bot，适用于同机部署
+  image-upload-mode: 'base64'
+  # file 模式下保留的图片文件数量
+  image-cache-size: 32
+  # 同一玩家的查询冷却(秒)，0 表示不限制
+  cooldown-seconds: 3

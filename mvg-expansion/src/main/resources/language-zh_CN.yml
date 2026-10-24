@@ -1,0 +1,26 @@
+version: 2
+
+# 手持物名称
+hand:
+  main: '主手'
+  off: '副手'
+
+key-word:
+  not-bound: '暂未查询到您的绑定信息，请先绑定游戏账号后重试'
+  no-permission: '仅管理员可以查询其他玩家的数据'
+  player-offline: '玩家 %player% 当前不在线，无法读取实时数据'
+  warming-up: '图像渲染服务正在预热中(%state%)，请稍后再试'
+  cooldown: '请求过于频繁，请 %seconds% 秒后再试'
+  empty-hand: '你的%hand%没有物品'
+  no-online-player: '当前没有玩家在线'
+  online-partial: '注: 部分子服未响应或在线人数已超出渲染上限，列表可能不完整'
+  query-failed: '跨服查询失败，请稍后再试'
+  local-fallback: '部分子服未响应，以下为 %server% 的数据'
+  online-local-fallback: '跨服在线数据获取失败，以下仅显示 %server% 的在线玩家'
+  render-failed: '渲染失败: %reason%'
+  image-failed: '图片发送失败，请稍后再试'
+  backend-unavailable: '渲染服务不可用，请联系管理员检查 mvg 是否运行'
+  resource-not-ready: '渲染资源尚未就绪，请稍后再试'
+  unauthorized: '渲染服务鉴权失败，请联系管理员检查 api-key 配置'
+  image-too-large: '生成的图片过大，无法发送'
+  error: '处理请求时出现异常，请稍后再试'

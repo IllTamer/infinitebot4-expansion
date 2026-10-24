@@ -17,6 +17,7 @@
 - [x] [message-manager (自定义消息附属)](./message-manager)
 - [x] [placeholder-hook (papi变量拓展附属)](./placeholder-hook)
 - [x] [video-parse (视频解析附属)](./video-parse)
+- [x] [mvg-expansion (图像渲染附属)](./mvg-expansion)
 
 ## 配套前端工具
 

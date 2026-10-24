@@ -1,0 +1,40 @@
+version '1.0-SNAPSHOT'
+
+repositories {
+    maven { url 'https://repo.codemc.org/repository/maven-public/' }
+}
+
+dependencies {
+    // SkinsRestorer 软依赖：仅在编译期可见，运行期由插件类加载器解析，
+    // 未安装 SkinsRestorer 时附属自动降级到原生 PlayerProfile 取皮肤
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.9.0'
+
+    // ItemsAdder 软依赖：官方 API stub（MIT，无传递依赖），
+    // 运行期由服务端已安装的 ItemsAdder 提供实现；未安装时只画原版物品
+    compileOnly 'beer.devs:itemsadder-api:4.0.18-beta-10'
+
+    // 离线沙箱运行所需的依赖（不参与打包）
+    testRuntimeOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+}
+
+/**
+ * 离线沙箱：直接调用本地 mvg 渲染服务，生成并发送测试报文，校验图片尺寸与内容差异。
+ * 用法: ./gradlew :mvg-expansion:sandbox
+ *      ./gradlew :mvg-expansion:sandbox -PmvgUrl=http://127.0.0.1:14666
+ *      ./gradlew :mvg-expansion:sandbox -Pskin=/path/to/64x64.png
+ *      ./gradlew :mvg-expansion:sandbox -PiaMaterial=paper -PiaCustomData=11257
+ */
+tasks.register('sandbox', JavaExec) {
+    group = 'verification'
+    description = 'Call the local minecraft-view-generator to verify render payloads'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.illtamer.infinite.bot.expansion.mvg.MvgSandboxMain'
+    if (project.hasProperty('mvgUrl')) {
+        args project.property('mvgUrl')
+    }
+    ['skin', 'iaMaterial', 'iaCustomData'].each { name ->
+        if (project.hasProperty(name)) {
+            systemProperty "mvg.sandbox.${name}", project.property(name)
+        }
+    }
+}
