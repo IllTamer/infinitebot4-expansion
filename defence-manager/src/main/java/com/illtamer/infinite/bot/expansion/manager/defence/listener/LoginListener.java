@@ -3,6 +3,7 @@ package com.illtamer.infinite.bot.expansion.manager.defence.listener;
 import com.illtamer.infinite.bot.expansion.manager.defence.DefenceManager;
 import com.illtamer.infinite.bot.expansion.manager.defence.entity.AuthData;
 import com.illtamer.infinite.bot.expansion.manager.defence.util.AuthUtil;
+import com.illtamer.infinite.bot.expansion.manager.defence.util.BotStatusUtil;
 import com.illtamer.infinite.bot.minecraft.api.StaticAPI;
 import com.illtamer.infinite.bot.minecraft.expansion.ExpansionConfig;
 import com.illtamer.infinite.bot.minecraft.pojo.PlayerData;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginListener implements Listener {
     @Getter
@@ -31,6 +33,10 @@ public class LoginListener implements Listener {
     private static final LinkedList<BukkitTask> authList = new LinkedList<>();
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final HashMap<String, Integer> ATTACKERS = new HashMap<>();
+    /**
+     * 机器人链接是否处于降级状态（边沿检测，避免日志刷屏）
+     * */
+    private static final AtomicBoolean DEGRADED = new AtomicBoolean(false);
     private static BukkitTask SCHEDULED;
     private static int joins;
 
@@ -72,6 +78,19 @@ public class LoginListener implements Listener {
     public void onLogin(AsyncPlayerPreLoginEvent event) {
         // AuthMe 等插件在 LOWEST 完成昵称合法性校验，若昵称非法已被拒绝，则不再触发绑定
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
+        // 机器人链接掉线/不可用时降级拦截，直接放行（否则玩家无法完成 QQ 验证）
+        if (!BotStatusUtil.isBotAvailable()) {
+            if (DEGRADED.compareAndSet(false, true)) {
+                DefenceManager.getInstance().getLogger().warn(
+                        "机器人链接不可用(" + BotStatusUtil.describe() + ")，DefenceManager 登录拦截已降级，未绑定玩家将直接放行");
+            }
+            DefenceManager.getInstance().getLogger().warn(
+                    "机器人链接不可用，放行玩家 " + event.getName() + "(" + event.getUniqueId() + ") 登录");
+            return;
+        }
+        if (DEGRADED.compareAndSet(true, false)) {
+            DefenceManager.getInstance().getLogger().info("机器人链接已恢复，DefenceManager 登录拦截已恢复");
+        }
         if (whiteList) {
             for (OfflinePlayer offlinePlayer : Bukkit.getWhitelistedPlayers()) {
                 if (offlinePlayer.getUniqueId().equals(event.getUniqueId())) return;
